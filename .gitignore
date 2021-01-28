@@ -12,6 +12,17 @@
 *.map
 *.exp
 
+#IDEA stuff
+*.idea
+
+#PIO stuff
+*.pio
+
+#CMAKE
+*cmake-build-debug
+*cmake-build-nodemcuv2
+
+
 # Precompiled Headers
 *.gch
 *.pch
