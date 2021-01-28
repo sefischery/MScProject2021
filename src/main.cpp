@@ -4,5 +4,5 @@ void setup() {
 }
 
 void loop() {
-
+    printf("test");
 }
