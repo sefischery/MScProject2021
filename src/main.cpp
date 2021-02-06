@@ -6,6 +6,5 @@ void setup() {
 }
 
 void loop() {
-    printf("test");
-    printf("Sebastian Test");
+
 }
