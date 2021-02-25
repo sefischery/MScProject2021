@@ -2,7 +2,10 @@
 #include <utilities.h>
 #include <acorn.h>
 
+#include <aes_gcm.h>
+
 #define SIZE 16
+
 
 void setup() {
     Serial.begin(115200);
@@ -21,13 +24,13 @@ void setup() {
     charToUint8(input, plaintext, textSize);
 
     /** Validation process **/
-    uint8_t tag                 [SIZE];
+    uint8_t tag[SIZE];
     uint8_t plaintextReceiver   [textSize];
     uint8_t ciphertextReceiver  [textSize];
 
     /** Key and IV initialization **/
-    uint8_t key[SIZE]                        = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
-    uint8_t iv[SIZE]                         = {0x00, 0x03, 0x06, 0x09, 0x0c, 0x0f, 0x12, 0x15, 0x18, 0x1b, 0x1e, 0x21, 0x24, 0x27, 0x2a, 0x2d};
+    uint8_t key[SIZE] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
+    uint8_t iv[SIZE] = {0x00, 0x03, 0x06, 0x09, 0x0c, 0x0f, 0x12, 0x15, 0x18, 0x1b, 0x1e, 0x21, 0x24, 0x27, 0x2a, 0x2d};
 
     /** Encryption **/
     acorn_encryption(plaintext, ciphertextReceiver, tag, textSize, key, iv, SIZE);
@@ -38,6 +41,27 @@ void setup() {
     print_uint8(plaintextReceiver, textSize);
 
     /** Convert received plaintext to readable char array **/
+    uint8ToChar(plaintextReceiver, backToText, textSize);
+    print_char(backToText, textSize);
+
+
+    /** Starts AES cryptographic algorithm **/
+    Serial.println("--------------------------------");
+    /** Reset all arrays **/
+    memset(tag, 0xBA, SIZE);
+    memset(plaintextReceiver, 0xBA, textSize);
+    memset(ciphertextReceiver, 0xBA, textSize);
+    memset(backToText, 0xBA, textSize);
+
+    /** AES Encryption **/
+    aes_gcm_encryption(plaintext, ciphertextReceiver, tag, textSize, key, iv,SIZE);
+    print_uint8(ciphertextReceiver, textSize);
+
+    /** AES Decryption **/
+    aes_gcm_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, key, iv, SIZE);
+    print_uint8(plaintextReceiver, textSize);
+
+    /** Convert to char array **/
     uint8ToChar(plaintextReceiver, backToText, textSize);
     print_char(backToText, textSize);
 }
