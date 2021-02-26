@@ -2,7 +2,7 @@
 #include <cstring>
 #include <Arduino.h>
 
-void acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
+bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
                       int size, uint8_t *key, uint8_t *iv, int cipherSize) {
     /** Initiate the Acorn cipher **/
     Acorn128 cipherEncryption;
@@ -19,9 +19,11 @@ void acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
     /** Perform the encryption og compute the tag **/
     cipherEncryption.encrypt(ciphertext, plaintext, size);
     cipherEncryption.computeTag(tag, size);
+
+    return true;
 }
 
-void acorn_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
+bool acorn_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
                       int size, uint8_t *key, uint8_t *iv, int cipherSize) {
     /** Initiate the Acorn cipher **/
     Acorn128 cipherDecryption;
@@ -39,8 +41,8 @@ void acorn_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
 
     /** Validate the received tag **/
     if (!cipherDecryption.checkTag(tag, cipherSize)) {
-        Serial.println("tag was not validated correct.");
-    } else {
-        Serial.println("tag was validated correct.");
+        return false;
     }
+
+    return true;
 }

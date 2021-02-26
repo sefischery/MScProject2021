@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <Ascon128.h>
 
-void ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
+bool ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
                         int size, uint8_t *key, uint8_t *iv, int cipherSize) {
 
     /** Initiate the Acorn cipher **/
@@ -19,9 +19,10 @@ void ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
     /** Perform the encryption og compute the tag **/
     gcmAesEncryption.encrypt(ciphertext, plaintext, size);
     gcmAesEncryption.computeTag(tag, size);
+    return true;
 }
 
-void ascon_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
+bool ascon_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
                         int size, uint8_t *key, uint8_t *iv, int cipherSize) {
 
     /** Initiate the Acorn cipher **/
@@ -40,8 +41,8 @@ void ascon_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
 
     /** Validate the received tag **/
     if (!cipherDecryption.checkTag(tag, cipherSize)) {
-        Serial.println("tag was not validated correct.");
-    } else {
-        Serial.println("tag was validated correct.");
+        return false;
     }
+
+    return true;
 }
