@@ -40,3 +40,19 @@ void uint8ToChar(const uint8_t *plaintext, char *toText, int size) {
         toText[index] = plaintext[index];
     }
 }
+
+void GenerateInitializationVector(uint8_t *iv, int size) {
+    TransistorNoiseSource noise(A3);
+    RNG.begin("RANDOM_NUMB_GEN");
+    RNG.addNoiseSource(noise);
+
+    bool haveKey = false;
+    while (!haveKey)
+    {
+        RNG.loop();
+        if(RNG.available(size)){
+            RNG.rand(iv, size);
+            haveKey = true;
+        }
+    }
+}
