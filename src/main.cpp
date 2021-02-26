@@ -4,20 +4,20 @@
 
 #include <aes_gcm.h>
 #include <ascon.h>
+#include <Crypto.h>
 
 #define SIZE 16
 
-
- struct encryption {
-    void (*acorn_encryption)(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
-    void (*aes_gcm_encryption)(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
-    void (*ascon_encryption)(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
+struct encryption {
+    bool (*acorn_encryption)(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
+    bool (*aes_gcm_encryption)(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
+    bool (*ascon_encryption)(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
 };
 
 struct decryption {
-    void (*acorn_decryption)(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
-    void (*aes_gcm_decryption)(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
-    void (*ascon_decryption)(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
+    bool (*acorn_decryption)(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
+    bool (*aes_gcm_decryption)(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
+    bool (*ascon_decryption)(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
 };
 
 struct cipherOperator {
@@ -25,6 +25,8 @@ struct cipherOperator {
     struct decryption decryption;
     uint8_t key[SIZE];
 };
+
+
 
 void setup() {
     Serial.begin(115200);
@@ -41,7 +43,7 @@ void setup() {
             aes_gcm_decryption,
             ascon_decryption
         },{
-        /** Key definition **/
+            /** Key definition **/
              0x00, 0x01, 0x02, 0x03, 0x04,
              0x05, 0x06, 0x07, 0x08, 0x09,
              0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
@@ -56,7 +58,7 @@ void setup() {
     const int textSize = sizeof(input);
 
     /** Setup for readable text to plaintext **/
-    char backToText[textSize];
+    char text[textSize];
 
     /** Convert char array to plaintext format; uint8_t **/
     uint8_t plaintext[textSize];
@@ -64,26 +66,72 @@ void setup() {
 
     /** Validation process **/
     uint8_t tag[SIZE];
+    uint8_t iv[SIZE];
     uint8_t plaintextReceiver[textSize];
     uint8_t ciphertextReceiver[textSize];
 
-    /** Key and IV initialization **/
-    //uint8_t key[SIZE] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
-    uint8_t iv[SIZE] = {0x00, 0x03, 0x06, 0x09, 0x0c, 0x0f, 0x12, 0x15, 0x18, 0x1b, 0x1e, 0x21, 0x24, 0x27, 0x2a, 0x2d};
+    /** IV initialization **/
+    GenerateInitializationVector(iv, SIZE);
 
 
+
+    
     /** Encryption **/
     cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
-    print_uint8(ciphertextReceiver, textSize);
+
+    /** Manipulate packet **/
+    //ciphertextReceiver[0] = 0x03; /** This could be a MITM who is tweaking the values **/
+
+    /** Sender: Encapsulating iv,tag and data into one packet **/
+    int packetSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertextReceiver);
+    uint8_t packetBuffer[packetSize];
+    loadPacketBuffer(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+
+
+
+
+
+
+
+    /** Receiver: Unpack received data into iv, tag and informative data **/
+    separatePacketBuffer(packetBuffer, packetSize, iv, tag, SIZE, ciphertextReceiver);
 
     /** Decryption **/
-    cipher.decryption.ascon_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
-    print_uint8(plaintextReceiver, textSize);
-
+    bool decryptionValidation = cipher.decryption.ascon_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
 
     /** Convert received plaintext to readable char array **/
-    uint8ToChar(plaintextReceiver, backToText, textSize);
-    print_char(backToText, textSize);
+    uint8ToChar(plaintextReceiver, text, textSize);
+
+
+
+
+
+
+
+    /** Printing functionality sender **/
+    Serial.println("----------------------------------------------------");
+    Serial.println("----------------------Receiver----------------------");
+    Serial.println("----------------------------------------------------");
+    Serial.print("Message: ");
+    print_char(input, textSize);
+    Serial.println("The encapsulated packet:");
+    print_uint8(packetBuffer, packetSize);
+
+    /** Print functionality receiver **/
+    Serial.println("----------------------------------------------------");
+    Serial.println("-----------------------Sender-----------------------");
+    Serial.println("----------------------------------------------------");
+    Serial.print("IV: ");
+    print_uint8(iv, SIZE);
+    Serial.print("Tag: ");
+    print_uint8(tag, SIZE);
+    Serial.print("Ciphertext: ");
+    print_uint8(ciphertextReceiver, packetSize - 2*SIZE);
+    Serial.print("Tag validation: ");
+    Serial.println(decryptionValidation);
+    Serial.print("Decrypted message: ");
+    print_char(text, textSize);
+    Serial.println("----------------------------------------------------");
 }
 
 void loop() {
