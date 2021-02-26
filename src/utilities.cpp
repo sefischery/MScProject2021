@@ -1,6 +1,8 @@
 #include <cstdint>
 #include <cstdio>
 #include <Arduino.h>
+#include <RNG.h>
+#include <TransistorNoiseSource.h>
 
 /** Print each value of uint8 array **/
 void print_uint8(const uint8_t *input, int size) {
@@ -38,6 +40,46 @@ void charToUint8(const char *input, uint8_t *plaintext, int size) {
 void uint8ToChar(const uint8_t *plaintext, char *toText, int size) {
     for (int index = 0; index < size; ++index) {
         toText[index] = plaintext[index];
+    }
+}
+
+/** Encapsulate iv, tag and ciphertext to one packet **/
+void loadPacketBuffer(const uint8_t *iv, const uint8_t *tag, int defaultSize,
+                      const uint8_t *ciphertextReceiver, uint8_t *packetBuffer,
+                      int packetSize) {
+    memset(packetBuffer, 0xBA, packetSize);
+
+    for (int index = 0; index < packetSize; ++index) {
+        if (index < defaultSize){
+            packetBuffer[index] = iv[index];
+        }
+        else if (index >= defaultSize && index < defaultSize*2)
+        {
+            packetBuffer[index] = tag[index - defaultSize];
+        }
+        else {
+            packetBuffer[index] = ciphertextReceiver[index - defaultSize*2];
+        }
+    }
+}
+
+void separatePacketBuffer(const uint8_t *packetBuffer, int packetSize, uint8_t *iv,
+                     uint8_t *tag, int defaultSize, uint8_t *ciphertext) {
+    memset(iv, 0xBA, defaultSize);
+    memset(tag, 0xBA, defaultSize);
+    memset(ciphertext, 0xBA, packetSize-(2*defaultSize));
+
+    for (int index = 0; index < packetSize; ++index) {
+        if (index < defaultSize){
+            iv[index] = packetBuffer[index];
+        }
+        else if (index >= defaultSize && index < defaultSize*2)
+        {
+            tag[index - defaultSize] = packetBuffer[index];
+        }
+        else {
+            ciphertext[index - defaultSize*2] = packetBuffer[index];
+        }
     }
 }
 
