@@ -19,9 +19,7 @@
 *.pio
 
 #CMAKE
-*cmake-build-debug
-*cmake-build-nodemcuv2
-
+*cmake-build-*
 
 # Precompiled Headers
 *.gch
