@@ -17,7 +17,13 @@ bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
     memset(ciphertext, 0xBA, size);
 
     /** Perform the encryption og compute the tag **/
+    unsigned long beforeEncryption = micros();
     cipherEncryption.encrypt(ciphertext, plaintext, size);
+    unsigned long afterEncrypt = micros() - beforeEncryption;
+
+    Serial.print(afterEncrypt);
+    Serial.println(" micro seconds encryption timing");
+
     cipherEncryption.computeTag(tag, size);
 
     return true;
@@ -37,7 +43,12 @@ bool acorn_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
     memset(plaintext, 0xBA, size);
 
     /** Perform the decryption **/
+    unsigned long beforeDecryption = micros();
     cipherDecryption.decrypt(plaintext, ciphertext, size);
+    unsigned long afterDecrypt = micros() - beforeDecryption;
+
+    Serial.print(afterDecrypt);
+    Serial.println(" micro seconds decryption timing");
 
     /** Validate the received tag **/
     if (!cipherDecryption.checkTag(tag, cipherSize)) {

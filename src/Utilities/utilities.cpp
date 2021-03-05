@@ -84,7 +84,7 @@ void separatePacketBuffer(const uint8_t *packetBuffer, int packetSize, uint8_t *
 }
 
 void GenerateInitializationVector(uint8_t *iv, int size) {
-    TransistorNoiseSource noise(A3);
+    TransistorNoiseSource noise(A0);
     RNG.begin("RANDOM_NUMB_GEN");
     RNG.addNoiseSource(noise);
 
