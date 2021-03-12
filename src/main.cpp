@@ -1,12 +1,9 @@
 #include <Arduino.h>
-
-#include <utilities.h>
-
-#include <acorn.h>
 #include <aes_gcm.h>
 #include <ascon.h>
+#include <utilities.h>
+#include <acorn.h>
 #include <Crypto.h>
-
 
 #define SIZE 16
 
