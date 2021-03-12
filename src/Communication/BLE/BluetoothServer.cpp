@@ -25,10 +25,13 @@
 #include <BLE2902.h>
 #include <Arduino.h>
 
-BLEServer* pServer = NULL;
-BLECharacteristic* pCharacteristic = NULL;
+BLEServer* pServer = nullptr;
+BLECharacteristic* pCharacteristic = nullptr;
+
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
+bool serialMonitorNotified = false;
+
 uint32_t value = 0;
 
 // See the following for generating UUIDs:
@@ -39,11 +42,11 @@ uint32_t value = 0;
 
 
 class MyServerCallbacks: public BLEServerCallbacks {
-    void onConnect(BLEServer* pServer) override {
+    void onConnect(BLEServer* server) override {
         deviceConnected = true;
     };
 
-    void onDisconnect(BLEServer* pServer) override {
+    void onDisconnect(BLEServer* server) override {
         deviceConnected = false;
     }
 };
@@ -96,6 +99,10 @@ void loop() {
     if (deviceConnected) {
         pCharacteristic->notify();
         pCharacteristic->setBroadcastProperty(true);
+        if (!serialMonitorNotified){
+            Serial.println("Client connected...");
+            serialMonitorNotified = true;
+        }
 
         delay(1000); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
     }
@@ -106,6 +113,11 @@ void loop() {
         Serial.println("start advertising");
         oldDeviceConnected = deviceConnected;
         pCharacteristic->setBroadcastProperty(false);
+
+        if (serialMonitorNotified){
+            Serial.println("Client disconnected...");
+            serialMonitorNotified = false;
+        }
     }
     // connecting
     if (deviceConnected && !oldDeviceConnected) {
