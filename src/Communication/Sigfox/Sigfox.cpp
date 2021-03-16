@@ -1,56 +1,8 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
+#include <Sigfox_functions.h>
 
 SoftwareSerial SigfoxSerial(SER_RX_PIN, SER_TX_PIN);
-
-//Send Sigfox Message
-void sendMessage(uint8_t msg[], int size)
-{
-    Serial.println("Inside sendMessage");
-
-    String status = "";
-    String hexChar = "";
-    String sigfoxCommand = "";
-    char output;
-
-    sigfoxCommand += "AT$SF=";
-
-    for (int i = 0; i < size; i++)
-    {
-        hexChar = String(msg[i], HEX);
-
-        //padding
-        if (hexChar.length() == 1)
-        {
-            hexChar = "0" + hexChar;
-        }
-
-        sigfoxCommand += hexChar;
-    }
-
-    Serial.println("Sending...");
-    Serial.println(sigfoxCommand);
-    SigfoxSerial.println(sigfoxCommand);
-
-    while (!SigfoxSerial.available())
-    {
-        Serial.println("Waiting for response");
-        delay(1000);
-    }
-
-    while (SigfoxSerial.available())
-    {
-        output = (char)SigfoxSerial.read();
-        status += output;
-        delay(10);
-    }
-
-    Serial.println();
-    Serial.print("Status \t");
-    Serial.println(status);
-}
-
-
 
 void setup()
 {
