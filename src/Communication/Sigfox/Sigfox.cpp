@@ -1,9 +1,6 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
-#define SER_RX_PIN D5
-#define SER_TX_PIN D6
-
 SoftwareSerial SigfoxSerial(SER_RX_PIN, SER_TX_PIN);
 
 //Send Sigfox Message
