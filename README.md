@@ -18,3 +18,15 @@ To listen on different coms via windows command line use the following code:
 pio device monitor -p COM5 -b 115200 
 
 Whereas -p is a shortcut for PORT and -b is for BAUDRATE. Furthermore, in the example the port is set to COM5 and the baudrate to 115200, which both can changed.
+
+## Use Sigfox
+When uploading the Sigfox sketch, the defined message will be transmitted and be available online.
+
+The message can be verified and seen on https://backend.sigfox.com/.
+
+- Login to https://backend.sigfox.com/
+- Press 'Device' in the top left hand-side.
+- Under the list of devices, press the device id.
+- In the left menu, press messages.
+
+All message send from that device will be located here, and can be decode with a hex decoder.
