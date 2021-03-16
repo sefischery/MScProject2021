@@ -118,11 +118,11 @@ void pubSubCheckConnect() {
         Serial.print("PubSubClient connecting to: "); Serial.print(awsEndpoint);
         while ( ! pubSubClient.connected()) {
             Serial.print(".");
-            pubSubClient.connect("ESPthingXXXX");
+            pubSubClient.connect("ESP-Subscriber");
             delay(1000);
         }
-        Serial.println(" connected");
-        pubSubClient.subscribe("inTopic");
+        Serial.println("connected");
+        pubSubClient.subscribe("outTopic");
     }
     pubSubClient.loop();
 }
@@ -132,6 +132,7 @@ int msgCount;
 
 void setup() {
     Serial.begin(115200); delay(50); Serial.println();
+    Serial.println("ESP-Subscriber");
     Serial.println("ESP32 AWS IoT Example");
     Serial.printf("SDK version: %s\n", ESP.getSdkVersion());
 
@@ -146,14 +147,5 @@ void setup() {
 }
 
 void loop() {
-
     pubSubCheckConnect();
-
-    if (millis() - lastPublish > 10000) {
-        String msg = String("Hello from ESP8266: ") + ++msgCount;
-        boolean rc = pubSubClient.publish("outTopic", msg.c_str());
-        Serial.print("Published, rc="); Serial.print( (rc ? "OK: " : "FAILED: ") );
-        Serial.println(msg);
-        lastPublish = millis();
-    }
 }

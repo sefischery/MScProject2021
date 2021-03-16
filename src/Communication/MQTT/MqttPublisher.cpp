@@ -118,13 +118,11 @@ void pubSubCheckConnect() {
         Serial.print("PubSubClient connecting to: "); Serial.print(awsEndpoint);
         while ( ! pubSubClient.connected()) {
             Serial.print(".");
-            pubSubClient.connect("ESPthingXXXX");
+            pubSubClient.connect("ESP-Publisher");
             delay(1000);
         }
-        Serial.println(" connected");
-        pubSubClient.subscribe("inTopic");
+        Serial.println("connected");
     }
-    pubSubClient.loop();
 }
 
 unsigned long lastPublish;
@@ -132,6 +130,7 @@ int msgCount;
 
 void setup() {
     Serial.begin(115200); delay(50); Serial.println();
+    Serial.println("ESP-Publisher");
     Serial.println("ESP32 AWS IoT Example");
     Serial.printf("SDK version: %s\n", ESP.getSdkVersion());
 
