@@ -11,7 +11,7 @@ void setup()
     SigfoxSerial.println("Test");
     Serial.println("HELLO WORLD");
     uint8_t msg[12] = "magnussebas";
-    sendMessage(msg, sizeof(msg));
+    sendMessage(msg, sizeof(msg),SigfoxSerial);
 
 }
 
@@ -21,8 +21,7 @@ void loop()
     String pac = "";
     char output;
 
-
-    SigfoxSerial.print("AT$I=11\r");
+    sendSigfoxATCommand(AT_PAC_COMMAND,SigfoxSerial);
     delay(1000);
     while(SigfoxSerial.available()){
         output = SigfoxSerial.read();
