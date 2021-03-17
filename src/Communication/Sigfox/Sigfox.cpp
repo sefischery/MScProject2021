@@ -11,7 +11,7 @@ void setup()
     SigfoxSerial.println("Test");
     Serial.println("HELLO WORLD");
     uint8_t msg[12] = "magnussebas";
-    sendMessage(msg, sizeof(msg),SigfoxSerial);
+    sendSigfoxMessage(msg, sizeof(msg), SigfoxSerial);
 
 }
 

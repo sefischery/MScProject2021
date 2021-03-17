@@ -6,7 +6,7 @@
 #define AT_MODID_COMMAND "AT$I=10\r"
 #define AT_PAC_COMMAND "AT$I=11\r"
 
-void sendMessage(uint8_t *msg, int size, SoftwareSerial &softwareSerial);
+void sendSigfoxMessage(uint8_t *msg, int size, SoftwareSerial &softwareSerial);
 void sendSigfoxATCommand(char const *Command, SoftwareSerial &softwareSerial);
 
 #endif //MSCPROJECT2021_SIGFOX_FUNCTIONS_H

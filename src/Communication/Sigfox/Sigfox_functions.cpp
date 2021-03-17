@@ -6,9 +6,9 @@ void sendSigfoxATCommand(char const *Command, SoftwareSerial &softwareSerial)
 }
 
 //Send Sigfox Message
-void sendMessage(uint8_t msg[], int size, SoftwareSerial &softwareSerial)
+void sendSigfoxMessage(uint8_t *msg, int size, SoftwareSerial &softwareSerial)
 {
-    Serial.println("Inside sendMessage");
+    Serial.println("Inside sendSigfoxMessage");
 
     String status = "";
     String hexChar = "";
