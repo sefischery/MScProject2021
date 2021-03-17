@@ -1,22 +1,12 @@
-/* ESP32 AWS IoT
- *
- * Simplest possible example (that I could come up with) of using an ESP32 with AWS IoT.
- *
- * Author: Anthony Elder
- * License: Apache License v2
- */
 #include <WiFiClientSecure.h>
-#include <PubSubClient.h> // install with Library Manager, I used v2.6.0
+#include <PubSubClient.h>
+#include <Mqtt_functions.h>
 
-const char* ssid = "Testfi";
-const char* password = "Ok123456";
+unsigned long lastPublish;
+int msgCount;
 
-const char* awsEndpoint = "a3pe5ezmacr7yu-ats.iot.eu-west-1.amazonaws.com";
-
-// Update the two certificate strings below. Paste in the text of your AWS
-// device certificate and private key. Add a quote character at the start
-// of each line and a backslash, n, quote, space, backslash at the end
-// of each line:
+WiFiClientSecure wiFiClient;
+PubSubClient pubSubClient(awsEndpoint, 8883, msgReceived, wiFiClient);
 
 // xxxxxxxxxx-certificate.pem.crt
 const char* certificate_pem_crt = \
@@ -40,9 +30,6 @@ const char* certificate_pem_crt = \
 "C46QaJqDbs+jN1VlwEpgwaJshSySNF0KcbePvetuvV0vyIxK9a9FD3QCRrZLcG2H\n" \
 "iAoJ3TTL9ZUy8YQ5pjLwURbg19jFXaeA0bCjPi6lAosev0OUUjhphir9bBEV1w==\n" \
 "-----END CERTIFICATE-----\n";
-
-
-
 
 // xxxxxxxxxx-private.pem.key
 const char* private_pem_key = \
@@ -74,11 +61,6 @@ const char* private_pem_key = \
 "o8dgY1sjQt5QkpaJ1al9jeXA+WUx7zrwZzsqB8vJxLxGKxt7rPsf\n" \
 "-----END RSA PRIVATE KEY-----\n";
 
-
-
-/* root CA can be downloaded in:
-  https://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem
-*/
 const char* rootCA = \
 "-----BEGIN CERTIFICATE-----\n" \
 "MIIDQTCCAimgAwIBAgITBmyfz5m/jAo54vB4ikPmljZbyjANBgkqhkiG9w0BAQsF\n" \
@@ -101,43 +83,19 @@ const char* rootCA = \
 "rqXRfboQnoZsG4q5WTP468SQvvG5\n" \
 "-----END CERTIFICATE-----\n";
 
-WiFiClientSecure wiFiClient;
-void msgReceived(char* topic, byte* payload, unsigned int len);
-PubSubClient pubSubClient(awsEndpoint, 8883, msgReceived, wiFiClient);
-
-void msgReceived(char* topic, byte* payload, unsigned int length) {
-    Serial.print("Message received on "); Serial.print(topic); Serial.print(": ");
-    for (int i = 0; i < length; i++) {
-        Serial.print((char)payload[i]);
-    }
-    Serial.println();
-}
-
-void pubSubCheckConnect() {
-    if ( ! pubSubClient.connected()) {
-        Serial.print("PubSubClient connecting to: "); Serial.print(awsEndpoint);
-        while ( ! pubSubClient.connected()) {
-            Serial.print(".");
-            pubSubClient.connect("ESP-Publisher");
-            delay(1000);
-        }
-        Serial.println("connected");
-    }
-}
-
-unsigned long lastPublish;
-int msgCount;
-
 void setup() {
-    Serial.begin(115200); delay(50); Serial.println();
+    Serial.begin(115200); delay(50);
+    Serial.println();
     Serial.println("ESP-Publisher");
     Serial.println("ESP32 AWS IoT Example");
     Serial.printf("SDK version: %s\n", ESP.getSdkVersion());
 
-    Serial.print("Connecting to "); Serial.print(ssid);
-    WiFi.begin(ssid, password);
+    Serial.print("Connecting to ");
+    Serial.print(SSID);
+    WiFi.begin(SSID, WiFi_PASS);
     WiFi.waitForConnectResult();
-    Serial.print(", WiFi connected, IP address: "); Serial.println(WiFi.localIP());
+    Serial.print(", WiFi connected, IP address: ");
+    Serial.println(WiFi.localIP());
 
     wiFiClient.setCACert(rootCA);
     wiFiClient.setCertificate(certificate_pem_crt);
@@ -146,7 +104,7 @@ void setup() {
 
 void loop() {
 
-    pubSubCheckConnect();
+    pubSubCheckConnect(pubSubClient, awsEndpoint);
 
     if (millis() - lastPublish > 10000) {
         String msg = String("Hello from ESP8266: ") + ++msgCount;
