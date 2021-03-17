@@ -14,8 +14,8 @@
 #include "ESPAsyncWebServer.h"
 
 // Set your access point network credentials
-const char* ssid = "ESP32-Access-Point";
-const char* password = "123456789";
+const char* SSID = "ESP32-Access-Point";
+const char* WiFi_PASS = "123456789";
 
 AsyncWebServer server(80);
 
@@ -27,7 +27,7 @@ void setup(){
     // Setting the ESP as an access point
     Serial.print("Setting AP (Access Point)…");
     // Remove the password parameter, if you want the AP (Access Point) to be open
-    WiFi.softAP(ssid, password);
+    WiFi.softAP(SSID, WiFi_PASS);
 
     IPAddress IP = WiFi.softAPIP();
     Serial.print("AP IP address: ");

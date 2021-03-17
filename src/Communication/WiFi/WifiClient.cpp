@@ -1,8 +1,8 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-const char* ssid = "ESP32-Access-Point";
-const char* password = "123456789";
+const char* SSID = "ESP32-Access-Point";
+const char* WiFi_PASS = "123456789";
 
 const char aesResource[] = "http://192.168.4.1/aes";
 
@@ -31,7 +31,7 @@ String httpGETRequest(const char* serverName) {
 void setup(){
     Serial.begin(115200);
 
-    WiFi.begin(ssid, password);
+    WiFi.begin(SSID, WiFi_PASS);
     Serial.println("Connecting");
     while(WiFiClass::status() != WL_CONNECTED) {
         delay(500);
