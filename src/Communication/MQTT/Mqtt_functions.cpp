@@ -9,16 +9,30 @@ void msgReceived(char* topic, byte* payload, unsigned int length) {
     Serial.println();
 }
 
-
-void pubSubCheckConnect(PubSubClient &pubSubClient, const char* aws_Endpoint) {
-    if ( ! pubSubClient.connected()) {
-        Serial.print("PubSubClient connecting to: ");
+void publisherCheckConnect(PubSubClient &pubSubClient, const char *aws_Endpoint) {
+    if ( !pubSubClient.connected()) {
+        Serial.print("ESP-Publisher connecting to: ");
         Serial.print(aws_Endpoint);
-        while ( ! pubSubClient.connected()) {
+        while ( !pubSubClient.connected()) {
             Serial.print(".");
             pubSubClient.connect("ESP-Publisher");
             delay(1000);
         }
         Serial.println("connected");
     }
+}
+
+void subscriberCheckConnect(PubSubClient &pubSubClient, const char *aws_Endpoint) {
+    if ( ! pubSubClient.connected()) {
+        Serial.print("ESP-Subscriber connecting to: ");
+        Serial.print(aws_Endpoint);
+        while ( ! pubSubClient.connected()) {
+            Serial.print(".");
+            pubSubClient.connect("ESP-Subscriber");
+            delay(1000);
+        }
+        Serial.println("connected");
+        pubSubClient.subscribe("outTopic");
+    }
+    pubSubClient.loop();
 }

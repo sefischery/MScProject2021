@@ -105,5 +105,5 @@ void setup() {
 }
 
 void loop() {
-    pubSubCheckConnect(pubSubClient, awsEndpoint);
+    subscriberCheckConnect(pubSubClient, awsEndpoint);
 }

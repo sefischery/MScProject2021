@@ -104,10 +104,10 @@ void setup() {
 
 void loop() {
 
-    pubSubCheckConnect(pubSubClient, awsEndpoint);
+    publisherCheckConnect(pubSubClient, awsEndpoint);
 
     if (millis() - lastPublish > 10000) {
-        String msg = String("Hello from ESP8266: ") + ++msgCount;
+        String msg = String("Hello from ESP-Publisher: ") + ++msgCount;
         boolean rc = pubSubClient.publish("outTopic", msg.c_str());
         Serial.print("Published, rc="); Serial.print( (rc ? "OK: " : "FAILED: ") );
         Serial.println(msg);
