@@ -30,3 +30,30 @@ The message can be verified and seen on https://backend.sigfox.com/.
 - In the left menu, press messages.
 
 All message send from that device will be located here, and can be decode with a hex decoder.
+
+## NB-IoT
+This section will contain information about NarrowBand-Internet of Things.
+### Azure 
+
+In the rdp Azure machine, open a terminal and type:
+
+nc -klvu 9889
+
+The number '9889' is the port and the 'nc' is a netcat command.
+
+### SODAQ Sara SFF Board
+It is important to open a socket before trying to send data to the endpoint. This is done by using the AT command:
+
+AT+USOCR=17
+
+Don't remember to close the socket when the communication is done. This done by this command:
+
+AT+USOCL=0
+
+When a socket is succesfully created, the following command can be used to send data via the protocol UDP.
+
+AT+USOST=0,"ip",port,message length,"message"
+
+And concrete example:
+
+AT+USOST=0,"52.169.123.25",9889,4,"Yes!"
