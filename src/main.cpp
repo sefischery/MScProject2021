@@ -54,11 +54,14 @@ void setup() {
     };
 
     /** Define initial text **/
-    int messageSize = 16;
+    int randomNumber = random(0,15);
+    int messageSize = 128;
     uint8_t inputUint8[messageSize];
     char input[messageSize]; // ] = "hej med dig min ven";
     GenerateInitializationVector(inputUint8, messageSize);
     uint8ToChar(inputUint8, input, messageSize);
+
+    Serial.println(messageSize);
 
     /** Allow the plaintext to vary in size **/
     const int textSize = sizeof(input);
@@ -79,17 +82,8 @@ void setup() {
     /** IV initialization **/
     GenerateInitializationVector(iv, SIZE);
 
-
-    Serial.print("Psdram: ");
-    Serial.println(ESP.getFreePsram());
-
-    float total = ESP.getHeapSize();
-    float usage = ESP.getFreeHeap();
-    float roundedProcentage = 100 - ((usage / total) * 100);
-    Serial.println(roundedProcentage);
-
     /** Encryption **/
-    cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
 
     /** Manipulate packet **/
     //ciphertextReceiver[0] = 0x03; /** This could be a MITM who is tweaking the values **/
@@ -99,12 +93,6 @@ void setup() {
     uint8_t packetBuffer[packetSize];
     loadPacketBuffer(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
 
-
-    usage = ESP.getFreeHeap();
-    roundedProcentage = 100 - ((usage / total) * 100);
-    Serial.println(roundedProcentage);
-
-
     Serial.print("Psdram: ");
     Serial.println(ESP.getFreePsram());
 
@@ -112,21 +100,10 @@ void setup() {
     separatePacketBuffer(packetBuffer, packetSize, iv, tag, SIZE, ciphertextReceiver);
 
     /** Decryption **/
-    bool decryptionValidation = cipher.decryption.aes_gcm_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    bool decryptionValidation = cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
 
     /** Convert received plaintext to readable char array **/
     uint8ToChar(plaintextReceiver, text, textSize);
-
-
-    Serial.print("Psdram: ");
-    Serial.println(ESP.getFreePsram());
-
-
-
-    usage = ESP.getFreeHeap();
-    roundedProcentage = 100 - ((usage / total) * 100);
-    Serial.println(roundedProcentage);
-
 
     /** Printing functionality sender **/
     Serial.println("----------------------------------------------------");
