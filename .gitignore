@@ -7,6 +7,9 @@
 *.obj
 *.elf
 
+# python env
+venv/
+
 # Linker output
 *.ilk
 *.map
