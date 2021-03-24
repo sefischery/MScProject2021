@@ -4,8 +4,10 @@ import dash_html_components as html
 import pandas as pd
 import numpy as np
 from dash.dependencies import Output, Input
+from flask import Flask
+from flask_restful import Resource, Api
 
-data = pd.read_csv("avocado.csv")
+data = pd.read_csv("nbiottest.csv")
 data["Date"] = pd.to_datetime(data["Date"], format="%Y-%m-%d")
 data.sort_values("Date", inplace=True)
 
@@ -16,15 +18,17 @@ external_stylesheets = [
         "rel": "stylesheet",
     },
 ]
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app.title = "Sebastian & Magnus MSc Thesis"
+server = Flask('my_app')
+ourapp = dash.Dash(server=server, external_stylesheets=external_stylesheets)
+ourapp.title = "Sebastian & Magnus MSc Thesis"
+api = Api(server)
 
-app.layout = html.Div(
+ourapp.layout = html.Div(
     children=[
         html.Div(
             children=[
                 html.H1(
-                    children=app.title, className="header-title"
+                    children=ourapp.title, className="header-title"
                 ),
                 html.P(
                     children="Showcase NB-IoT received messages",
@@ -39,16 +43,16 @@ app.layout = html.Div(
                     children=[
                         html.Div(children="Technology", className="menu-title"),
                         dcc.Dropdown(
-                            id="region-filter",
+                            id="technology-filter",
                             options=[
                                 {
-                                    "label": region,
-                                    "value": region
-                                 }
+                                    "label": technology,
+                                    "value": technology
+                                }
 
-                                for region in np.sort(data.region.unique())
+                                for technology in np.sort(data.technology.unique())
                             ],
-                            value="Albany",
+                            value="NB-IoT",
                             clearable=False,
                             className="dropdown",
                         ),
@@ -61,11 +65,11 @@ app.layout = html.Div(
                             id="type-filter",
                             options=[
                                 {
-                                 "label": avocado_type,
-                                 "value": avocado_type
-                                 }
+                                    "label": security_type,
+                                    "value": security_type
+                                }
 
-                                for avocado_type in data.type.unique()
+                                for security_type in data.type.unique()
 
                             ],
                             value="organic",
@@ -115,19 +119,19 @@ app.layout = html.Div(
 )
 
 
-@app.callback(
+@ourapp.callback(
     [Output("price-chart", "figure"), Output("volume-chart", "figure")],
     [
-        Input("region-filter", "value"),
+        Input("technology-filter", "value"),
         Input("type-filter", "value"),
         Input("date-range", "start_date"),
         Input("date-range", "end_date"),
     ],
 )
-def update_charts(region, avocado_type, start_date, end_date):
+def update_charts(technology, security_type, start_date, end_date):
     mask = (
-            (data.region == region)
-            & (data.type == avocado_type)
+            (data.technology == technology)
+            & (data.type == security_type)
             & (data.Date >= start_date)
             & (data.Date <= end_date)
     )
@@ -136,7 +140,7 @@ def update_charts(region, avocado_type, start_date, end_date):
         "data": [
             {
                 "x": filtered_data["Date"],
-                "y": filtered_data["AveragePrice"],
+                "y": filtered_data["Payload Size"],
                 "type": "lines",
                 "hovertemplate": "$%{y:.2f}<extra></extra>",
             },
@@ -157,7 +161,7 @@ def update_charts(region, avocado_type, start_date, end_date):
         "data": [
             {
                 "x": filtered_data["Date"],
-                "y": filtered_data["Total Volume"],
+                "y": filtered_data["Content"],
                 "type": "lines",
             },
         ],
@@ -171,5 +175,13 @@ def update_charts(region, avocado_type, start_date, end_date):
     return price_chart_figure, volume_chart_figure
 
 
+class HelloWorld(Resource):
+    def get(self):
+        return {'hello': 'world'}
+
+
+api.add_resource(HelloWorld, '/hello')
+
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    ourapp.run_server(debug=True)
+

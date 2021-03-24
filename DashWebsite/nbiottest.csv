@@ -1,0 +1,4 @@
+,Date,Payload Size,Content,type,technology
+0,2021-03-24,1.33,Somethingnotencrypted,plaintext,NB-IoT
+1,2021-03-24,1.35,Somethingencrypted,encrypted,Whatevs
+2,2021-03-24,0.93,Somethingencrypted,encrypted,NB-IoT
