@@ -36,7 +36,7 @@ void sendMessageThroughUDP()
 
     DEBUG_STREAM.println("Created socket!");
 
-    int lengthSent = nbiot.socketSend(socketID,"52.169.123.25", 9889, "nybesked");
+    int lengthSent = nbiot.socketSend(socketID,"40.85.115.125", 9889, "nybesked");
     DEBUG_STREAM.println(lengthSent);
 
 
