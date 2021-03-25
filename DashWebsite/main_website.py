@@ -1,6 +1,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import flask
 import pandas as pd
 import numpy as np
 from dash.dependencies import Output, Input
@@ -39,6 +40,7 @@ def addMessageItem(name, age):
 
 ourapp.layout = html.Div(
     children=[
+        dcc.Location(id='url', refresh=False),
         html.Div(
             children=[
                 html.H1(
@@ -126,12 +128,20 @@ ourapp.layout = html.Div(
                     ),
                     className="card",
                 ),
+
+                dcc.Interval(
+                    id='interval-component',
+                    interval=1 * 1000,  # in milliseconds
+                ),
+
                 html.Div(
                     children=html.Div(
+
                         id="message-list",
                         children=[addMessageItem(message['name'], message['age']) for message in dataList],
                         className="message-list"
                     ),
+
                     className="card",
                 ),
             ],
@@ -141,12 +151,20 @@ ourapp.layout = html.Div(
 )
 
 
-@ourapp.callback(
-    Output("message-list", "children")
-)
-def update_charts(name, age):
-    dataList.append({'name': name, 'age': age})
+@ourapp.callback(Output('message-list', 'children'),
+                [Input('interval-component', 'n_intervals')])
+def timer(n_intervals):
     return dataList
+
+
+# @ourapp.callback(
+#     Output("message-list", "children"),
+#     Input('url', 'pathname')
+# )
+# def update_charts(name, age):
+#     dataList.append({'name': name, 'age': age})
+#     print("dataLIST", dataList)
+#     return dataList
 
 
 @ourapp.callback(
@@ -158,6 +176,14 @@ def update_charts(name, age):
     Input("date-range", "end_date"),
 )
 def update_charts(technology, security_type, start_date, end_date):
+    """
+
+    :param technology:
+    :param security_type:
+    :param start_date:
+    :param end_date:
+    :return:
+    """
     mask = (
             (data.technology == technology)
             & (data.type == security_type)
@@ -204,13 +230,18 @@ def update_charts(technology, security_type, start_date, end_date):
     return price_chart_figure, volume_chart_figure
 
 
-@server.route("/message", methods=['POST'])
-def message():
-    request_data = request.get_json()
+@server.route('/test', methods=['POST'])
+def req():
+    print(request.json)
+    print('Request triggered!')  # For debugging purposes, prints to console
+    request_data = request.json()
+    print("request_Data ",request_data)
     name = request_data['name']
     age = request_data['age']
+    # {'name': "Magnus", 'age': 25}
     dataList.append({'name': name, 'age': age})
-    return { 'name': name, 'age': age }
+
+    return flask.redirect(flask.request.url)
 
 
 @server.route("/hello")
@@ -219,4 +250,4 @@ def hello():
 
 
 if __name__ == "__main__":
-    ourapp.run_server(host='localhost', port=80, debug=True)
+    ourapp.run_server(host='localhost', port=8050, debug=True)

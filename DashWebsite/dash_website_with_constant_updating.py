@@ -1,91 +1,50 @@
-import datetime
-
+import flask
 import dash
-import dash_core_components as dcc
 import dash_html_components as html
-from plotly import subplots
-from dash.dependencies import Input, Output
-from pyorbital.orbital import Orbital
+import dash_core_components as dcc
+from dash.dependencies import Output, Input
+from flask import request
 
-satellite = Orbital('TERRA')
+text_style = {
+    'color': 'blue',
+}
 
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+children_text = {
+    'content' : "fuckdig",
+}
 
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app.layout = html.Div(
-    html.Div([
-        html.H4('TERRA Satellite Live Feed'),
-        html.Div(id='live-update-text'),
-        dcc.Graph(id='live-update-graph'),
-        dcc.Interval(
-            id='interval-component',
-            interval=1 * 1000,  # in milliseconds
-            n_intervals=0
-        )
-    ])
-)
+server = flask.Flask(__name__)
+app = dash.Dash(__name__, server=server)
 
-
-@app.callback(Output('live-update-text', 'children'),
-              Input('interval-component', 'n_intervals'))
-def update_metrics(n):
-    lon, lat, alt = satellite.get_lonlatalt(datetime.datetime.now())
-    style = {'padding': '5px', 'fontSize': '16px'}
-    return [
-        html.Span('Longitude: {0:.2f}'.format(lon), style=style),
-        html.Span('Latitude: {0:.2f}'.format(lat), style=style),
-        html.Span('Altitude: {0:0.2f}'.format(alt), style=style)
-    ]
+app.layout = html.Div([
+    html.Div(id='dummy', children=children_text['content'], style=text_style),
+    dcc.Interval(
+        id='interval-component',
+        interval=1 * 1000,  # in milliseconds
+    ),
+    html.Div(id='none', style={'display': 'none'}),
+])
 
 
-# Multiple components can update everytime interval gets fired.
-@app.callback(Output('live-update-graph', 'figure'),
-              Input('interval-component', 'n_intervals'))
-def update_graph_live(n):
-    satellite_ = Orbital('TERRA')
-    data = {
-        'time': [],
-        'Latitude': [],
-        'Longitude': [],
-        'Altitude': []
-    }
+@app.callback(Output('dummy', 'children'),
+              [Input('interval-component', 'n_intervals')])
+def timer(n_intervals):
+    return children_text['content']
 
-    # Collect some data
-    for i in range(180):
-        time = datetime.datetime.now() - datetime.timedelta(seconds=i * 20)
-        lon, lat, alt = satellite_.get_lonlatalt(
-            time
-        )
-        data['Longitude'].append(lon)
-        data['Latitude'].append(lat)
-        data['Altitude'].append(alt)
-        data['time'].append(time)
 
-    # Create the graph with subplots
-    fig = subplots.make_subplots(rows=2, cols=1, vertical_spacing=0.2)
+@server.route('/test', methods=['POST'])
+def req():
+    print(request.json)
+    print('Request triggered!')  # For debugging purposes, prints to console
 
-    fig['layout']['margin'] = {
-        'l': 30, 'r': 10, 'b': 30, 't': 10
-    }
-    fig['layout']['legend'] = {'x': 0, 'y': 1, 'xanchor': 'left'}
+    if request.json['color'] == 'red':  # Toggle textcolor between red and blue
+        text_style['color'] = 'red'
+        children_text['content'] = "FUCKDETHERPIS"
 
-    fig.append_trace({
-        'x': data['time'],
-        'y': data['Altitude'],
-        'name': 'Altitude',
-        'mode': 'lines+markers',
-        'type': 'scatter'
-    }, 1, 1)
-    fig.append_trace({
-        'x': data['Longitude'],
-        'y': data['Latitude'],
-        'text': data['time'],
-        'name': 'Longitude vs Latitude',
-        'mode': 'lines+markers',
-        'type': 'scatter'
-    }, 2, 1)
+    if request.json['color'] == 'gray':  # Toggle textcolor between red and blue
+        text_style['color'] = 'gray'
 
-    return fig
+    return flask.redirect(flask.request.url)
 
 
 if __name__ == '__main__':
