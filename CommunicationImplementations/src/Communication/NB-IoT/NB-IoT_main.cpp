@@ -2,16 +2,12 @@
 #include "Sodaq_wdt.h"
 
 #define R4XX
-
 #define DEBUG_STREAM SerialUSB
 #define MODEM_STREAM Serial1
 #define powerPin SARA_ENABLE
 #define enablePin -1
-
-
 #define DEBUG_STREAM_BAUD 115200
 #define STARTUP_DELAY 5000
-
 
 const char* apn = "company.iot.dk1.tdc";
 const char* cdp = "10.212.187.119";

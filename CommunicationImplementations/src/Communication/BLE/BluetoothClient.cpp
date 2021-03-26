@@ -1,14 +1,5 @@
-/**
- * A BLE client example that is rich in capabilities.
- * There is a lot new capabilities implemented.
- * author unknown
- * updated by chegewara
- */
-
 #include <Arduino.h>
-#include "BLEDevice.h"
-
-
+#include <BLEDevice.h>
 
 static boolean doConnect = false;
 static boolean connected = false;
@@ -27,7 +18,7 @@ static void notifyCallback(BLERemoteCharacteristic* pBLERemoteCharacteristic,
                            size_t length,
                            bool isNotify) {
     Serial.println();
-    Serial.print("Notify callback for characteristic ");
+    Serial.print("Notify callback for characteristic %s");
     Serial.print(pBLERemoteCharacteristic->getUUID().toString().c_str());
     Serial.print(" of data length ");
     Serial.println(length);
@@ -135,10 +126,10 @@ void BLEClientSetup(){
 bool performServerConnectionAttempt(){
     bool connectionAttempt = connectToServer();
     if (connectionAttempt) {
-        Serial.println("We are now connected to the BLE Server.");
+        Serial.println("Connection to BLE Server: ESTABLISHED");
         return false;
     } else {
-        Serial.println("We have failed to connect to the server; there is nothin more we will do.");
+        Serial.println("Connection to BLE Server: FAILED");
         return true;
     }
 }
