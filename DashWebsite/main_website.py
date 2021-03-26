@@ -1,3 +1,4 @@
+import datetime
 import json
 
 import dash
@@ -11,10 +12,6 @@ from dash.dependencies import Output, Input
 from flask import Flask, request
 from flask_restful import Resource, Api
 
-data = pd.read_csv("nbiottest.csv")
-data["Date"] = pd.to_datetime(data["Date"], format="%Y-%m-%d")
-data.sort_values("Date", inplace=True)
-
 external_stylesheets = [
     {
         "href": "https://fonts.googleapis.com/css2?"
@@ -23,27 +20,16 @@ external_stylesheets = [
     },
 ]
 
-data_array_of_dics = [{'Source': 2,
-                       'Payload': 3}, {'Source': 2,
-                                       'Payload': 3}]
+data_array_of_dics = []
+
+data = pd.read_csv("nbiottest.csv")
+data["Date"] = pd.to_datetime(data["Date"], format="%Y-%m-%d")
+data.sort_values("Date", inplace=True)
 
 server = Flask('my_app')
 ourapp = dash.Dash(server=server, external_stylesheets=external_stylesheets)
 ourapp.title = "Sebastian & Magnus MSc Thesis"
 api = Api(server)
-
-dataList = [{'name': "Magnus", 'age': 25}, {'name': "Sebastian", 'age': 24}]
-
-
-def addMessageItem(name, age):
-    return html.Div(
-        children=[
-            html.H2(children=name),
-            html.P(children=age),
-        ],
-        className="message-item",
-    )
-
 
 ourapp.layout = html.Div(
     children=[
@@ -69,11 +55,11 @@ ourapp.layout = html.Div(
                             id="technology-filter",
                             options=[
                                 {
-                                    "label": technology,
-                                    "value": technology
+                                    "label": 'NB-IoT',
+                                    "value": 'NB-IoT'
                                 }
 
-                                for technology in np.sort(data.technology.unique())
+                                #for technology in np.sort(data.technology.unique())
                             ],
                             value="NB-IoT",
                             clearable=False,
@@ -88,11 +74,14 @@ ourapp.layout = html.Div(
                             id="type-filter",
                             options=[
                                 {
-                                    "label": security_type,
-                                    "value": security_type
+                                    "label": 'plaintext',
+                                    "value": 'plaintext',
+                                },
+                                {
+                                    "label": 'encryption',
+                                    "value": 'encryption',
                                 }
-
-                                for security_type in data.type.unique()
+                                #for security_type in data.type.unique()
 
                             ],
                             value="organic",
@@ -122,6 +111,16 @@ ourapp.layout = html.Div(
         html.Div(
             children=[
                 html.Div(
+                    dash_table.DataTable(
+                        id='table',
+                        columns=[{"name": i, "id": i}
+                                 for i in ["Date", "Payload Size", "Content", "type", "technology"]],
+                        data=data_array_of_dics,
+                        style_cell=dict(textAlign='left', padding='10px')
+                    ),
+                    className="card-listview",
+                ),
+                html.Div(
                     children=dcc.Graph(
                         id="price-chart",
                         config={"displayModeBar": False},
@@ -135,31 +134,10 @@ ourapp.layout = html.Div(
                     ),
                     className="card",
                 ),
-
-                html.Div(
-                    children=html.Div(
-
-                        id="message-list",
-                        children=[addMessageItem(message['name'], message['age']) for message in dataList],
-                        className="message-list"
-                    ),
-
-                    className="card",
-                ),
-                dash_table.DataTable(
-                    id='table',
-                    columns=[{"name": i, "id": i}
-                             for i in ["Source", "Payload"]],
-                    data=data_array_of_dics,
-                    style_cell=dict(textAlign='left'),
-                    style_header=dict(backgroundColor="paleturquoise"),
-                    style_data=dict(backgroundColor="lavender")
-                ),
                 dcc.Interval(
                     id='interval-component',
-                    interval=1 * 1000,  # in milliseconds
-                )
-                ,
+                    interval=1 * 2000,  # in milliseconds
+                ),
             ],
             className="wrapper",
         ),
@@ -167,16 +145,103 @@ ourapp.layout = html.Div(
 )
 
 
-@ourapp.callback(Output('table', 'data'),
-                 [Input('interval-component', 'n_intervals')])
-def updateTable(n_intervals):
-    return data_array_of_dics
+@ourapp.callback(
+    Output("date-range", "start_date"),
+    Output("date-range", "end_date"),
+    Output('table', 'data'),
+    Input('interval-component', 'n_intervals'),
+    Input('table', 'data')
+)
+def updateTable(n_intervals, data):
+    try:
+        start_date = data[0]['Date']
+        end_data = data[-1]['Date']
+        return start_date, end_data, data_array_of_dics
+    except:
+        return datetime.datetime.now(), datetime.datetime.now(), data_array_of_dics
 
 
-@server.route('/test', methods=['POST'])
+@ourapp.callback(
+    Output("price-chart", "figure"),
+    Output("volume-chart", "figure"),
+    Input("technology-filter", "value"),
+    Input("type-filter", "value"),
+    Input("date-range", "start_date"),
+    Input("date-range", "end_date"),
+)
+def update_charts(technology, security_type, start_date, end_date):
+    mask = (
+            (data.technology == technology)
+            & (data.type == security_type)
+            & (data.Date >= start_date)
+            & (data.Date <= end_date)
+    )
+    filtered_data = data.loc[mask, :]
+    price_chart_figure = {
+        "data": [
+            {
+                "x": filtered_data["Date"],
+                "y": filtered_data["Payload Size"],
+                "type": "lines",
+                "hovertemplate": "$%{y:.2f}<extra></extra>",
+            },
+        ],
+        "layout": {
+            "title": {
+                "text": "Average Payload Size",
+                "x": 0.05,
+                "xanchor": "left",
+            },
+            "xaxis": {"fixedrange": True},
+            "yaxis": {"tickprefix": "$", "fixedrange": True},
+            "colorway": ["#17B897"],
+        },
+    }
+
+    volume_chart_figure = {
+        "data": [
+            {
+                "x": filtered_data["Date"],
+                "y": filtered_data["Content"],
+                "type": "lines",
+            },
+        ],
+        "layout": {
+            "title": {"text": "UDP Packets Received on Port XYZ", "x": 0.05, "xanchor": "left"},
+            "xaxis": {"fixedrange": True},
+            "yaxis": {"fixedrange": True},
+            "colorway": ["#E12D39"],
+        },
+    }
+    return price_chart_figure, volume_chart_figure
+
+
+@server.route('/message', methods=['POST'])
 def req():
+    global data
     json_data = request.json  # this is a dictionary!!
-    data_array_of_dics.append({'Source': json_data['Source'], 'Payload': json_data['Payload']})
+    data_array_of_dics.append(
+        {
+            'Date': json_data['date'],
+            'Payload Size': json_data['payload-size'],
+            'Content': json_data['content'],
+            'type': json_data['type'],
+            'technology': json_data['technology']})
+
+    dataFrame1 = pd.DataFrame(
+        {
+            'Date': [json_data['date']],
+            'Payload Size': [json_data['payload-size']],
+            'Content': [json_data['content']],
+            'type': [json_data['type']],
+            'technology': [json_data['technology']]
+        }
+    )
+    data = data.append(dataFrame1, ignore_index=True)
+
+    data["Date"] = pd.to_datetime(data["Date"], format="%Y-%m-%d")
+    data.sort_values("Date", inplace=True)
+
     return flask.redirect(flask.request.url)
 
 
