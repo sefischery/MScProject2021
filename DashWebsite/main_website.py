@@ -1,5 +1,5 @@
 import datetime
-import json
+import os
 
 import dash
 import dash_core_components as dcc
@@ -7,10 +7,9 @@ import dash_html_components as html
 import dash_table
 import flask
 import pandas as pd
-import numpy as np
 from dash.dependencies import Output, Input
 from flask import Flask, request
-from flask_restful import Resource, Api
+from flask_restful import Api
 
 external_stylesheets = [
     {
@@ -59,7 +58,8 @@ ourapp.layout = html.Div(
                                     "value": 'NB-IoT'
                                 }
 
-                                #for technology in np.sort(data.technology.unique())
+                                # for technology in np.sort(
+                                # data.technology.unique())
                             ],
                             value="NB-IoT",
                             clearable=False,
@@ -81,7 +81,7 @@ ourapp.layout = html.Div(
                                     "label": 'encryption',
                                     "value": 'encryption',
                                 }
-                                #for security_type in data.type.unique()
+                                # for security_type in data.type.unique()
 
                             ],
                             value="organic",
@@ -114,7 +114,9 @@ ourapp.layout = html.Div(
                     dash_table.DataTable(
                         id='table',
                         columns=[{"name": i, "id": i}
-                                 for i in ["Date", "Payload Size", "Content", "type", "technology"]],
+                                 for i in
+                                 ["Date", "Payload Size", "Content", "type",
+                                  "technology"]],
                         data=data_array_of_dics,
                         style_cell=dict(textAlign='left', padding='10px')
                     ),
@@ -157,8 +159,9 @@ def updateTable(n_intervals, data):
         start_date = data[0]['Date']
         end_data = data[-1]['Date']
         return start_date, end_data, data_array_of_dics
-    except:
-        return datetime.datetime.now(), datetime.datetime.now(), data_array_of_dics
+    except Exception as e:
+        return datetime.datetime.now(), datetime.datetime.now(), \
+               data_array_of_dics
 
 
 @ourapp.callback(
@@ -207,7 +210,8 @@ def update_charts(technology, security_type, start_date, end_date):
             },
         ],
         "layout": {
-            "title": {"text": "UDP Packets Received on Port XYZ", "x": 0.05, "xanchor": "left"},
+            "title": {"text": "UDP Packets Received on Port XYZ", "x": 0.05,
+                      "xanchor": "left"},
             "xaxis": {"fixedrange": True},
             "yaxis": {"fixedrange": True},
             "colorway": ["#E12D39"],
@@ -251,4 +255,4 @@ def hello():
 
 
 if __name__ == "__main__":
-    ourapp.run_server(host='localhost', port=8050, debug=True)
+    ourapp.run_server(host='0.0.0.0', debug=True, port=8050)
