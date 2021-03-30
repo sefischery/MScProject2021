@@ -8,7 +8,7 @@ RUN pip3 install -r requirements.txt
 
 #COPY entire source
 COPY . .
-# Define environment variables
+# Define environment variables - currently doesnt work.
 ENV dash_port=8050
 ENV dash_debug="True"
 
