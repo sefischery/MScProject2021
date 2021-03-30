@@ -10,6 +10,7 @@ import pandas as pd
 from dash.dependencies import Output, Input
 from flask import Flask, request
 from flask_restful import Api
+import plotly.express as px
 
 external_stylesheets = [
     {
@@ -34,15 +35,18 @@ ourapp.layout = html.Div(
     children=[
         dcc.Location(id='url', refresh=False),
         html.Div(
-            children=[
-                html.H1(
-                    children=ourapp.title, className="header-title"
-                ),
-                html.P(
-                    children="Showcase NB-IoT received messages",
-                    className="header-description",
-                ),
-            ],
+            html.Div(
+                children=[
+                    html.H1(
+                        children=ourapp.title, className="header-title"
+                    ),
+                    html.P(
+                        children="Showcase NB-IoT received messages",
+                        className="header-description",
+                    ),
+                ],
+                className="title-container"
+            ),
             className="header",
         ),
         html.Div(
@@ -57,9 +61,6 @@ ourapp.layout = html.Div(
                                     "label": 'NB-IoT',
                                     "value": 'NB-IoT'
                                 }
-
-                                # for technology in np.sort(
-                                # data.technology.unique())
                             ],
                             value="NB-IoT",
                             clearable=False,
@@ -124,14 +125,7 @@ ourapp.layout = html.Div(
                 ),
                 html.Div(
                     children=dcc.Graph(
-                        id="price-chart",
-                        config={"displayModeBar": False},
-                    ),
-                    className="card",
-                ),
-                html.Div(
-                    children=dcc.Graph(
-                        id="volume-chart",
+                        id="content-chart",
                         config={"displayModeBar": False},
                     ),
                     className="card",
@@ -156,17 +150,17 @@ ourapp.layout = html.Div(
 )
 def updateTable(n_intervals, data):
     try:
-        start_date = data[0]['Date']
-        end_data = data[-1]['Date']
+        start_date = data[0]['Date'] - datetime.timedelta(days=1)
+        end_data = data[-1]['Date'] + datetime.timedelta(days=1)
         return start_date, end_data, data_array_of_dics
     except Exception as e:
-        return datetime.datetime.now(), datetime.datetime.now(), \
+        return datetime.datetime.now() - datetime.timedelta(days=1), \
+               datetime.datetime.now() + datetime.timedelta(days=1), \
                data_array_of_dics
 
 
 @ourapp.callback(
-    Output("price-chart", "figure"),
-    Output("volume-chart", "figure"),
+    Output("content-chart", "figure"),
     Input("technology-filter", "value"),
     Input("type-filter", "value"),
     Input("date-range", "start_date"),
@@ -180,13 +174,14 @@ def update_charts(technology, security_type, start_date, end_date):
             & (data.Date <= end_date)
     )
     filtered_data = data.loc[mask, :]
-    price_chart_figure = {
+
+    content_chart_figure = {
         "data": [
             {
                 "x": filtered_data["Date"],
                 "y": filtered_data["Payload Size"],
-                "type": "lines",
-                "hovertemplate": "$%{y:.2f}<extra></extra>",
+                "hovertemplate": filtered_data["Content"] + "<extra></extra>",
+                "mode": "markers",
             },
         ],
         "layout": {
@@ -196,28 +191,11 @@ def update_charts(technology, security_type, start_date, end_date):
                 "xanchor": "left",
             },
             "xaxis": {"fixedrange": True},
-            "yaxis": {"tickprefix": "$", "fixedrange": True},
+            "yaxis": {"fixedrange": True},
             "colorway": ["#17B897"],
         },
     }
-
-    volume_chart_figure = {
-        "data": [
-            {
-                "x": filtered_data["Date"],
-                "y": filtered_data["Content"],
-                "type": "lines",
-            },
-        ],
-        "layout": {
-            "title": {"text": "UDP Packets Received on Port XYZ", "x": 0.05,
-                      "xanchor": "left"},
-            "xaxis": {"fixedrange": True},
-            "yaxis": {"fixedrange": True},
-            "colorway": ["#E12D39"],
-        },
-    }
-    return price_chart_figure, volume_chart_figure
+    return content_chart_figure
 
 
 @server.route('/message', methods=['POST'])
@@ -249,10 +227,5 @@ def req():
     return flask.redirect(flask.request.url)
 
 
-@server.route("/hello")
-def hello():
-    return {'hello': 'world'}
-
-
 if __name__ == "__main__":
-    ourapp.run_server(host='0.0.0.0', debug=True, port=8050)
+    ourapp.run_server(host='localhost', debug=True, port=8050)
