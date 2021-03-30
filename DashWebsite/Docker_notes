@@ -1,0 +1,2 @@
+1. docker build --tag webapp .
+2. docker run -d -p PORT:PORT
