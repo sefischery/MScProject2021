@@ -1,2 +1,5 @@
 1. docker build --tag webapp .
-2. docker run -d -p PORT:PORT
+2. docker run -d -p PORT:PORT	
+
+
+docker rm -vf $(docker ps -a -q) && docker rmi -f $(docker images -a -q)
