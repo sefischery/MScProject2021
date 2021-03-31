@@ -1,0 +1,7 @@
+version: '3'
+services:
+  nb-iot_webapp-service:
+    image: nb-iot_webapp-image
+    container_name: nb-iot_webapp-container
+    ports:
+      - "8050:8050"
