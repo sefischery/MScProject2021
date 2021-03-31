@@ -4,4 +4,4 @@ services:
     image: nb-iot_webapp-image
     container_name: nb-iot_webapp-container
     ports:
-      - "8050:8050"
+      - "80:80"

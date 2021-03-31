@@ -35,4 +35,4 @@ callback_handler(ourapp, data)
 createMessageEndpoint(server, data)
 
 if __name__ == "__main__":
-    ourapp.run_server(host='0.0.0.0', debug=True, port=8050)
+    ourapp.run_server(host='0.0.0.0', debug=True, port=80)
