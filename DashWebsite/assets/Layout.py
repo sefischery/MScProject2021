@@ -2,8 +2,12 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 
+from Utilities.Utilities import constructDataFrame
 
-def defineHtmlLayout(ourapp, data, data_array_of_dics):
+
+def defineHtmlLayout(ourapp, data_list):
+    data = constructDataFrame(data_list)
+
     return html.Div(
         children=[
             dcc.Location(id='url', refresh=False),
@@ -91,7 +95,7 @@ def defineHtmlLayout(ourapp, data, data_array_of_dics):
                                      for i in
                                      ["Date", "Payload Size", "Content", "type",
                                       "technology"]],
-                            data=data_array_of_dics,
+                            data=data_list,
                             style_cell=dict(textAlign='left', padding='10px')
                         ),
                         className="card-listview",

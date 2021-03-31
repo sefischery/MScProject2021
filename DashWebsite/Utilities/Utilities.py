@@ -18,8 +18,10 @@ def formatToList(data):
     return resultingList
 
 
-def contructDataFrame(input_list):
+def constructDataFrame(input_list):
     data = pd.DataFrame([], columns=["Date", "Payload Size", "Content", "type", "technology"])
+    data["Date"] = pd.to_datetime(data["Date"], format="%Y-%m-%d")
+    data.sort_values("Date", inplace=True)
 
     for item in input_list:
         dataFrame = pd.DataFrame(

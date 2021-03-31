@@ -1,10 +1,15 @@
 import datetime
 
-from Utilities.Utilities import contructDataFrame
+from Utilities.Utilities import constructDataFrame
 from dash.dependencies import Output, Input
 
 
-def dataCallback(ourapp, data_array_of_dics):
+def callback_handler(ourapp, data_list):
+    dataCallback(ourapp, data_list)
+    graphCallback(ourapp)
+
+
+def dataCallback(ourapp, data_list):
     @ourapp.callback(
         Output("date-range", "start_date"),
         Output("date-range", "end_date"),
@@ -12,14 +17,14 @@ def dataCallback(ourapp, data_array_of_dics):
         Input('interval-component', 'n_intervals'),
     )
     def updateTable(n_intervals):
-        if len(data_array_of_dics) > 0:
-            start_date = data_array_of_dics[0]['Date']
-            end_data = data_array_of_dics[-1]['Date']
-            return start_date, end_data, data_array_of_dics
+        if len(data_list) > 0:
+            start_date = data_list[0]['Date']
+            end_data = data_list[-1]['Date']
+            return start_date, end_data, data_list
         else:
             return datetime.datetime.now(), \
                    datetime.datetime.now(), \
-                   data_array_of_dics
+                   data_list
 
 
 def graphCallback(ourapp):
@@ -32,7 +37,7 @@ def graphCallback(ourapp):
         Input('table', 'data')
     )
     def update_charts(technology, security_type, start_date, end_date, dataInput):
-        graph_data = contructDataFrame(dataInput)
+        graph_data = constructDataFrame(dataInput)
 
         mask = (
                 (graph_data.technology == technology)

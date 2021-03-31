@@ -3,9 +3,8 @@ import pandas as pd
 from flask import Flask
 from flask_restful import Api
 
-from Utilities.Callbacks import graphCallback, dataCallback
+from Utilities.Callbacks import callback_handler
 from Utilities.Endpoints import createMessageEndpoint
-from Utilities.Utilities import formatToList
 from assets.Layout import defineHtmlLayout
 
 pd.set_option("display.max_rows", None, "display.max_columns", None)
@@ -18,23 +17,22 @@ external_stylesheets = [
     },
 ]
 
-data_array_of_dics = []
+data = []
 
-data = pd.DataFrame([], columns=["Date", "Payload Size", "Content", "type", "technology"])
-data["Date"] = pd.to_datetime(data["Date"], format="%Y-%m-%d")
-data.sort_values("Date", inplace=True)
-
+""" Initial setup of web application """
 server = Flask('my_app')
 ourapp = dash.Dash(server=server, external_stylesheets=external_stylesheets)
 ourapp.title = "Sebastian & Magnus MSc Thesis"
 api = Api(server)
 
-ourapp.layout = defineHtmlLayout(ourapp, data, formatToList(data))
+""" This method defined the html layout of the web application """
+ourapp.layout = defineHtmlLayout(ourapp, data)
 
-dataCallback(ourapp, data_array_of_dics)
-graphCallback(ourapp)
+""" This method creates and handle the callback functionality of the web application """
+callback_handler(ourapp, data)
 
-data = createMessageEndpoint(server, data_array_of_dics, data)
+""" This method creates the message endpoint, which is used for adding datas """
+createMessageEndpoint(server, data)
 
 if __name__ == "__main__":
     ourapp.run_server(host='0.0.0.0', debug=True, port=8050)
