@@ -1,0 +1,12 @@
+version: '3'
+services:
+  nb-iot_webapp-service:
+    image: nb-iot_webapp-image
+    container_name: nb-iot_webapp-container
+    ports:
+      - "8050:8050"
+      
+  udp_python_server:
+    image: udp_python_server-image
+    container_name: udp_python_server-container
+
