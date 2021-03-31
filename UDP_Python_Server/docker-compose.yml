@@ -1,0 +1,5 @@
+version: '3'
+services:
+  udp_python_server:
+    image: udp_python_server-image
+    container_name: udp_python_server-container
