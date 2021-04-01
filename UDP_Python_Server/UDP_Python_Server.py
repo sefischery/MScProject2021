@@ -23,6 +23,6 @@ while True:
             "type": "plaintext",
             "technology": "NB-IoT"
         }
-        print(data)
+        print(f"Data is {data}")
         request_to_send = requests.post(url=f"http://{ip}/message", json=data)
         print(f"I SENT {request_to_send}")
