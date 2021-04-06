@@ -1,7 +1,9 @@
 #include <Arduino.h>
 #include <PubSubClient.h>
 
-void msgReceived(char* topic, byte* payload, unsigned int length) {
+/** Callback function for MQTT_CALLBACK_SIGNATURE **/
+void msgReceived(char* topic, byte* payload, unsigned int length)
+ {
     Serial.print("Message received on ");
     Serial.print(topic);
     Serial.print(": ");
@@ -10,11 +12,12 @@ void msgReceived(char* topic, byte* payload, unsigned int length) {
     }
     Serial.println();
 }
-
-void publisherCheckConnect(PubSubClient &pubSubClient, const char *aws_Endpoint) {
+/** Check if the Publisher is connected to the Endpoint **/
+void publisherCheckConnect(PubSubClient &pubSubClient, const char *endpoint)
+{
     if (!pubSubClient.connected()) {
         Serial.print("ESP-Publisher connecting to: ");
-        Serial.print(aws_Endpoint);
+        Serial.print(endpoint);
         while (!pubSubClient.connected()) {
             Serial.print(".");
             pubSubClient.connect("ESP-Publisher");
@@ -24,10 +27,12 @@ void publisherCheckConnect(PubSubClient &pubSubClient, const char *aws_Endpoint)
     }
 }
 
-void subscriberCheckConnect(PubSubClient &pubSubClient, const char *aws_Endpoint) {
+/** Check if the Subscriber is connected to the Endpoint **/
+void subscriberCheckConnect(PubSubClient &pubSubClient, const char *endpoint)
+{
     if (!pubSubClient.connected()) {
         Serial.print("ESP-Subscriber connecting to: ");
-        Serial.print(aws_Endpoint);
+        Serial.print(endpoint);
         while (!pubSubClient.connected()) {
             Serial.print(".");
             pubSubClient.connect("ESP-Subscriber");
