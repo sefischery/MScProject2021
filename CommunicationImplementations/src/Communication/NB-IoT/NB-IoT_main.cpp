@@ -4,7 +4,7 @@
 
 // Definitions for the Azure VM, and the port it listens to.
 // Used by the NB-IoT backend to route the UDP packet.
-#define REMOTE_IP "41.85.115.125"
+#define REMOTE_IP "40.85.115.125"
 #define REMOTE_PORT 9889
 
 //Operator information, TDC endpoint and IP.
