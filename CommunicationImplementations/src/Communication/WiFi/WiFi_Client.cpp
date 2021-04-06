@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
+/** Network Credentials **/
 const char* SSID = "ESP32-Access-Point";
 const char* WiFi_PASS = "123456789";
 
@@ -30,7 +31,7 @@ String httpGETRequest(const char* serverName) {
 
 void setup(){
     Serial.begin(115200);
-
+    /** Connect to the WiFi Access Point **/
     WiFi.begin(SSID, WiFi_PASS);
     Serial.println("Connecting");
     while(WiFiClass::status() != WL_CONNECTED) {
