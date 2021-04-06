@@ -2,7 +2,9 @@
 #include <PubSubClient.h>
 
 void msgReceived(char* topic, byte* payload, unsigned int length) {
-    Serial.print("Message received on "); Serial.print(topic); Serial.print(": ");
+    Serial.print("Message received on ");
+    Serial.print(topic);
+    Serial.print(": ");
     for (int i = 0; i < length; i++) {
         Serial.print((char)payload[i]);
     }
@@ -10,10 +12,10 @@ void msgReceived(char* topic, byte* payload, unsigned int length) {
 }
 
 void publisherCheckConnect(PubSubClient &pubSubClient, const char *aws_Endpoint) {
-    if ( !pubSubClient.connected()) {
+    if (!pubSubClient.connected()) {
         Serial.print("ESP-Publisher connecting to: ");
         Serial.print(aws_Endpoint);
-        while ( !pubSubClient.connected()) {
+        while (!pubSubClient.connected()) {
             Serial.print(".");
             pubSubClient.connect("ESP-Publisher");
             delay(1000);
@@ -23,10 +25,10 @@ void publisherCheckConnect(PubSubClient &pubSubClient, const char *aws_Endpoint)
 }
 
 void subscriberCheckConnect(PubSubClient &pubSubClient, const char *aws_Endpoint) {
-    if ( ! pubSubClient.connected()) {
+    if (!pubSubClient.connected()) {
         Serial.print("ESP-Subscriber connecting to: ");
         Serial.print(aws_Endpoint);
-        while ( ! pubSubClient.connected()) {
+        while (!pubSubClient.connected()) {
             Serial.print(".");
             pubSubClient.connect("ESP-Subscriber");
             delay(1000);
