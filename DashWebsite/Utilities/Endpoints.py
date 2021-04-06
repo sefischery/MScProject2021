@@ -18,6 +18,7 @@ def createMessageEndpoint(server, data_array_of_dics):
         if json_data['technology'] == "Sigfox":
             date = datetime.datetime.fromtimestamp(int(json_data['date'])).strftime("%Y-%m-%d %H:%M:%S")
             payloadSize = len(json_data['content'])
+            content = bytes.fromhex(content[:len(content)-2]).decode('utf-8')
 
         data_array_of_dics.append(
             {
