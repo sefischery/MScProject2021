@@ -1,11 +1,12 @@
 #include <SoftwareSerial.h>
 
+/** Sends an inputted AT command to the Sigfox module via SoftwareSerial **/
 void sendSigfoxATCommand(char const *Command, SoftwareSerial &softwareSerial)
 {
     softwareSerial.print(Command);
 }
 
-//Send Sigfox Message
+/** Sends a message to the Sigfox backend while also waiting for response **/
 void sendSigfoxMessage(uint8_t *msg, int size, SoftwareSerial &softwareSerial)
 {
     Serial.println("Inside sendSigfoxMessage");
