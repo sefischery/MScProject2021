@@ -37,7 +37,11 @@ def defineHtmlLayout(ourapp, data_list):
                                     {
                                         "label": 'NB-IoT',
                                         "value": 'NB-IoT'
-                                    }
+                                    },
+                                    {
+                                        "label": 'Sigfox',
+                                        "value": 'Sigfox'
+                                    },
                                 ],
                                 value="NB-IoT",
                                 clearable=False,
