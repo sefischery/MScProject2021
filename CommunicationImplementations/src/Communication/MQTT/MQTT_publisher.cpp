@@ -1,6 +1,6 @@
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
-#include <Mqtt_functions.h>
+#include <MQTT_functions.h>
 
 unsigned long lastPublish;
 int msgCount;
@@ -83,12 +83,10 @@ const char* rootCA = \
 "rqXRfboQnoZsG4q5WTP468SQvvG5\n" \
 "-----END CERTIFICATE-----\n";
 
-
 void setup() {
-    Serial.begin(115200);
-    delay(50);
+    Serial.begin(115200); delay(50);
     Serial.println();
-    Serial.println("ESP-Subscriber");
+    Serial.println("ESP-Publisher");
     Serial.println("ESP32 AWS IoT Example");
     Serial.printf("SDK version: %s\n", ESP.getSdkVersion());
 
@@ -105,5 +103,14 @@ void setup() {
 }
 
 void loop() {
-    subscriberCheckConnect(pubSubClient, awsEndpoint);
+
+    publisherCheckConnect(pubSubClient, awsEndpoint);
+
+    if (millis() - lastPublish > 10000) {
+        String msg = String("Hello from ESP-Publisher: ") + ++msgCount;
+        boolean rc = pubSubClient.publish("outTopic", msg.c_str());
+        Serial.print("Published, rc="); Serial.print( (rc ? "OK: " : "FAILED: ") );
+        Serial.println(msg);
+        lastPublish = millis();
+    }
 }
