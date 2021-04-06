@@ -6,7 +6,7 @@ unsigned long lastPublish;
 int msgCount;
 
 WiFiClientSecure wiFiClient;
-PubSubClient pubSubClient(awsEndpoint, 8883, msgReceived, wiFiClient);
+PubSubClient pubSubClient(AWS_ENDPOINT, MQTT_PORT, msgReceived, wiFiClient);
 
 // xxxxxxxxxx-certificate.pem.crt
 const char* certificate_pem_crt = \
@@ -85,7 +85,7 @@ const char* rootCA = \
 
 
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(BAUD_RATE);
     delay(50);
     Serial.println();
     Serial.println("ESP-Subscriber");
@@ -105,5 +105,5 @@ void setup() {
 }
 
 void loop() {
-    subscriberCheckConnect(pubSubClient, awsEndpoint);
+    subscriberCheckConnect(pubSubClient, AWS_ENDPOINT);
 }

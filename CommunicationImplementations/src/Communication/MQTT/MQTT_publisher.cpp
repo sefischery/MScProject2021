@@ -6,7 +6,7 @@ unsigned long lastPublish;
 int msgCount;
 
 WiFiClientSecure wiFiClient;
-PubSubClient pubSubClient(awsEndpoint, 8883, msgReceived, wiFiClient);
+PubSubClient pubSubClient(AWS_ENDPOINT, MQTT_PORT, msgReceived, wiFiClient);
 
 // xxxxxxxxxx-certificate.pem.crt
 const char* certificate_pem_crt = \
@@ -84,7 +84,8 @@ const char* rootCA = \
 "-----END CERTIFICATE-----\n";
 
 void setup() {
-    Serial.begin(115200); delay(50);
+    Serial.begin(BAUD_RATE);
+    delay(50);
     Serial.println();
     Serial.println("ESP-Publisher");
     Serial.println("ESP32 AWS IoT Example");
@@ -104,7 +105,7 @@ void setup() {
 
 void loop() {
 
-    publisherCheckConnect(pubSubClient, awsEndpoint);
+    publisherCheckConnect(pubSubClient, AWS_ENDPOINT);
 
     if (millis() - lastPublish > 10000) {
         String msg = String("Hello from ESP-Publisher: ") + ++msgCount;
