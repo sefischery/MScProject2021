@@ -12,4 +12,7 @@ RUN pip3 install -r requirements.txt
 #COPY entire source
 COPY . .
 
+#COPY program from parent
+COPY ../UDP_Python_Server.py .
+
 CMD ["python3", "UDP_Python_Server.py"]
