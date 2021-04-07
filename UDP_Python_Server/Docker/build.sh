@@ -1,4 +1,4 @@
 #!/bin/bash
-set -e
-docker build --tag udp_python_server-image .
+set -ex
+docker build --tag udp_python_server-image -f Dockerfile ../
 docker image prune -f
