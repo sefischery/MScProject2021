@@ -1,11 +1,11 @@
 #!/bin/bash
 set -ex
 
-pushd DashWebsite
+pushd ../DashWebsite/Docker
 ./build.sh
 popd
 
-pushd UDP_Python_Server
+pushd ../UDP_Python_Server/Docker
 ./build.sh
 popd
 
