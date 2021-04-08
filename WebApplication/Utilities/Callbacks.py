@@ -1,16 +1,15 @@
 import datetime
-
 from Utilities.Utilities import constructDataFrame
 from dash.dependencies import Output, Input
 
 
-def callback_handler(ourapp, data_list):
-    dataCallback(ourapp, data_list)
-    graphCallback(ourapp)
+def callback_handler(webapp, data_list):
+    dataCallback(webapp, data_list)
+    graphCallback(webapp)
 
 
-def dataCallback(ourapp, data_list):
-    @ourapp.callback(
+def dataCallback(webapp, data_list):
+    @webapp.callback(
         Output("date-range", "start_date"),
         Output("date-range", "end_date"),
         Output('table', 'data'),
@@ -27,8 +26,8 @@ def dataCallback(ourapp, data_list):
                    data_list
 
 
-def graphCallback(ourapp):
-    @ourapp.callback(
+def graphCallback(webapp):
+    @webapp.callback(
         Output("content-chart", "figure"),
         Input("technology-filter", "value"),
         Input("type-filter", "value"),
@@ -36,8 +35,8 @@ def graphCallback(ourapp):
         Input("date-range", "end_date"),
         Input('table', 'data')
     )
-    def update_charts(technology, security_type, start_date, end_date, dataInput):
-        graph_data = constructDataFrame(dataInput)
+    def update_charts(technology, security_type, start_date, end_date, data_input):
+        graph_data = constructDataFrame(data_input)
 
         mask = (
                 (graph_data.technology == technology)

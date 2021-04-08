@@ -21,18 +21,18 @@ data = []
 
 """ Initial setup of web application """
 server = Flask('my_app')
-ourapp = dash.Dash(server=server, external_stylesheets=external_stylesheets)
-ourapp.title = "Sebastian & Magnus MSc Thesis"
+webapp = dash.Dash(server=server, external_stylesheets=external_stylesheets)
+webapp.title = "Sebastian & Magnus MSc Thesis"
 api = Api(server)
 
 """ This method defined the html layout of the web application """
-ourapp.layout = defineHtmlLayout(ourapp, data)
+webapp.layout = defineHtmlLayout(webapp, data)
 
 """ This method creates and handle the callback functionality of the web application """
-callback_handler(ourapp, data)
+callback_handler(webapp, data)
 
-""" This method creates the message endpoint, which is used for adding datas """
+""" This method creates the message endpoint, which is used for adding data """
 createMessageEndpoint(server, data)
 
 if __name__ == "__main__":
-    ourapp.run_server(host='0.0.0.0', debug=True, port=80)
+    webapp.run_server(host='0.0.0.0', debug=True, port=80)

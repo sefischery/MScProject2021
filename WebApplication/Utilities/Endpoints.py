@@ -1,8 +1,6 @@
 import datetime
-
 from flask import request
 import flask
-import pandas as pd
 
 
 def createMessageEndpoint(server, data_array_of_dics):
@@ -12,18 +10,18 @@ def createMessageEndpoint(server, data_array_of_dics):
         json_data = request.json  # this is a dictionary!!
 
         date = json_data['date']
-        payloadSize = json_data['payload-size']
+        payload_size = json_data['payload-size']
         content = json_data['content']
 
         if json_data['technology'] == "Sigfox":
             content = bytes.fromhex(content[:len(content) - 2]).decode('utf-8')
             date = datetime.datetime.fromtimestamp(int(json_data['date'])).strftime("%Y-%m-%d %H:%M:%S")
-            payloadSize = len(content)
+            payload_size = len(content)
 
         data_array_of_dics.append(
             {
                 'Date': date,
-                'Payload Size': payloadSize,
+                'Payload Size': payload_size,
                 'Content': content,
                 'type': json_data['type'],
                 'technology': json_data['technology']

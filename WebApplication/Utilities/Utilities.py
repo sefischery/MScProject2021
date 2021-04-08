@@ -2,20 +2,20 @@ import pandas as pd
 
 
 def formatToList(data):
-    resultingList = []
+    resulting_list = []
 
     if data.values.any():
-        return resultingList
+        return resulting_list
 
     for item in data.values:
-        resultingList.append({
+        resulting_list.append({
             'Date': item[0],
             'Payload Size': item[1],
             'Content': item[2],
             'type': item[3],
             'technology': item[4]})
 
-    return resultingList
+    return resulting_list
 
 
 def constructDataFrame(input_list):
@@ -24,7 +24,7 @@ def constructDataFrame(input_list):
     data.sort_values("Date", inplace=True)
 
     for item in input_list:
-        dataFrame = pd.DataFrame(
+        data_frame = pd.DataFrame(
             {
                 'Date': [item['Date']],
                 'Payload Size': [item['Payload Size']],
@@ -33,6 +33,6 @@ def constructDataFrame(input_list):
                 'technology': [item['technology']]
             }
         )
-        data = data.append(dataFrame, ignore_index=True)
+        data = data.append(data_frame, ignore_index=True)
 
     return data
