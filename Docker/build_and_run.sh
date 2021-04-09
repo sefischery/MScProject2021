@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-pushd ../DashWebsite/Docker
+pushd ../WebApplication/Docker
 ./build.sh
 popd
 
