@@ -3,7 +3,7 @@ from flask import request
 import flask
 
 
-def createMessageEndpoint(server, data_array_of_dics):
+def createMessageEndpoint(server, data_array_of_dicts):
 
     @server.route('/message', methods=['POST'])
     def req():
@@ -18,7 +18,7 @@ def createMessageEndpoint(server, data_array_of_dics):
             date = datetime.datetime.fromtimestamp(int(json_data['date'])).strftime("%Y-%m-%d %H:%M:%S")
             payload_size = len(content)
 
-        data_array_of_dics.append(
+        data_array_of_dicts.append(
             {
                 'Date': date,
                 'Payload Size': payload_size,

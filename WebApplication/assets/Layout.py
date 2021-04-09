@@ -5,7 +5,7 @@ import dash_table
 from Utilities.Utilities import constructDataFrame
 
 
-def defineHtmlLayout(ourapp, data_list):
+def defineHtmlLayout(webapp, data_list):
     data = constructDataFrame(data_list)
 
     return html.Div(
@@ -15,7 +15,7 @@ def defineHtmlLayout(ourapp, data_list):
                 html.Div(
                     children=[
                         html.H1(
-                            children=ourapp.title, className="header-title"
+                            children=webapp.title, className="header-title"
                         ),
                         html.P(
                             children="Showcase NB-IoT received messages",
