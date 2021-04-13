@@ -2,59 +2,91 @@
 #include <AES.h>
 #include <GCM.h>
 
+#define POINTITERATION 200
+
 bool aes_gcm_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
                         int size, uint8_t *key, uint8_t *iv, int cipherSize) {
 
+    bool timingRequired = true;
+
     /** Initiate the Acorn cipher **/
-    GCM<AES128> gcmAesEncryption;
+    GCM<AES128> cipher;
 
     /** It is important to clear the key and iv before usage, ensures no strange rotations are affecting the encryption process **/
-    gcmAesEncryption.clear();
-    gcmAesEncryption.setKey(key, cipherSize);
-    gcmAesEncryption.setIV(iv, cipherSize);
+    cipher.clear();
+    cipher.setKey(key, cipherSize);
+    cipher.setIV(iv, cipherSize);
 
     /** Clear memory address values before using it. This ensures no weird values suddently appearing **/
     memset(tag, 0xBA, cipherSize);
     memset(ciphertext, 0xBA, size);
 
     /** Perform the encryption og compute the tag **/
-    unsigned long beforeEncryption = micros();
-    gcmAesEncryption.encrypt(ciphertext, plaintext, size);
-    unsigned long afterEncrypt = micros() - beforeEncryption;
+    cipher.encrypt(ciphertext, plaintext, size);
 
-    Serial.print("Message size: ");
-    Serial.println(size);
-    Serial.print(float(afterEncrypt) / float(size));
-    Serial.println(" micro seconds encryption timing");
+    if (timingRequired) {
+        unsigned long start;
+        unsigned long elapsed;
+        int count;
+        Serial.println("aes-encryption,");
+        /** Perform the encryption og compute the tag **/
+        for (int graphIteration = 0; graphIteration < POINTITERATION; graphIteration++){
+            start = micros();
+            for (count = 0; count < 500; ++count) {
+                cipher.encrypt(ciphertext, plaintext, size);
+            }
+            elapsed = micros() - start;
 
-    gcmAesEncryption.computeTag(tag, size);
+            Serial.print(elapsed / (size * 500.0));
+            Serial.println(",");
+            delay(10);
+        }
+    }
+
+    cipher.computeTag(tag, size);
     return true;
 }
 
 bool aes_gcm_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
                         int size, uint8_t *key, uint8_t *iv, int cipherSize) {
 
+    bool timingRequired = true;
+
     /** Initiate the Acorn cipher **/
-    GCM<AES128> cipherDecryption;
+    GCM<AES128> cipher;
 
     /** It is important to clear the key and iv before usage, ensures no strange rotations are affecting the decryption process **/
-    cipherDecryption.clear();
-    cipherDecryption.setKey(key, cipherSize);
-    cipherDecryption.setIV(iv, cipherSize);
+    cipher.clear();
+    cipher.setKey(key, cipherSize);
+    cipher.setIV(iv, cipherSize);
 
     /** Clear memory address values before using it. This ensures no weird values suddently appearing **/
     memset(plaintext, 0xBA, size);
 
     /** Perform the decryption **/
-    unsigned long beforeDecryption = micros();
-    cipherDecryption.decrypt(plaintext, ciphertext, size);
-    unsigned long afterDecrypt = micros() - beforeDecryption;
+    cipher.decrypt(plaintext, ciphertext, size);
 
-    Serial.print(float(afterDecrypt) / float(size));
-    Serial.println(" micro seconds decryption timing");
+    if (timingRequired) {
+        unsigned long start;
+        unsigned long elapsed;
+        int count;
+        Serial.println("aes-decryption,");
+        /** Perform the encryption og compute the tag **/
+        for (int graphIteration = 0; graphIteration < POINTITERATION; graphIteration++){
+            start = micros();
+            for (count = 0; count < 500; ++count) {
+                cipher.decrypt(plaintext, ciphertext, size);
+            }
+            elapsed = micros() - start;
+
+            Serial.print(elapsed / (size * 500.0));
+            Serial.println(",");
+            delay(10);
+        }
+    }
 
     /** Validate the received tag **/
-    if (!cipherDecryption.checkTag(tag, cipherSize)) {
+    if (!cipher.checkTag(tag, cipherSize)) {
         return false;
     }
 

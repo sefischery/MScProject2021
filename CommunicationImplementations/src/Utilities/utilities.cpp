@@ -1,5 +1,3 @@
-#include <cstdint>
-#include <cstdio>
 #include <Arduino.h>
 #include <RNG.h>
 #include <TransistorNoiseSource.h>

@@ -34,23 +34,23 @@ void setup() {
     unsigned long start = micros();
 
     struct cipherOperator cipher = {
-        {
-            /** Defined encryption methods **/
-            acorn_encryption,
-            aes_gcm_encryption,
-            ascon_encryption
-        },{
-            /** Defined decryption methods **/
-            acorn_decryption,
-            aes_gcm_decryption,
-            ascon_decryption
-        },{
-            /** Key definition **/
-             0x00, 0x01, 0x02, 0x03, 0x04,
-             0x05, 0x06, 0x07, 0x08, 0x09,
-             0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
-             0x0f
-        }
+            {
+                    /** Defined encryption methods **/
+                    acorn_encryption,
+                    aes_gcm_encryption,
+                    ascon_encryption
+            },{
+                    /** Defined decryption methods **/
+                    acorn_decryption,
+                    aes_gcm_decryption,
+                    ascon_decryption
+            },{
+                    /** Key definition **/
+                    0x00, 0x01, 0x02, 0x03, 0x04,
+                    0x05, 0x06, 0x07, 0x08, 0x09,
+                    0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
+                    0x0f
+            }
     };
 
     /** Define initial text **/
@@ -92,9 +92,6 @@ void setup() {
     int packetSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertextReceiver);
     uint8_t packetBuffer[packetSize];
     loadPacketBuffer(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
-
-    Serial.print("Psdram: ");
-    Serial.println(ESP.getFreePsram());
 
     /** Receiver: Unpack received data into iv, tag and informative data **/
     separatePacketBuffer(packetBuffer, packetSize, iv, tag, SIZE, ciphertextReceiver);
