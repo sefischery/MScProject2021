@@ -10,7 +10,7 @@ void sendSigfoxATCommand(char const *Command, SoftwareSerial &softwareSerial)
 void sendSigfoxMessage(uint8_t *msg, int size, SoftwareSerial &softwareSerial)
 {
     Serial.println("Inside sendSigfoxMessage");
-
+    delay(2000);
     String status = "";
     String hexChar = "";
     String sigfoxCommand = "";
@@ -32,9 +32,9 @@ void sendSigfoxMessage(uint8_t *msg, int size, SoftwareSerial &softwareSerial)
     }
 
     Serial.println("Sending...");
-    Serial.println(sigfoxCommand);
+    //Serial.println(sigfoxCommand);
     softwareSerial.println(sigfoxCommand);
-
+    delay(5000);
     while (!softwareSerial.available())
     {
         Serial.println("Waiting for response");

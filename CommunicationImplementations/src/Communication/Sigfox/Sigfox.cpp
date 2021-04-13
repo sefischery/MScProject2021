@@ -17,6 +17,7 @@ void setup()
 
 void loop()
 {
+    /*
     delay(1000);
     String pac = "";
     char output;
@@ -34,4 +35,5 @@ void loop()
     Serial.println(pac);
     Serial.println("---------------");
     delay(1000);
+    */
 }
