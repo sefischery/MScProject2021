@@ -1,7 +1,7 @@
 #include <Acorn128.h>
 #include <Arduino.h>
 
-#define POINTITERATION 50
+#define POINTITERATION 200
 
 bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
                       int size, uint8_t *key, uint8_t *iv, int cipherSize) {
@@ -37,6 +37,7 @@ bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
 
             Serial.print(elapsed / (size * 500.0));
             Serial.println(",");
+            delay(10);
         }
     }
 
