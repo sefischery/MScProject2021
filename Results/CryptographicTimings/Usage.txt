@@ -1,0 +1,11 @@
+ESP8266:
+RAM:   [===       ]  33.5% (used 27432 bytes from 81920 bytes)
+Flash: [===       ]  26.7% (used 279116 bytes from 1044464 bytes)
+
+Arduino Uno: 
+RAM:   [===       ]  33.9% (used 695 bytes from 2048 bytes)
+Flash: [========= ]  90.2% (used 29092 bytes from 32256 bytes)
+
+ESP32:
+RAM:   [          ]   4.2% (used 13840 bytes from 327680 bytes)
+Flash: [==        ]  19.0% (used 248612 bytes from 1310720 bytes)
