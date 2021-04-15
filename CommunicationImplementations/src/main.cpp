@@ -91,7 +91,7 @@ void setup() {
     /** Sender: Encapsulating iv,tag and data into one packet **/
     int packetSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertextReceiver);
     uint8_t packetBuffer[packetSize];
-    loadPacketBuffer(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
 
     /** Receiver: Unpack received data into iv, tag and informative data **/
     separatePacketBuffer(packetBuffer, packetSize, iv, tag, SIZE, ciphertextReceiver);

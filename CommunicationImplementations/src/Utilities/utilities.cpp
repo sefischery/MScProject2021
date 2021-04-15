@@ -42,9 +42,9 @@ void uint8ToChar(const uint8_t *plaintext, char *toText, int size) {
 }
 
 /** Encapsulate iv, tag and ciphertext to one packet **/
-void loadPacketBuffer(const uint8_t *iv, const uint8_t *tag, int defaultSize,
-                      const uint8_t *ciphertextReceiver, uint8_t *packetBuffer,
-                      int packetSize) {
+void AssembleAuthenticatedEncryptionPacket(const uint8_t *iv, const uint8_t *tag, int defaultSize,
+                                           const uint8_t *ciphertextReceiver, uint8_t *packetBuffer,
+                                           int packetSize) {
     memset(packetBuffer, 0xBA, packetSize);
 
     for (int index = 0; index < packetSize; ++index) {
