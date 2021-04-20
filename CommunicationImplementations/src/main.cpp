@@ -94,7 +94,7 @@ void setup() {
     AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
 
     /** Receiver: Unpack received data into iv, tag and informative data **/
-    separatePacketBuffer(packetBuffer, packetSize, iv, tag, SIZE, ciphertextReceiver);
+    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
 
     /** Decryption **/
     bool decryptionValidation = cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);

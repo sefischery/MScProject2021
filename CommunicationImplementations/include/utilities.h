@@ -11,9 +11,10 @@ void charToUint8(const char *input, uint8_t *plaintext, int size);
 void uint8ToChar(const uint8_t *plaintext, char *toText, int size);
 
 void AssembleAuthenticatedEncryptionPacket(const uint8_t *iv, const uint8_t *tag, int defaultSize, const uint8_t *ciphertextReceiver, uint8_t *packetBuffer, int packetSize);
-void separatePacketBuffer(const uint8_t *packetBuffer, int packetSize, uint8_t *iv, uint8_t *tag, int defaultSize, uint8_t *ciphertext);
+void DisassembleAuthenticaedEncryptionPacket(uint8_t *iv, uint8_t *tag, int defaultSize, uint8_t *ciphertext,
+                                             const uint8_t *packetBuffer, int packetSize);
 
-void GenerateInitializationVector(uint8_t *iv, int size);
+void GenerateInitializationVector(uint8_t *IV, int size);
 
 #endif
 

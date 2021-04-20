@@ -60,9 +60,9 @@ void AssembleAuthenticatedEncryptionPacket(const uint8_t *iv, const uint8_t *tag
         }
     }
 }
-
-void separatePacketBuffer(const uint8_t *packetBuffer, int packetSize, uint8_t *iv,
-                     uint8_t *tag, int defaultSize, uint8_t *ciphertext) {
+/** Dissameble the IV, tag and ciphertext to three different pointers**/
+void DisassembleAuthenticaedEncryptionPacket(uint8_t *iv, uint8_t *tag, int defaultSize, uint8_t *ciphertext,
+                                             const uint8_t *packetBuffer, int packetSize) {
     memset(iv, 0xBA, defaultSize);
     memset(tag, 0xBA, defaultSize);
     memset(ciphertext, 0xBA, packetSize-(2*defaultSize));
@@ -80,19 +80,18 @@ void separatePacketBuffer(const uint8_t *packetBuffer, int packetSize, uint8_t *
         }
     }
 }
-
-void GenerateInitializationVector(uint8_t *iv, int size) {
+/** Genereates a random IV from Noise Source **/
+void GenerateInitializationVector(uint8_t *IV, int size) {
     TransistorNoiseSource noise(A0);
     RNG.begin("RANDOM_NUMB_GEN");
     RNG.addNoiseSource(noise);
 
-    bool haveKey = false;
-    while (!haveKey)
-    {
+    bool IsKeyGenerated = false;
+    while (!IsKeyGenerated){
         RNG.loop();
         if(RNG.available(size)){
-            RNG.rand(iv, size);
-            haveKey = true;
+            RNG.rand(IV, size);
+            IsKeyGenerated = true;
         }
     }
 }
