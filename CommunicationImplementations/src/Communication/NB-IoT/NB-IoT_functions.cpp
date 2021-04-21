@@ -4,7 +4,7 @@
 
 void sendNBIoTUDP(const char *message, const char *targetIP, int targetPort, Sodaq_nbIOT &nbiot)
 {
-    DEBUG_STREAM.println("\n ---- Sending message through UDP ----");
+    DEBUG_STREAM.println("\n ---- Sending message as UDP ----");
 
     int socketID = nbiot.createSocket();
 
