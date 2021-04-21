@@ -11,6 +11,6 @@
 #define DEBUG_STREAM_BAUD 115200
 #define STARTUP_DELAY 5000
 
-void sendNBIoTUDP(const char *message, const char *remoteIp, int remotePort, Sodaq_nbIOT &nbiot);
+void sendNBIoTUDP(const char *message, const char *targetIP, int targetPort, Sodaq_nbIOT &nbiot);
 
 #endif //COMMUNICATIONIMPLEMENTATIONS_NB_IOT_FUNCTIONS_H

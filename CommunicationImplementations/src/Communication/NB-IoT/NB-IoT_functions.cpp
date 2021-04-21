@@ -2,7 +2,7 @@
 #include <NB-IoT_functions.h>
 
 
-void sendNBIoTUDP(const char *message, const char *remoteIp, int remotePort, Sodaq_nbIOT &nbiot)
+void sendNBIoTUDP(const char *message, const char *targetIP, int targetPort, Sodaq_nbIOT &nbiot)
 {
     DEBUG_STREAM.println("\n ---- Sending message through UDP ----");
 
@@ -15,7 +15,7 @@ void sendNBIoTUDP(const char *message, const char *remoteIp, int remotePort, Sod
 
     DEBUG_STREAM.println("Created socket!");
 
-    int lengthSent = nbiot.socketSend(socketID, remoteIp, remotePort, message);
+    int lengthSent = nbiot.socketSend(socketID, targetIP, targetPort, message);
     DEBUG_STREAM.println(lengthSent);
     nbiot.closeSocket(socketID);
 
