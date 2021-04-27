@@ -56,10 +56,10 @@ void setup() {
     /** Define initial text **/
     int randomNumber = random(0,15);
     int messageSize = 128;
-    uint8_t inputUint8[messageSize];
-    char input[messageSize]; // ] = "hej med dig min ven";
-    GenerateInitializationVector(inputUint8, messageSize);
-    uint8ToChar(inputUint8, input, messageSize);
+    //uint8_t inputUint8[messageSize];
+    char input[] = "hej med dig min ven";
+    //GenerateInitializationVector(inputUint8, messageSize);
+    //uint8ToChar(inputUint8, input, messageSize);
 
     Serial.println(messageSize);
 
@@ -108,7 +108,7 @@ void setup() {
     Serial.println("----------------------------------------------------");
     Serial.print("Message: ");
     print_char(input, textSize);
-    Serial.println("                         |----16 Bytes---|---16 Bytes---|--- Varies ---| ");
+    Serial.println("                         |----16 Bytes---|---16 Bytes---|--- Varies ---|");
     Serial.println("The encapsulated packet: |      Iv       |     Tag      |  Ciphertext  |");
     print_uint8(packetBuffer, packetSize);
 
