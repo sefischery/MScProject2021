@@ -24,6 +24,7 @@
 #include <BLEUtils.h>
 #include <BLE2902.h>
 #include <Arduino.h>
+#include <utilities.h>
 
 BLEServer* pServer = nullptr;
 BLECharacteristic* pCharacteristic = nullptr;
@@ -94,6 +95,17 @@ void setup() {
     Serial.println("Waiting a client connection to notify...");
 }
 
+bool encryptionFlag = false;
+bool ivRecived = false;
+bool tagReceived = false;
+std::string incomingString;
+
+uint8_t iv[16] = {};
+uint8_t tag[16] = {};
+uint8_t ciphertext[20];
+
+uint8_t testingContainer[20];
+
 void loop() {
     // notify changed value
     if (deviceConnected) {
@@ -102,6 +114,68 @@ void loop() {
         if (!serialMonitorNotified){
             Serial.println("Client connected...");
             serialMonitorNotified = true;
+        }
+
+        //If the encryption; This needs to be fixed, ugly as fuck!
+        if (encryptionFlag){
+            incomingString = pCharacteristic->getValue();
+            std::string ivTest = incomingString.substr(0, 3);
+
+            if (ivTest == "iv:" || ivRecived ){
+
+                /** Testing **/
+                if (!ivRecived){
+                    uint8_t *receiver = pCharacteristic->getData();
+                    for (int index = 3; index < 19; index++){
+                        iv[index-3] = receiver[index];
+                    }
+                }
+                /** Testing **/
+
+                ivRecived = true;
+                std::string tagTest = incomingString.substr(0, 4);
+
+                if (tagTest == "tag:" || tagReceived){
+
+                    /** Testing **/
+                    if (!tagReceived){
+                        uint8_t *receiver = pCharacteristic->getData();
+                        for (int index = 4; index < 20; index++){
+                            tag[index-4] = receiver[index];
+                        }
+                    }
+                    /** Testing **/
+
+                    tagReceived = true;
+                    if (tagTest != "tag:" || tagReceived) {
+                        for (int index = 0; index < 20; index++){
+                            ciphertext[index] = incomingString[index];
+                        }
+                        Serial.print("Ciphertext: ");
+                        print_uint8(ciphertext, 20);
+                        Serial.print("Tag: ");
+                        print_uint8(tag, 16);
+                        Serial.print("Iv: ");
+                        print_uint8(iv, 16);
+                        performDecryption(ciphertext, tag, iv);
+                        Serial.println();
+                    }
+                }
+            }
+        }
+        // If not encryption
+        else {
+            //  uint8_t *hi = pCharacteristic->toString();
+            incomingString = pCharacteristic->getValue();
+            Serial.println(incomingString.c_str());
+        }
+
+        if (incomingString == "Setup encryption")
+        {
+            pCharacteristic->setValue("Server: Encrypted channel ready");
+            pCharacteristic->notify();
+            encryptionFlag = true;
+
         }
 
         delay(1000); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
@@ -121,8 +195,10 @@ void loop() {
     }
     // connecting
     if (deviceConnected && !oldDeviceConnected) {
-        pCharacteristic->setValue("what up mate?");
+        pCharacteristic->setValue("Server: You are connected");
         pCharacteristic->notify();
         oldDeviceConnected = deviceConnected;
     }
+
+    delay(2000);
 }

@@ -6,7 +6,7 @@
 bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
                       int size, uint8_t *key, uint8_t *iv, int cipherSize) {
     /** Manually change if the method is not used for timing **/
-    bool timingRequired = true;
+    bool timingRequired = false;
 
     /** Initiate the Acorn cipher **/
     Acorn128 cipher;
@@ -50,7 +50,7 @@ bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
 bool acorn_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
                       int size, uint8_t *key, uint8_t *iv, int cipherSize) {
     /** Manually change if the method is not used for timing **/
-    bool timingRequired = true;
+    bool timingRequired = false;
 
     /** Initiate the Acorn cipher **/
     Acorn128 cipher;

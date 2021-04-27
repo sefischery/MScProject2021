@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <BLEDevice.h>
+#include <utilities.h>
 
 static boolean doConnect = false;
 static boolean connected = false;
@@ -12,21 +13,8 @@ static BLEScan* pBLEScan;
 static BLEUUID serviceUUID("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
 static BLEUUID charUUID("beb5483e-36e1-4688-b7f5-ea07361b26a8");
 
+bool sendingEncryptedText = false;
 
-static void notifyCallback(BLERemoteCharacteristic* pBLERemoteCharacteristic,
-                           uint8_t* pData,
-                           size_t length,
-                           bool isNotify) {
-    Serial.println();
-    Serial.print("Notify callback for characteristic %s");
-    Serial.print(pBLERemoteCharacteristic->getUUID().toString().c_str());
-    Serial.print(" of data length ");
-    Serial.println(length);
-    Serial.print("data: ");
-    Serial.println((char*)pData);
-    Serial.print("Notify: ");
-    Serial.println(isNotify);
-}
 
 class MyClientCallback : public BLEClientCallbacks {
     void onConnect(BLEClient* pClient) override {
@@ -78,9 +66,6 @@ bool connectToServer() {
         Serial.print("The characteristic value was: ");
         Serial.println(value.c_str());
     }
-
-    if(pRemoteCharacteristic->canNotify())
-        pRemoteCharacteristic->registerForNotify(notifyCallback);
 
     connected = true;
 
@@ -134,13 +119,78 @@ bool performServerConnectionAttempt(){
     }
 }
 
+bool encryptionPerformed = false;
+bool hasSentIv = false;
+bool hasSentTag = false;
+uint8_t iv[16] = {0};
+uint8_t tag[16] = {0};
+
+uint8_t copyOfCipherText[20] = {0};
+
 void changeBleServerCharacteristics(){
-    if (firstMessage){
-        pRemoteCharacteristic->writeValue("Magnus her");
-        firstMessage = false;
-    } else {
-        pRemoteCharacteristic->writeValue("Sebastian her");
-        firstMessage = true;
+    std::string value = pRemoteCharacteristic->readValue();
+    Serial.println(value.c_str());
+
+    if (value == "Server: You are connected")
+    {
+        pRemoteCharacteristic->writeValue("Setup encryption");
+    }
+    else if (value == "Server: Encrypted channel ready" || sendingEncryptedText)
+    {
+        sendingEncryptedText = true;
+
+        /** Define initial text **/
+        char message[] = "Secret: 1234";
+        const int textSize = sizeof(message);
+
+        if(!encryptionPerformed){
+            uint8_t plaintext[textSize];
+            charToUint8(message, plaintext, textSize);
+            uint8_t ciphertextReceiver[textSize];
+
+            performEncryption(plaintext, textSize, ciphertextReceiver, tag, iv);
+            encryptionPerformed = true;
+            copy_uint8(ciphertextReceiver, copyOfCipherText, textSize);
+            Serial.print("Ciphertext: ");
+            print_uint8(ciphertextReceiver, 20);
+            Serial.print("Tag: ");
+            print_uint8(tag, 16);
+            Serial.print("Iv: ");
+            print_uint8(iv, 16);
+        }
+
+        if (!hasSentIv){
+            hasSentIv = true;
+            uint8_t writer[19] = "iv:";
+
+            for (int index = 3; index < 19; index++)
+            {
+                writer[index] = iv[index-3];
+            }
+            Serial.print("writing iv: ");
+            print_uint8(writer, 19);
+            pRemoteCharacteristic->writeValue(writer, 19);
+        }
+        else if (!hasSentTag){
+            hasSentTag = true;
+            pRemoteCharacteristic->writeValue("tag:");
+
+            uint8_t writer[20] = "tag:";
+
+            for (int index = 4; index < 20; index++)
+            {
+                writer[index] = tag[index-4];
+            }
+
+            Serial.print("writing tag: ");
+            print_uint8(tag, 20);
+
+            pRemoteCharacteristic->writeValue(writer, 20);
+
+        }
+        else {
+            pRemoteCharacteristic->writeValue(copyOfCipherText, 20);
+        }
     }
 }
 
@@ -164,5 +214,5 @@ void loop() {
         BLEDevice::getScan()->start(0);
     }
 
-    delay(2000);
+    delay(5000);
 }
