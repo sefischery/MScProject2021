@@ -16,6 +16,8 @@ void DisassembleAuthenticaedEncryptionPacket(uint8_t *iv, uint8_t *tag, int defa
 
 void GenerateInitializationVector(uint8_t *IV, int size);
 
+void performEncryption(uint8_t *plaintext, int inputSize, uint8_t *ciphertextReceiver, uint8_t *tag, uint8_t *iv);
+void performDecryption(uint8_t *ciphertext, uint8_t *tag, uint8_t *iv);
 #endif
 
 
