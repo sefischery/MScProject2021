@@ -21,3 +21,10 @@ j
 
 More information about PlatformIO Unit Testing:
 - https://docs.platformio.org/page/plus/unit-testing.html
+---
+
+if you get an error in CLion with something like could not provide code insights then go to
+
+CMakeLists.txt and manually add
+add_executable(Z_DUMMY_TARGET ${SRC_LIST} test/test_XYZ.cpp)
+(remember to remove it)

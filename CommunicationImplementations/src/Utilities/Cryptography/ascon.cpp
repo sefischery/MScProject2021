@@ -5,7 +5,7 @@
 
 bool ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
                         int size, uint8_t *key, uint8_t *iv, int cipherSize) {
-    bool timingRequired = true;
+    bool timingRequired = false;
 
     /** Initiate the Acorn cipher **/
     Ascon128 cipher;
@@ -48,7 +48,7 @@ bool ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
 
 bool ascon_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
                         int size, uint8_t *key, uint8_t *iv, int cipherSize) {
-    bool timingRequired = true;
+    bool timingRequired = false;
 
     /** Initiate the Acorn cipher **/
     Ascon128 cipher;

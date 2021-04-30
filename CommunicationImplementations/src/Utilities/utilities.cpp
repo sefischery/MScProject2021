@@ -2,7 +2,6 @@
 #include <RNG.h>
 #include <TransistorNoiseSource.h>
 #include <utilities.h>
-#include <Encryption_testing.h>
 
 /** Print each value of uint8 array **/
 void print_uint8(const uint8_t *input, int size) {
@@ -109,34 +108,34 @@ void GenerateInitializationVector(uint8_t *IV, int size) {
 }
 
 
-void performEncryption(uint8_t *plaintext, int inputSize,
-                       uint8_t *ciphertextReceiver, uint8_t *tag, uint8_t *iv) {
-    /** IV initialization **/
-    GenerateInitializationVector(iv, 16);
-
-    /** Perform encryption and timings **/
-    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE);
-
-    uint8_t plaintextReceiver[20];
-    char text[20];
-
-    cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, tag, inputSize, cipher.key, iv, SIZE);
-
-    uint8ToChar(plaintextReceiver, text, inputSize);
-    Serial.print("Decrypted Text: ");
-    print_char(text, 20);
-}
-
-void performDecryption(uint8_t *ciphertext, uint8_t *tag, uint8_t *iv) {
-    /** Plaintext buffer **/
-    uint8_t plaintextReceiver[20];
-    char text[20];
-
-    /** Perform decryption and timing of the following **/
-    cipher.decryption.acorn_decryption(ciphertext, plaintextReceiver, tag, 20, cipher.key, iv, SIZE);
-
-    uint8ToChar(plaintextReceiver, text, 20);
-    Serial.print("Decrypted Text: ");
-    print_char(text, 20);
-}
+//void performEncryption(uint8_t *plaintext, int inputSize,
+//                       uint8_t *ciphertextReceiver, uint8_t *tag, uint8_t *iv) {
+//    /** IV initialization **/
+//    GenerateInitializationVector(iv, 16);
+//
+//    /** Perform encryption and timings **/
+//    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE);
+//
+//    uint8_t plaintextReceiver[20];
+//    char text[20];
+//
+//    cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, tag, inputSize, cipher.key, iv, SIZE);
+//
+//    uint8ToChar(plaintextReceiver, text, inputSize);
+//    Serial.print("Decrypted Text: ");
+//    print_char(text, 20);
+//}
+//
+//void performDecryption(uint8_t *ciphertext, uint8_t *tag, uint8_t *iv) {
+//    /** Plaintext buffer **/
+//    uint8_t plaintextReceiver[20];
+//    char text[20];
+//
+//    /** Perform decryption and timing of the following **/
+//    cipher.decryption.acorn_decryption(ciphertext, plaintextReceiver, tag, 20, cipher.key, iv, SIZE);
+//
+//    uint8ToChar(plaintextReceiver, text, 20);
+//    Serial.print("Decrypted Text: ");
+//    print_char(text, 20);
+//}
 
