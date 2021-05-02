@@ -1,8 +1,15 @@
+from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
 import scipy.stats as st
+
+result_path = str(Path.cwd().parents[0])
+result_path_graphs = f"{result_path}\\GraphResults"
+result_path_graphs_hist = f"{result_path_graphs}\\Histogram"
+result_path_graphs_box = f"{result_path_graphs}\\Boxplot"
+microseconds_label_str = "[µs]"
 
 
 def unique(input_list):
@@ -20,7 +27,7 @@ def generate_histogram(deviceType, encryptionStandard, isEncryption, save):
 
     fig, axe = plt.subplots(figsize=(9, 5))
     axe.hist(operatingValues, histtype='stepfilled', alpha=0.5, color='#86bf91', zorder=2, rwidth=0.9)
-    axe.set_xlabel("µs")
+    axe.set_xlabel(microseconds_label_str)
     axe.set_ylabel('Samples count')
     axe.grid(color='white')  # True, axis='y', alpha=0.2)
     axe.set_facecolor('#e6e8e7')
@@ -40,10 +47,9 @@ def generate_histogram(deviceType, encryptionStandard, isEncryption, save):
     else:
         naming = "decryption"
 
-    """ This is a specific Path to Magnus' Computer. For testing change it to your desired location """
     if save:
         plt.savefig(
-            f'C:\\Users\\glasd\\CLionProjects\\MScProject2021\\Results\\GraphResults\\Histogram/{deviceType}-{encryptionStandard}-{naming}.pdf')
+            f'{result_path_graphs_hist}\\{deviceType}-{encryptionStandard}-{naming}.pdf')
 
 
 def box_plot_coloring(ax, data, edge_color, fill_color):
@@ -72,13 +78,12 @@ def generate_boxplot(deviceTypes, encryptionStandards, save):
     fig, axe = plt.subplots(figsize=(9, 5))
     axe.boxplot(columns)
     plt.xticks(numberArray, namings, rotation=10)
-    axe.set_ylabel('µs')
+    axe.set_ylabel(microseconds_label_str)
     axe.grid(color='white')  # True, axis='y', alpha=0.2)
     axe.set_facecolor('#e6e8e7')
 
-    """ This is a specific Path to Magnus' Computer. For testing change it to your desired location """
     if save:
-        plt.savefig(f'C:\\Users\\glasd\\CLionProjects\\MScProject2021\\Results\\GraphResults\\Boxplot/one-in-all.pdf')
+        plt.savefig(f'{result_path_graphs_box}\\one-in-all.pdf')
 
 
 def generate_boxplot2(devices, standardTypes, save):
@@ -98,8 +103,8 @@ def generate_boxplot2(devices, standardTypes, save):
             box_plot_coloring(axe, crypto, 'blue', 'white')
         else:
             box_plot_coloring(axe, crypto, 'green', 'white')
-    plt.xticks([1, 2, 3], ['Acorn', 'Ascon', 'AES'], rotation=10)
-    axe.set_ylabel('[µs]')
+    plt.xticks([1, 2, 3], ['ACORN', 'ASCON', 'AES'], rotation=10)
+    axe.set_ylabel(microseconds_label_str)
     axe.grid(color='white')  # True, axis='y', alpha=0.2)
     axe.set_facecolor('#e6e8e7')
     uno = mpatches.Patch(color='red', label=f'Uno', alpha=0.3)
@@ -108,25 +113,25 @@ def generate_boxplot2(devices, standardTypes, save):
     axe.legend(handles=[esp32, esp8266, uno])
 
     if save:
-        plt.savefig(f'C:\\Users\\glasd\\CLionProjects\\MScProject2021\\Results\\GraphResults\\Boxplot/comparable-boxplot.pdf')
+        plt.savefig(f'{result_path_graphs_box}\\comparable-boxplot.pdf')
 
 
 def generate_boxplot_individual(data, label, save):
     fig, axe = plt.subplots(figsize=(9, 5))
     box_plot_coloring(axe, data, 'black', 'white')
     plt.xticks([1], [label], rotation=10)
-    axe.set_ylabel('[µs]')
-    axe.grid(color='white') #True, axis='y', alpha=0.2)
+    axe.set_ylabel(microseconds_label_str)
+    axe.grid(color='white')  # True, axis='y', alpha=0.2)
     axe.set_facecolor('#e6e8e7')
 
     confidence_interval = st.t.interval(alpha=0.95, df=len(data) - 1, loc=np.mean(data), scale=st.sem(data))
     firstnumber = confidence_interval[0]
     sencondnumber = confidence_interval[1]
-    confidence = mpatches.Patch(label=f'Confidence: ({round(firstnumber,5)},{round(sencondnumber, 5)})', alpha=0.3)
+    confidence = mpatches.Patch(label=f'Confidence: ({round(firstnumber, 5)},{round(sencondnumber, 5)})', alpha=0.3)
     axe.legend(handles=[confidence])
 
     if save:
-        plt.savefig(f'C:\\Users\\glasd\\CLionProjects\\MScProject2021\\Results\\GraphResults\\Boxplot/{label}-boxplot.pdf')
+        plt.savefig(f'{result_path_graphs_box}\\{label}-boxplot.pdf')
 
 
 def triggerHistogram(display, save):
@@ -174,7 +179,7 @@ def triggerBoxplot3(display, save):
 
 
 if __name__ == '__main__':
-    #triggerHistogram(display=False, save=True)
-    #triggerBoxplot1(display=False, save=True)
-    #triggerBoxplot2(display=False, save=True)
+    triggerHistogram(display=False, save=True)
+    triggerBoxplot1(display=False, save=True)
+    triggerBoxplot2(display=False, save=True)
     triggerBoxplot3(display=False, save=True)
