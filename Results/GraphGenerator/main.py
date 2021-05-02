@@ -20,24 +20,24 @@ def unique(input_list):
 def generate_histogram(deviceType, encryptionStandard, isEncryption, save):
     if isEncryption:
         read = pd.read_csv(f"{deviceType}/{encryptionStandard}-encryption.csv")
-        operatingValues = read[f'{encryptionStandard}-encryption'].values
+        operating_values = read[f'{encryptionStandard}-encryption'].values
     else:
         read = pd.read_csv(f"{deviceType}/{encryptionStandard}-decryption.csv")
-        operatingValues = read[f'{encryptionStandard}-decryption'].values
+        operating_values = read[f'{encryptionStandard}-decryption'].values
 
     fig, axe = plt.subplots(figsize=(9, 5))
-    axe.hist(operatingValues, histtype='stepfilled', alpha=0.5, color='#86bf91', zorder=2, rwidth=0.9)
+    axe.hist(operating_values, histtype='stepfilled', alpha=0.5, color='#86bf91', zorder=2, rwidth=0.9)
     axe.set_xlabel(microseconds_label_str)
     axe.set_ylabel('Samples count')
     axe.grid(color='white')  # True, axis='y', alpha=0.2)
     axe.set_facecolor('#e6e8e7')
 
     # Get mean as standard deviation
-    std = mpatches.Patch(color='#86bf91', label=f'std: {round(operatingValues.std(), 4)}', alpha=0.5)
-    mean = mpatches.Patch(color='r', label=f'mean: {round(operatingValues.mean(), 2)}', alpha=0.3)
+    std = mpatches.Patch(color='#86bf91', label=f'std: {round(operating_values.std(), 4)}', alpha=0.5)
+    mean = mpatches.Patch(color='r', label=f'mean: {round(operating_values.mean(), 2)}', alpha=0.3)
     axe.legend(handles=[std, mean])
 
-    mean = operatingValues.mean()
+    mean = operating_values.mean()
 
     # the problem comes here
     plt.axvline(mean, color='r', linestyle='dashed', linewidth=2, alpha=0.3)
@@ -64,7 +64,7 @@ def box_plot_coloring(ax, data, edge_color, fill_color):
 
 def generate_boxplot(deviceTypes, encryptionStandards, save):
     columns = []
-    numberArray = []
+    number_array = []
     namings = []
     counter = 0
     for device in deviceTypes:
@@ -72,12 +72,12 @@ def generate_boxplot(deviceTypes, encryptionStandards, save):
             counter += 1
             readEncryption = pd.read_csv(f"{device}/{standard}-encryption.csv")
             columns.append(readEncryption[f'{standard}-encryption'].values)
-            numberArray.append(counter)
+            number_array.append(counter)
             namings.append(f'{device}-{standard}')
 
     fig, axe = plt.subplots(figsize=(9, 5))
     axe.boxplot(columns)
-    plt.xticks(numberArray, namings, rotation=10)
+    plt.xticks(number_array, namings, rotation=10)
     axe.set_ylabel(microseconds_label_str)
     axe.grid(color='white')  # True, axis='y', alpha=0.2)
     axe.set_facecolor('#e6e8e7')
@@ -89,11 +89,11 @@ def generate_boxplot(deviceTypes, encryptionStandards, save):
 def generate_boxplot2(devices, standardTypes, save):
     algorithm = []
     for device in devices:
-        containmentList = []
+        containment_list = []
         for standard in standardTypes:
-            readEncryption = pd.read_csv(f"{device}/{standard}-encryption.csv")
-            containmentList.append(readEncryption[f'{standard}-encryption'].values)
-        algorithm.append(containmentList)
+            read_encryption = pd.read_csv(f"{device}/{standard}-encryption.csv")
+            containment_list.append(read_encryption[f'{standard}-encryption'].values)
+        algorithm.append(containment_list)
 
     fig, axe = plt.subplots(figsize=(9, 5))
     for index, crypto in enumerate(algorithm):
