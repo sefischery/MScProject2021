@@ -62,7 +62,7 @@ def box_plot_coloring(ax, data, edge_color, fill_color):
         patch.set(facecolor=fill_color)
 
 
-def generate_boxplot(deviceTypes, encryptionStandards, save):
+def generate_boxplot(cryptographicOperation, deviceTypes, encryptionStandards, save):
     columns = []
     number_array = []
     namings = []
@@ -70,8 +70,8 @@ def generate_boxplot(deviceTypes, encryptionStandards, save):
     for device in deviceTypes:
         for index, standard in enumerate(encryptionStandards):
             counter += 1
-            readEncryption = pd.read_csv(f"{device}/{standard}-encryption.csv")
-            columns.append(readEncryption[f'{standard}-encryption'].values)
+            readEncryption = pd.read_csv(f"{device}/{standard}-{cryptographicOperation}.csv")
+            columns.append(readEncryption[f'{standard}-{cryptographicOperation}'].values)
             number_array.append(counter)
             namings.append(f'{device}-{standard}')
 
@@ -83,16 +83,16 @@ def generate_boxplot(deviceTypes, encryptionStandards, save):
     axe.set_facecolor('#e6e8e7')
 
     if save:
-        plt.savefig(f'{result_path_graphs_box}\\one-in-all.pdf')
+        plt.savefig(f'{result_path_graphs_box}\\one-in-all-{cryptographicOperation}.pdf')
 
 
-def generate_boxplot2(devices, standardTypes, save):
+def generate_boxplot2(cryptographicOperation, devices, standardTypes, save):
     algorithm = []
     for device in devices:
         containment_list = []
         for standard in standardTypes:
-            read_encryption = pd.read_csv(f"{device}/{standard}-encryption.csv")
-            containment_list.append(read_encryption[f'{standard}-encryption'].values)
+            read_encryption = pd.read_csv(f"{device}/{standard}-{cryptographicOperation}.csv")
+            containment_list.append(read_encryption[f'{standard}-{cryptographicOperation}'].values)
         algorithm.append(containment_list)
 
     fig, axe = plt.subplots(figsize=(9, 5))
@@ -113,7 +113,7 @@ def generate_boxplot2(devices, standardTypes, save):
     axe.legend(handles=[esp32, esp8266, uno])
 
     if save:
-        plt.savefig(f'{result_path_graphs_box}\\comparable-boxplot.pdf')
+        plt.savefig(f'{result_path_graphs_box}\\comparable-boxplot-{cryptographicOperation}.pdf')
 
 
 def generate_boxplot_individual(data, label, save):
@@ -152,19 +152,19 @@ def triggerHistogram(display, save):
         plt.show()
 
 
-def triggerBoxplot1(display, save):
+def triggerBoxplot1(cryptographicOperation, display, save):
     devices = ['Uno', 'Esp8266', 'Esp32']
     encryptions = ['acorn', 'ascon', 'aes']
-    generate_boxplot(devices, encryptions, save)
+    generate_boxplot(cryptographicOperation, devices, encryptions, save)
 
     if display:
         plt.show()
 
 
-def triggerBoxplot2(display, save):
+def triggerBoxplot2(cryptographicOperation, display, save):
     devices = ['Uno', 'Esp8266', 'Esp32']
     encryptions = ['acorn', 'ascon', 'aes']
-    generate_boxplot2(devices, encryptions, save)
+    generate_boxplot2(cryptographicOperation, devices, encryptions, save)
     if display:
         plt.show()
 
@@ -185,6 +185,6 @@ def triggerBoxplot3(cryptographicOperation, display, save):
 
 if __name__ == '__main__':
     #triggerHistogram(display=False, save=True)
-    #triggerBoxplot1(display=False, save=True)
-    #triggerBoxplot2(display=False, save=True)
-    triggerBoxplot3("encryption", display=False, save=False)
+    triggerBoxplot1("encryption", display=False, save=True)
+    triggerBoxplot2("encryption", display=False, save=True)
+    triggerBoxplot3("encryption", display=False, save=True)
