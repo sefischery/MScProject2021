@@ -49,7 +49,7 @@ def generate_histogram(deviceType, encryptionStandard, isEncryption, save):
 
     if save:
         plt.savefig(
-            f'{result_path_graphs_hist}\\{deviceType}-{encryptionStandard}-{naming}.pdf')
+            f'{result_path_graphs_hist}\\{deviceType}-{encryptionStandard}-{naming}.pdf', bbox_inches="tight", pad_inches=0.1)
 
 
 def box_plot_coloring(ax, data, positions, edge_color, fill_color):
@@ -88,7 +88,7 @@ def generate_boxplot(cryptographicOperation, deviceTypes, encryptionStandards, s
     axe.legend(handles=[esp32, esp8266, uno])
 
     if save:
-        plt.savefig(f'{result_path_graphs_box}\\one-in-all-{cryptographicOperation}.pdf')
+        plt.savefig(f'{result_path_graphs_box}\\one-in-all-{cryptographicOperation}.pdf', bbox_inches="tight", pad_inches=0.1)
 
 
 def generate_boxplot2(cryptographicOperation, devices, standardTypes, save):
@@ -118,13 +118,20 @@ def generate_boxplot2(cryptographicOperation, devices, standardTypes, save):
     axe.legend(handles=[esp32, esp8266, uno])
 
     if save:
-        plt.savefig(f'{result_path_graphs_box}\\comparable-boxplot-{cryptographicOperation}.pdf')
+        plt.savefig(f'{result_path_graphs_box}\\comparable-boxplot-{cryptographicOperation}.pdf', bbox_inches="tight", pad_inches=0.1)
 
 
 def generate_boxplot_individual(data, label, save):
     fig, axe = plt.subplots(figsize=(9, 5))
-    box_plot_coloring(axe, data, 'black', 'white')
-    plt.xticks([1], [label], rotation=10)
+    box_plot_coloring(axe, data, [1], 'black', 'white')
+    #plt.xticks([1], [label], rotation=10)
+    plt.tick_params(
+        axis='x',  # changes apply to the x-axis
+        which='both',  # both major and minor ticks are affected
+        bottom=False,  # ticks along the bottom edge are off
+        top=False,  # ticks along the top edge are off
+        labelbottom=False)  # labels along the bottom edge are off
+
     axe.set_ylabel(microseconds_label_str)
     axe.grid(color='white')  # True, axis='y', alpha=0.2)
     axe.set_facecolor('#e6e8e7')
@@ -141,7 +148,7 @@ def generate_boxplot_individual(data, label, save):
     axe.legend(handles=[confidence])
 
     if save:
-        plt.savefig(f'{result_path_graphs_box}\\{label}-boxplot.pdf')
+        plt.savefig(f'{result_path_graphs_box}\\{label}-boxplot.pdf', bbox_inches="tight", pad_inches=0.1)
 
 
 def triggerHistogram(display, save):
@@ -190,7 +197,8 @@ def triggerBoxplot3(cryptographicOperation, display, save):
 
 if __name__ == '__main__':
     #triggerHistogram(display=False, save=True)
-    triggerBoxplot1("encryption", display=True, save=True)
-    triggerBoxplot1("decryption", display=True, save=True)
+    #triggerBoxplot1("encryption", display=False, save=True)
+    #triggerBoxplot1("decryption", display=True, save=True)
     #triggerBoxplot2("encryption", display=False, save=True)
-    #triggerBoxplot3("encryption", display=False, save=True)
+    triggerBoxplot3("encryption", display=False, save=True)
+    triggerBoxplot3("decryption", display=False, save=True)
