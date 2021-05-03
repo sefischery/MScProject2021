@@ -4,54 +4,15 @@
 #include <utilities.h>
 #include <acorn.h>
 #include <Crypto.h>
+#include <Encryption_testing.h>
 
 #define SIZE 16
-
-struct encryption {
-    bool (*acorn_encryption)(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
-    bool (*aes_gcm_encryption)(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
-    bool (*ascon_encryption)(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
-};
-
-struct decryption {
-    bool (*acorn_decryption)(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
-    bool (*aes_gcm_decryption)(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
-    bool (*ascon_decryption)(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv, int cipherSize);
-};
-
-struct cipherOperator {
-    struct encryption encryption;
-    struct decryption decryption;
-    uint8_t key[SIZE];
-};
-
-
 
 void setup() {
     Serial.begin(115200);
 
     unsigned long toEnd;
     unsigned long start = micros();
-
-    struct cipherOperator cipher = {
-            {
-                    /** Defined encryption methods **/
-                    acorn_encryption,
-                    aes_gcm_encryption,
-                    ascon_encryption
-            },{
-                    /** Defined decryption methods **/
-                    acorn_decryption,
-                    aes_gcm_decryption,
-                    ascon_decryption
-            },{
-                    /** Key definition **/
-                    0x00, 0x01, 0x02, 0x03, 0x04,
-                    0x05, 0x06, 0x07, 0x08, 0x09,
-                    0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
-                    0x0f
-            }
-    };
 
     /** Define initial text **/
     int randomNumber = random(0,15);
@@ -60,8 +21,15 @@ void setup() {
     char input[] = "hej med dig min ven";
     //GenerateInitializationVector(inputUint8, messageSize);
     //uint8ToChar(inputUint8, input, messageSize);
+    Serial.println();
+    Serial.println("----------------------------------------------------");
+    Serial.println("-----------------------Sender-----------------------");
+    Serial.println("----------------------------------------------------\n");
 
-    Serial.println(messageSize);
+    Serial.println("Step 1. Initialize input");
+    Serial.print("Input message: ");
+    print_char(input, 19);
+    Serial.println();
 
     /** Allow the plaintext to vary in size **/
     const int textSize = sizeof(input);
@@ -79,11 +47,28 @@ void setup() {
     uint8_t plaintextReceiver[textSize];
     uint8_t ciphertextReceiver[textSize];
 
+    Serial.println("Step 2. Define arrays: tag, iv, plaintext & ciphertext\n");
+
     /** IV initialization **/
     GenerateInitializationVector(iv, SIZE);
 
+    Serial.println("Step 3. Generate random initialization vector");
+    Serial.print("Iv: ");
+    print_uint8(iv, SIZE);
+    Serial.println();
+
     /** Encryption **/
-    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE, false);
+
+    Serial.println("Step 4. Compute tag");
+    Serial.print("Tag: ");
+    print_uint8(tag, SIZE);
+    Serial.println();
+
+    Serial.println("Step 5. Perform encryption and return result in ciphertext array");
+    Serial.print("Ciphertext: ");
+    print_uint8(ciphertextReceiver, 19);
+    Serial.println();
 
     /** Manipulate packet **/
     //ciphertextReceiver[0] = 0x03; /** This could be a MITM who is tweaking the values **/
@@ -93,45 +78,59 @@ void setup() {
     uint8_t packetBuffer[packetSize];
     AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
 
-    /** Receiver: Unpack received data into iv, tag and informative data **/
-    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    Serial.println("Step 6. Assemble IV, Tag & ciphertext into one packet");
+    Serial.print("Assembled data array: ");
+    print_uint8(packetBuffer, packetSize);
+    Serial.println();
 
-    /** Decryption **/
-    bool decryptionValidation = cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    Serial.println("Step 7. Send assembled data\n");
 
-    /** Convert received plaintext to readable char array **/
-    uint8ToChar(plaintextReceiver, text, textSize);
-
-    /** Printing functionality sender **/
     Serial.println("----------------------------------------------------");
     Serial.println("----------------------Receiver----------------------");
-    Serial.println("----------------------------------------------------");
-    Serial.print("Message: ");
-    print_char(input, textSize);
-    Serial.println("                         |----16 Bytes---|---16 Bytes---|--- Varies ---|");
-    Serial.println("The encapsulated packet: |      Iv       |     Tag      |  Ciphertext  |");
-    print_uint8(packetBuffer, packetSize);
+    Serial.println("----------------------------------------------------\n");
 
-    /** Print functionality receiver **/
-    Serial.println("----------------------------------------------------");
-    Serial.println("-----------------------Sender-----------------------");
-    Serial.println("----------------------------------------------------");
-    Serial.print("IV: ");
+    Serial.println("Step 1. Define arrays: tag, iv, plaintext & ciphertext\n");
+
+    Serial.println("Step 2. Retrieve data as one big packet");
+    Serial.print("Received data: ");
+    print_uint8(packetBuffer, packetSize);
+    Serial.println();
+
+    /** Receiver: Unpack received data into iv, tag and informative data **/
+    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    Serial.println("Step 3. Disassemble data in to IV, Tag and Ciphertext array");
+    Serial.print("Iv: ");
     print_uint8(iv, SIZE);
     Serial.print("Tag: ");
     print_uint8(tag, SIZE);
     Serial.print("Ciphertext: ");
-    print_uint8(ciphertextReceiver, packetSize - 2 * SIZE);
-    Serial.print("Tag validation: ");
-    Serial.println(decryptionValidation);
+    print_uint8(ciphertextReceiver, 19);
+    Serial.println();
+
+    /** Decryption **/
+    bool decryptionValidation = cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE, false);
+    Serial.println("Step 4. Perform decryption of ciphertext");
+    Serial.print("Plaintext: ");
+    print_uint8(plaintextReceiver, 19);
+    Serial.println();
+
+    Serial.println("Step 5. Compute tag and validate tag to ensure integrity");
+    Serial.print("Validity of tag: ");
+    if (decryptionValidation){
+        Serial.println("Approved");
+    } else {
+        Serial.println("Denied");
+    }
+    Serial.println();
+
+    /** Convert received plaintext to readable char array **/
+    uint8ToChar(plaintextReceiver, text, textSize);
+    Serial.println("Step 6. Convert plaintext to human readable content");
     Serial.print("Decrypted message: ");
     print_char(text, textSize);
-    Serial.println("----------------------------------------------------");
+    Serial.println();
 
-
-    toEnd = micros() - start;
-    Serial.print(toEnd);
-    Serial.println(" Micro seconds from start to end");
+    Serial.println("Sequence finished");
 }
 
 void loop() {
