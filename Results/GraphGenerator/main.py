@@ -103,11 +103,11 @@ def generate_boxplot2(cryptographicOperation, devices, standardTypes, save):
     fig, axe = plt.subplots(figsize=(9, 5))
     for index, crypto in enumerate(algorithm):
         if index == 0:
-            box_plot_coloring(axe, crypto, 'red', 'white')
+            box_plot_coloring(axe, crypto, [1, 2, 3], 'red', 'white')
         elif index == 1:
-            box_plot_coloring(axe, crypto, 'blue', 'white')
+            box_plot_coloring(axe, crypto, [1, 2, 3], 'blue', 'white')
         else:
-            box_plot_coloring(axe, crypto, 'green', 'white')
+            box_plot_coloring(axe, crypto, [1, 2, 3], 'green', 'white')
     plt.xticks([1, 2, 3], ['ACORN', 'ASCON', 'AES'], rotation=10)
     axe.set_ylabel(microseconds_label_str)
     axe.grid(color='white')  # True, axis='y', alpha=0.2)
@@ -199,6 +199,6 @@ if __name__ == '__main__':
     #triggerHistogram(display=False, save=True)
     #triggerBoxplot1("encryption", display=False, save=True)
     #triggerBoxplot1("decryption", display=True, save=True)
-    #triggerBoxplot2("encryption", display=False, save=True)
-    triggerBoxplot3("encryption", display=False, save=True)
-    triggerBoxplot3("decryption", display=False, save=True)
+    triggerBoxplot2("decryption", display=False, save=True)
+    #triggerBoxplot3("encryption", display=False, save=True)
+    #triggerBoxplot3("decryption", display=False, save=True)
