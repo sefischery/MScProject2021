@@ -1,6 +1,7 @@
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
-#include <MQTT_functions.h>
+#include <Mqtt_functions.h>
+#include "utilities.h"
 
 unsigned long lastPublish;
 int msgCount;
@@ -109,7 +110,29 @@ void loop() {
 
     if (millis() - lastPublish > 10000) {
         String msg = String("Hello from ESP-Publisher: ") + ++msgCount;
-        boolean rc = pubSubClient.publish("outTopic", msg.c_str());
+
+        /** Testing **/
+
+        // Define arrays
+        uint8_t iv[16];
+        uint8_t tag[16];
+        uint8_t plaintext[msg.length()];
+        uint8_t ciphertext[msg.length()];
+
+        // Copy message to plaintext as uint8_t
+        charToUint8(msg.c_str(), plaintext, (int) msg.length());
+
+        // Perform encryption
+        performEncryption(1, plaintext, (int) msg.length(), ciphertext, tag, iv);
+
+        // Concatenate to one big message containing iv + tag + ciphertext
+        uint8_t concatenatedMessage[sizeof(iv) + sizeof (tag) + sizeof(ciphertext)];
+        int concatenatedMessageSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertext);
+        AssembleAuthenticatedEncryptionPacket(iv, tag, 16, ciphertext, concatenatedMessage, concatenatedMessageSize);
+
+        /** Testing **/
+        // Public message to encryption topic
+        boolean rc = pubSubClient.publish("Encryption", concatenatedMessage, concatenatedMessageSize);
         Serial.print("Published, rc="); Serial.print( (rc ? "OK: " : "FAILED: ") );
         Serial.println(msg);
         lastPublish = millis();
