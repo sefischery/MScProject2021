@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include <BLEDevice.h>
 #include <utilities.h>
+#include <BluetoothHelper.h>
 
 static boolean doConnect = false;
 static boolean connected = false;
 static boolean doScan = false;
-bool firstMessage = true;
 
 static BLERemoteCharacteristic* pRemoteCharacteristic;
 static BLEAdvertisedDevice* myDevice;
@@ -148,7 +148,7 @@ void changeBleServerCharacteristics(){
             charToUint8(message, plaintext, textSize);
             uint8_t ciphertextReceiver[textSize];
 
-            performEncryption(plaintext, textSize, ciphertextReceiver, tag, iv);
+            performEncryption(1, plaintext, textSize, ciphertextReceiver, tag, iv);
             encryptionPerformed = true;
             copy_uint8(ciphertextReceiver, copyOfCipherText, textSize);
             Serial.print("Ciphertext: ");
@@ -189,7 +189,7 @@ void changeBleServerCharacteristics(){
 
         }
         else {
-            pRemoteCharacteristic->writeValue(copyOfCipherText, 20);
+            pRemoteCharacteristic->writeValue(copyOfCipherText, textSize);
         }
     }
 }
