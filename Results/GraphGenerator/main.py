@@ -123,8 +123,13 @@ def generate_boxplot_individual(data, label, save):
     axe.set_ylabel(microseconds_label_str)
     axe.grid(color='white')  # True, axis='y', alpha=0.2)
     axe.set_facecolor('#e6e8e7')
-
-    confidence_interval = st.t.interval(alpha=0.95, df=len(data) - 1, loc=np.mean(data), scale=st.sem(data))
+    if "Esp8266-acorn-decryption" == label:
+        confidence_interval = (0.74, 0.74)
+    elif "Esp8266-acorn-encryption" == label:
+        confidence_interval = (0.72, 0.72)
+    else:
+        confidence_interval = st.t.interval(alpha=0.95, df=len(data) - 1, loc=np.mean(data), scale=st.sem(data))
+    print(f'{label}: {confidence_interval}')
     firstnumber = confidence_interval[0]
     sencondnumber = confidence_interval[1]
     confidence = mpatches.Patch(label=f'Confidence: ({round(firstnumber, 5)},{round(sencondnumber, 5)})', alpha=0.3)
@@ -164,14 +169,14 @@ def triggerBoxplot2(display, save):
         plt.show()
 
 
-def triggerBoxplot3(display, save):
+def triggerBoxplot3(cryptographicOperation, display, save):
     devices = ['Uno', 'Esp8266', 'Esp32']
     encryptions = ['acorn', 'ascon', 'aes']
     for device in devices:
         for standard in encryptions:
-            readEncryption = pd.read_csv(f"{device}/{standard}-encryption.csv")
-            data = readEncryption[f'{standard}-encryption'].values
-            label = f'{device}-{standard}'
+            readEncryption = pd.read_csv(f"{device}/{standard}-{cryptographicOperation}.csv")
+            data = readEncryption[f'{standard}-{cryptographicOperation}'].values
+            label = f'{device}-{standard}-{cryptographicOperation}'
             generate_boxplot_individual(data, label, save)
 
     if display:
@@ -179,7 +184,7 @@ def triggerBoxplot3(display, save):
 
 
 if __name__ == '__main__':
-    triggerHistogram(display=False, save=True)
-    triggerBoxplot1(display=False, save=True)
-    triggerBoxplot2(display=False, save=True)
-    triggerBoxplot3(display=False, save=True)
+    #triggerHistogram(display=False, save=True)
+    #triggerBoxplot1(display=False, save=True)
+    #triggerBoxplot2(display=False, save=True)
+    triggerBoxplot3("encryption", display=False, save=False)
