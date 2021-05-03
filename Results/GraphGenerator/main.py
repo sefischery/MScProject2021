@@ -52,8 +52,8 @@ def generate_histogram(deviceType, encryptionStandard, isEncryption, save):
             f'{result_path_graphs_hist}\\{deviceType}-{encryptionStandard}-{naming}.pdf')
 
 
-def box_plot_coloring(ax, data, edge_color, fill_color):
-    bp = ax.boxplot(data, patch_artist=True)
+def box_plot_coloring(ax, data, positions, edge_color, fill_color):
+    bp = ax.boxplot(data, positions=positions, patch_artist=True)
 
     for element in ['boxes', 'whiskers', 'fliers', 'means', 'medians', 'caps']:
         plt.setp(bp[element], color=edge_color, alpha=0.75)
@@ -67,20 +67,25 @@ def generate_boxplot(cryptographicOperation, deviceTypes, encryptionStandards, s
     number_array = []
     namings = []
     counter = 0
-    for device in deviceTypes:
+    fig, axe = plt.subplots(figsize=(9, 5))
+    for deviceIndex, device in enumerate(deviceTypes):
         for index, standard in enumerate(encryptionStandards):
             counter += 1
             readEncryption = pd.read_csv(f"{device}/{standard}-{cryptographicOperation}.csv")
             columns.append(readEncryption[f'{standard}-{cryptographicOperation}'].values)
             number_array.append(counter)
             namings.append(f'{device}-{standard}')
-
-    fig, axe = plt.subplots(figsize=(9, 5))
-    axe.boxplot(columns)
+    box_plot_coloring(axe, columns[:3], [1,2,3], "red", "white")
+    box_plot_coloring(axe, columns[3:6], [4,5,6], "blue", "white")
+    box_plot_coloring(axe, columns[6:9], [7,8,9], "green", "white")
     plt.xticks(number_array, namings, rotation=10)
     axe.set_ylabel(microseconds_label_str)
     axe.grid(color='white')  # True, axis='y', alpha=0.2)
     axe.set_facecolor('#e6e8e7')
+    uno = mpatches.Patch(color='red', label=f'Uno', alpha=0.3)
+    esp8266 = mpatches.Patch(color='blue', label=f'ESP8266', alpha=0.3)
+    esp32 = mpatches.Patch(color='green', label=f'ESP32', alpha=0.3)
+    axe.legend(handles=[esp32, esp8266, uno])
 
     if save:
         plt.savefig(f'{result_path_graphs_box}\\one-in-all-{cryptographicOperation}.pdf')
@@ -185,6 +190,7 @@ def triggerBoxplot3(cryptographicOperation, display, save):
 
 if __name__ == '__main__':
     #triggerHistogram(display=False, save=True)
-    triggerBoxplot1("encryption", display=False, save=True)
-    triggerBoxplot2("encryption", display=False, save=True)
-    triggerBoxplot3("encryption", display=False, save=True)
+    triggerBoxplot1("encryption", display=True, save=True)
+    triggerBoxplot1("decryption", display=True, save=True)
+    #triggerBoxplot2("encryption", display=False, save=True)
+    #triggerBoxplot3("encryption", display=False, save=True)
