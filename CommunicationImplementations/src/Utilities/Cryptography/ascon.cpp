@@ -4,9 +4,7 @@
 #define POINTITERATION 200
 
 bool ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
-                        int size, uint8_t *key, uint8_t *iv, int cipherSize) {
-    bool timingRequired = false;
-
+                        int size, uint8_t *key, uint8_t *iv, int cipherSize, bool timingRequired = false) {
     /** Initiate the Acorn cipher **/
     Ascon128 cipher;
 
@@ -22,6 +20,7 @@ bool ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
     /** Perform the encryption **/
     cipher.encrypt(ciphertext, plaintext, size);
 
+    /** Timings started here **/
     if (timingRequired) {
         unsigned long start;
         unsigned long elapsed;
@@ -40,6 +39,7 @@ bool ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
             delay(10);
         }
     }
+    /** Timings ended here **/
 
     /** Compute the tag **/
     cipher.computeTag(tag, size);
@@ -47,9 +47,7 @@ bool ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
 }
 
 bool ascon_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
-                        int size, uint8_t *key, uint8_t *iv, int cipherSize) {
-    bool timingRequired = false;
-
+                        int size, uint8_t *key, uint8_t *iv, int cipherSize, bool timingRequired = false) {
     /** Initiate the Acorn cipher **/
     Ascon128 cipher;
 
@@ -64,6 +62,7 @@ bool ascon_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
     /** Perform the decryption **/
     cipher.decrypt(plaintext, ciphertext, size);
 
+    /** Timings started here **/
     if (timingRequired) {
         unsigned long start;
         unsigned long elapsed;
@@ -81,6 +80,7 @@ bool ascon_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
             Serial.println(",");
         }
     }
+    /** Timings ended here **/
 
     /** Validate the received tag **/
     if (!cipher.checkTag(tag, cipherSize)) {

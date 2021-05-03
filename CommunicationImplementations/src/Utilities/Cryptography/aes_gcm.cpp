@@ -5,10 +5,7 @@
 #define POINTITERATION 200
 
 bool aes_gcm_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
-                        int size, uint8_t *key, uint8_t *iv, int cipherSize) {
-
-    bool timingRequired = false;
-
+                        int size, uint8_t *key, uint8_t *iv, int cipherSize, bool timingRequired = false) {
     /** Initiate the Acorn cipher **/
     GCM<AES128> cipher;
 
@@ -24,6 +21,7 @@ bool aes_gcm_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
     /** Perform the encryption og compute the tag **/
     cipher.encrypt(ciphertext, plaintext, size);
 
+    /** Timings started here **/
     if (timingRequired) {
         unsigned long start;
         unsigned long elapsed;
@@ -42,16 +40,14 @@ bool aes_gcm_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
             delay(10);
         }
     }
+    /** Timings ended here **/
 
     cipher.computeTag(tag, size);
     return true;
 }
 
 bool aes_gcm_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
-                        int size, uint8_t *key, uint8_t *iv, int cipherSize) {
-
-    bool timingRequired = false;
-
+                        int size, uint8_t *key, uint8_t *iv, int cipherSize, bool timingRequired = false) {
     /** Initiate the Acorn cipher **/
     GCM<AES128> cipher;
 
@@ -66,6 +62,7 @@ bool aes_gcm_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
     /** Perform the decryption **/
     cipher.decrypt(plaintext, ciphertext, size);
 
+    /** Timings started here **/
     if (timingRequired) {
         unsigned long start;
         unsigned long elapsed;
@@ -84,6 +81,7 @@ bool aes_gcm_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
             delay(10);
         }
     }
+    /** Timings ended here **/
 
     /** Validate the received tag **/
     if (!cipher.checkTag(tag, cipherSize)) {

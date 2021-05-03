@@ -4,10 +4,7 @@
 #define POINTITERATION 200
 
 bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
-                      int size, uint8_t *key, uint8_t *iv, int cipherSize) {
-    /** Manually change if the method is not used for timing **/
-    bool timingRequired = false;
-
+                      int size, uint8_t *key, uint8_t *iv, int cipherSize, bool timingRequired = false) {
     /** Initiate the Acorn cipher **/
     Acorn128 cipher;
 
@@ -22,6 +19,7 @@ bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
 
     cipher.encrypt(ciphertext, plaintext, size);
 
+    /** Timings are started here **/
     if (timingRequired) {
         unsigned long start;
         unsigned long elapsed;
@@ -40,7 +38,7 @@ bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
             delay(10);
         }
     }
-
+    /** Timings are ended here **/
 
     cipher.computeTag(tag, size);
 
@@ -48,10 +46,7 @@ bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
 }
 
 bool acorn_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
-                      int size, uint8_t *key, uint8_t *iv, int cipherSize) {
-    /** Manually change if the method is not used for timing **/
-    bool timingRequired = false;
-
+                      int size, uint8_t *key, uint8_t *iv, int cipherSize, bool timingRequired = false) {
     /** Initiate the Acorn cipher **/
     Acorn128 cipher;
 
@@ -66,6 +61,7 @@ bool acorn_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
     /** Perform the decryption **/
     cipher.decrypt(plaintext, ciphertext, size);
 
+    /** Timings started here **/
     if (timingRequired) {
         unsigned long start;
         unsigned long elapsed;
@@ -83,6 +79,7 @@ bool acorn_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
             Serial.println(",");
         }
     }
+    /** Timings ended here **/
 
     /** Validate the received tag **/
     if (!cipher.checkTag(tag, cipherSize)) {
