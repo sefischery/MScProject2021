@@ -8,7 +8,7 @@
 #ifndef COMMUNICATIONIMPLEMENTATIONS_ENCRYPTION_TESTING_H
 #define COMMUNICATIONIMPLEMENTATIONS_ENCRYPTION_TESTING_H
 
-#define SIZE 16
+#define SIZE_16 16
 #define MESSAGECONTAINERSIZE 128
 
 struct encryption {
@@ -26,7 +26,7 @@ struct decryption {
 struct cipherOperator {
     struct encryption encryption;
     struct decryption decryption;
-    uint8_t key[SIZE];
+    uint8_t key[SIZE_16];
 };
 
 struct cipherOperator cipher = {

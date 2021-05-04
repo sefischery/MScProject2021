@@ -17,21 +17,21 @@ void setup() {
     uint8_t plaintext[textSize];
 
     /** Validation process **/
-    uint8_t tag[SIZE];
-    uint8_t iv[SIZE];
+    uint8_t tag[SIZE_16];
+    uint8_t iv[SIZE_16];
     uint8_t ciphertextReceiver[textSize] = {};
 
     /** IV initialization **/
-    GenerateInitializationVector(iv, SIZE);
+    GenerateInitializationVector(iv, SIZE_16);
 
     /** Perform encryption and timings **/
-    cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE, true);
+    cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE_16, true);
 
     /** Plaintext buffer **/
     uint8_t plaintextReceiver[MESSAGECONTAINERSIZE];
 
     /** Perform decryption and timing of the following **/
-    cipher.decryption.aes_gcm_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE, true);
+    cipher.decryption.aes_gcm_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE_16, true);
 }
 
 void loop() {

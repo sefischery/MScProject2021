@@ -73,15 +73,15 @@ void performEncryption(int encryptionType, uint8_t *plaintext, int inputSize,
     /** Perform encryption and timings **/
     if (encryptionType == 1)
     {
-        cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE, false);
+        cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE_16, false);
     }
     else if (encryptionType == 2)
     {
-        cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE, false);
+        cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE_16, false);
     }
     else if (encryptionType == 3)
     {
-        cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE, false);
+        cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE_16, false);
     }
 }
 
@@ -92,7 +92,7 @@ void performDecryption(uint8_t *ciphertext, uint8_t *tag, uint8_t *iv,
     char text[ciphertextSize];
 
     /** Perform decryption and timing of the following **/
-    cipher.decryption.aes_gcm_decryption(ciphertext, plaintextReceiver, tag, ciphertextSize, cipher.key, iv, SIZE, false);
+    cipher.decryption.aes_gcm_decryption(ciphertext, plaintextReceiver, tag, ciphertextSize, cipher.key, iv, SIZE_16, false);
 
     Serial.print("Tag: ");
     print_uint8(tag, 16);
