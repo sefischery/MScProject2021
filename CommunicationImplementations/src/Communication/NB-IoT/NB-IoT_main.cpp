@@ -56,27 +56,28 @@ void loop()
         /** Testing **/
         String msg = String("NB-IoT message; Number: ") + ++msgCount;
 
-        uint8_t tag[16];
-        uint8_t iv[16];
-        uint8_t plaintext[msg.length()];
-        uint8_t ciphertext[msg.length()];
+        uint8_t Tag[16];
+        uint8_t IV[16];
+        unsigned int msg_len = msg.length();
+        uint8_t plaintext[msg_len];
+        uint8_t ciphertext[msg_len];
 
         DEBUG_STREAM.println("Definition of arrays was successfull");
 
         // Copy message to plaintext as uint8_t
-        charToUint8(msg.c_str(), plaintext, (int) msg.length());
+        charToUint8(msg.c_str(), plaintext, (int) msg_len);
 
         DEBUG_STREAM.println("Conversion of msg to plaintext was successful");
 
         // Perform encryption
-        performEncryptionNB(1, plaintext, (int) msg.length(), ciphertext, tag, iv);
+        performEncryptionNB(AES_GCM_ENCRYPTION, plaintext, (int) msg_len, ciphertext, Tag, IV);
 
         DEBUG_STREAM.println("Encryption passed, and therefore were successful");
 
-        // Concatenate to one big message containing iv + tag + ciphertext
-        uint8_t concatenatedMessage[sizeof(iv) + sizeof (tag) + sizeof(ciphertext)];
-        int concatenatedMessageSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertext);
-        AssembleAuthenticatedEncryptionPacket(iv, tag, 16, ciphertext, concatenatedMessage, concatenatedMessageSize);
+        // Concatenate to one big message containing IV + Tag + ciphertext
+        uint8_t concatenatedMessage[sizeof(IV) + sizeof (Tag) + sizeof(ciphertext)];
+        int concatenatedMessageSize = sizeof(IV) + sizeof (Tag) + sizeof(ciphertext);
+        AssembleAuthenticatedEncryptionPacket(IV, Tag, 16, ciphertext, concatenatedMessage, concatenatedMessageSize);
 
         DEBUG_STREAM.println("Assemble function was passed without problems");
 

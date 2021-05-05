@@ -2,26 +2,6 @@
 #include <NB-IoT_functions.h>
 #include <Encryption_testing.h>
 
-/*
-void sendNBIoTUDP(const char *message, const char *targetIP, int targetPort, Sodaq_nbIOT &nbiot)
-{
-    DEBUG_STREAM.println("\n ---- Sending message as UDP ----");
-
-    int socketID = nbiot.createSocket();
-
-    if (socketID >= 7 || socketID < 0) {
-        DEBUG_STREAM.println("Failed to create socket");
-        return;
-    }
-
-    DEBUG_STREAM.println("Created socket!");
-
-    int lengthSent = nbiot.socketSend(socketID, targetIP, targetPort, message);
-    DEBUG_STREAM.println(lengthSent);
-    nbiot.closeSocket(socketID);
-
-}*/
-
 void sendNBIoTUDP(const uint8_t *message, int messageSize, const char *targetIP,
                   int targetPort, Sodaq_nbIOT &nbiot) {
     DEBUG_STREAM.println("\n ---- Sending message as UDP ----");
@@ -45,45 +25,25 @@ void sendNBIoTUDP(const uint8_t *message, int messageSize, const char *targetIP,
 }
 
 void performEncryptionNB(int encryptionType, uint8_t *plaintext, int inputSize,
-                       uint8_t *ciphertextReceiver, uint8_t *tag, uint8_t *iv) {
+                         uint8_t *ciphertextReceiver, uint8_t *Tag, uint8_t *IV) {
     /** IV initialization **/
-    DEBUG_STREAM.println("Started iv generation");
+    DEBUG_STREAM.println("Started IV generation");
     for (int index = 0; index < 16; ++index) {
-        iv[index] = index;
+        IV[index] = index;
     }
     DEBUG_STREAM.println("Generate IV");
 
     /** Perform encryption and timings **/
-    if (encryptionType == 1)
+    if (encryptionType == AES_GCM_ENCRYPTION)
     {
-        cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE, false);
+        cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, Tag, inputSize, cipher.key, IV, false);
     }
-    else if (encryptionType == 2)
+    else if (encryptionType == ACORN_ENCRYPTION)
     {
-        cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE, false);
+        cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, Tag, inputSize, cipher.key, IV, false);
     }
-    else if (encryptionType == 3)
+    else if (encryptionType == ASCON_ENCRYPTION)
     {
-        cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE, false);
+        cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, Tag, inputSize, cipher.key, IV, false);
     }
-}
-
-void performDecryption(uint8_t *ciphertext, uint8_t *tag, uint8_t *iv,
-                       int ciphertextSize) {
-    /** Plaintext buffer **/
-    uint8_t plaintextReceiver[ciphertextSize];
-    char text[ciphertextSize];
-
-    /** Perform decryption and timing of the following **/
-    cipher.decryption.aes_gcm_decryption(ciphertext, plaintextReceiver, tag, ciphertextSize, cipher.key, iv, SIZE, false);
-
-    Serial.print("Tag: ");
-    print_uint8(tag, 16);
-
-    Serial.print("Iv: ");
-    print_uint8(iv, 16);
-
-    uint8ToChar(plaintextReceiver, text, ciphertextSize);
-    Serial.print("Decrypted Text: ");
-    print_char(text, ciphertextSize);
 }
