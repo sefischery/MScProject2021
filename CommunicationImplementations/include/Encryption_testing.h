@@ -1,8 +1,8 @@
 #include <Arduino.h>
-#include <aes_gcm.h>
-#include <ascon.h>
+#include <AES_GCM.h>
+#include <ASCON.h>
 #include <utilities.h>
-#include <acorn.h>
+#include <ACORN.h>
 #include <Crypto.h>
 
 #ifndef COMMUNICATIONIMPLEMENTATIONS_ENCRYPTION_TESTING_H
