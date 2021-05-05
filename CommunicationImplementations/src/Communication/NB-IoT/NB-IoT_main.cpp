@@ -1,6 +1,7 @@
 #include <Sodaq_nbIOT.h>
 #include <Sodaq_wdt.h>
 #include <NB-IoT_functions.h>
+#include <utilities.h>
 
 /** Definitions for the Azure VM, and the port it listens to.
  *  Used by the NB-IoT backend to route the UDP packet. **/
@@ -38,18 +39,52 @@ void setup()
     DEBUG_STREAM.print(connection_delta);
     DEBUG_STREAM.println(" seconds to connect to the network");
 
-    sendNBIoTUDP("First_Test_Message", TARGET_IP, TARGET_PORT, nbiot);
+    //sendNBIoTUDP("Succesfull Acknowledgement", TARGET_IP, TARGET_PORT, nbiot);
 }
 
+int msgCount = 0;
 void loop()
 {
-    sodaq_wdt_safe_delay(60000);
+    sodaq_wdt_safe_delay(30000);
     if (!nbiot.isConnected()) {
         if (!nbiot.connect(AccessPointName, cdp)) {
             DEBUG_STREAM.println("Failed to connect to the modem!");
         }
     }
     else {
-        sendNBIoTUDP("NBIoT-Test-Message", TARGET_IP, TARGET_PORT, nbiot);
+        // This is where the message is decrypted.
+        /** Testing **/
+        String msg = String("NB-IoT message; Number: ") + ++msgCount;
+
+        uint8_t tag[16];
+        uint8_t iv[16];
+        uint8_t plaintext[msg.length()];
+        uint8_t ciphertext[msg.length()];
+
+        DEBUG_STREAM.println("Definition of arrays was successfull");
+
+        // Copy message to plaintext as uint8_t
+        charToUint8(msg.c_str(), plaintext, (int) msg.length());
+
+        DEBUG_STREAM.println("Conversion of msg to plaintext was successful");
+
+        // Perform encryption
+        performEncryptionNB(1, plaintext, (int) msg.length(), ciphertext, tag, iv);
+
+        DEBUG_STREAM.println("Encryption passed, and therefore were successful");
+
+        // Concatenate to one big message containing iv + tag + ciphertext
+        uint8_t concatenatedMessage[sizeof(iv) + sizeof (tag) + sizeof(ciphertext)];
+        int concatenatedMessageSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertext);
+        AssembleAuthenticatedEncryptionPacket(iv, tag, 16, ciphertext, concatenatedMessage, concatenatedMessageSize);
+
+        DEBUG_STREAM.println("Assemble function was passed without problems");
+
+        /** Testing **/
+
+        sendNBIoTUDP(concatenatedMessage, concatenatedMessageSize, TARGET_IP, TARGET_PORT, nbiot);
+
+        // This could be included to
+        //sendNBIoTUDP("This is clear-text, meaning not encrypted.", TARGET_IP, TARGET_PORT, nbiot);
     }
 }
