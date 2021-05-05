@@ -2,6 +2,7 @@
 #include <PubSubClient.h>
 #include <MQTT_functions.h>
 #include <Encryption_testing.h>
+#define SIZE_16 16
 
 /** Callback function for MQTT_CALLBACK_SIGNATURE **/
 void msgReceived(char* topic, byte* payload, unsigned int length)
@@ -21,13 +22,13 @@ void msgReceived(char* topic, byte* payload, unsigned int length)
         associatedMessage[index] = payload[index];
     }
 
-    uint8_t iv[16];
-    uint8_t tag[16];
+    uint8_t IV[SIZE_16];
+    uint8_t Tag[SIZE_16];
     uint8_t ciphertext[length-32];
 
-    DisassembleAuthenticaedEncryptionPacket(iv, tag, 16, ciphertext, associatedMessage, (int) length);
+    DisassembleAuthenticaedEncryptionPacket(IV, Tag, SIZE_16, ciphertext, associatedMessage, (int) length);
 
-    performDecryption(ciphertext, tag, iv, (int)length-32);
+    performDecryption(ciphertext, Tag, IV, (int)length - 32);
 
     /** Testing **/
 
@@ -65,40 +66,39 @@ void subscriberCheckConnect(PubSubClient &pubSubClient, const char *endpoint)
     pubSubClient.loop();
 }
 
-void performEncryption(int encryptionType, uint8_t *plaintext, int inputSize,
-                       uint8_t *ciphertextReceiver, uint8_t *tag, uint8_t *iv) {
+void performEncryption(int encryptionType, uint8_t *plaintext, int inputSize, uint8_t *ciphertextReceiver,
+                       uint8_t *Tag, uint8_t *IV) {
     /** IV initialization **/
-    GenerateInitializationVector(iv, 16);
+    GenerateInitializationVector(IV, 16);
 
     /** Perform encryption and timings **/
     if (encryptionType == 1)
     {
-        cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE_16, false);
+        cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, Tag, inputSize, cipher.key, IV, false);
     }
     else if (encryptionType == 2)
     {
-        cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE_16, false);
+        cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, Tag, inputSize, cipher.key, IV, false);
     }
     else if (encryptionType == 3)
     {
-        cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, tag, inputSize, cipher.key, iv, SIZE_16, false);
+        cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, Tag, inputSize, cipher.key, IV, false);
     }
 }
 
-void performDecryption(uint8_t *ciphertext, uint8_t *tag, uint8_t *iv,
-                       int ciphertextSize) {
+void performDecryption(uint8_t *ciphertext, uint8_t *Tag, uint8_t *IV, int ciphertextSize) {
     /** Plaintext buffer **/
     uint8_t plaintextReceiver[ciphertextSize];
     char text[ciphertextSize];
 
     /** Perform decryption and timing of the following **/
-    cipher.decryption.aes_gcm_decryption(ciphertext, plaintextReceiver, tag, ciphertextSize, cipher.key, iv, SIZE_16, false);
+    cipher.decryption.aes_gcm_decryption(ciphertext, plaintextReceiver, Tag, ciphertextSize, cipher.key, IV, false);
 
     Serial.print("Tag: ");
-    print_uint8(tag, 16);
+    print_uint8(Tag, 16);
 
     Serial.print("Iv: ");
-    print_uint8(iv, 16);
+    print_uint8(IV, 16);
 
     uint8ToChar(plaintextReceiver, text, ciphertextSize);
     Serial.print("Decrypted Text: ");

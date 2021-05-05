@@ -25,13 +25,13 @@ void setup() {
     GenerateInitializationVector(iv, SIZE_16);
 
     /** Perform encryption and timings **/
-    cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE_16, true);
+    cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, true);
 
     /** Plaintext buffer **/
     uint8_t plaintextReceiver[MESSAGECONTAINERSIZE];
 
     /** Perform decryption and timing of the following **/
-    cipher.decryption.aes_gcm_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE_16, true);
+    cipher.decryption.aes_gcm_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, true);
 }
 
 void loop() {

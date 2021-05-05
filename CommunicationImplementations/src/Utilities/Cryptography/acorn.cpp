@@ -1,20 +1,21 @@
 #include <Acorn128.h>
 #include <Arduino.h>
-
+#define SIZE_16 16
 #define POINTITERATION 200
 
-bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
-                      int size, uint8_t *key, uint8_t *iv, int cipherSize, bool timingRequired = false) {
+
+bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv,
+                      bool timingRequired = false) {
     /** Initiate the Acorn cipher **/
     Acorn128 cipher;
 
     /** It is important to clear the key and iv before usage, ensures no strange rotations are affecting the encryption process **/
     cipher.clear();
-    cipher.setKey(key, cipherSize);
-    cipher.setIV(iv, cipherSize);
+    cipher.setKey(key, SIZE_16);
+    cipher.setIV(iv, SIZE_16);
 
     /** Clear memory address values before using it. This ensures no weird values suddently appearing **/
-    memset(tag, 0xBA, cipherSize);
+    memset(tag, 0xBA, SIZE_16);
     memset(ciphertext, 0xBA, size);
 
     cipher.encrypt(ciphertext, plaintext, size);
@@ -45,15 +46,15 @@ bool acorn_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
     return true;
 }
 
-bool acorn_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
-                      int size, uint8_t *key, uint8_t *iv, int cipherSize, bool timingRequired = false) {
+bool acorn_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag, int size, uint8_t *key, uint8_t *iv,
+                      bool timingRequired = false) {
     /** Initiate the Acorn cipher **/
     Acorn128 cipher;
 
     /** It is important to clear the key and iv before usage, ensures no strange rotations are affecting the decryption process **/
     cipher.clear();
-    cipher.setKey(key, cipherSize);
-    cipher.setIV(iv, cipherSize);
+    cipher.setKey(key, SIZE_16);
+    cipher.setIV(iv, SIZE_16);
 
     /** Clear memory address values before using it. This ensures no weird values suddently appearing **/
     memset(plaintext, 0xBA, size);
@@ -82,7 +83,7 @@ bool acorn_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
     /** Timings ended here **/
 
     /** Validate the received tag **/
-    if (!cipher.checkTag(tag, cipherSize)) {
+    if (!cipher.checkTag(tag, SIZE_16)) {
         return false;
     }
 

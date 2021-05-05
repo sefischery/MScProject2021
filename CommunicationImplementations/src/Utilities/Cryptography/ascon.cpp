@@ -2,19 +2,20 @@
 #include <Ascon128.h>
 
 #define POINTITERATION 200
+#define SIZE_16 16
 
 bool ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
-                        int size, uint8_t *key, uint8_t *iv, int cipherSize, bool timingRequired = false) {
+                      int size, uint8_t *key, uint8_t *IV, bool timingRequired = false) {
     /** Initiate the Acorn cipher **/
     Ascon128 cipher;
 
-    /** It is important to clear the key and iv before usage, ensures no strange rotations are affecting the encryption process **/
+    /** It is important to clear the key and IV before usage, ensures no strange rotations are affecting the encryption process **/
     cipher.clear();
-    cipher.setKey(key, cipherSize);
-    cipher.setIV(iv, cipherSize);
+    cipher.setKey(key, SIZE_16);
+    cipher.setIV(IV, SIZE_16);
 
     /** Clear memory address values before using it. This ensures no weird values suddently appearing **/
-    memset(tag, 0xBA, cipherSize);
+    memset(tag, 0xBA, SIZE_16);
     memset(ciphertext, 0xBA, size);
 
     /** Perform the encryption **/
@@ -47,14 +48,14 @@ bool ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
 }
 
 bool ascon_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
-                        int size, uint8_t *key, uint8_t *iv, int cipherSize, bool timingRequired = false) {
+                      int size, uint8_t *key, uint8_t *IV, bool timingRequired = false) {
     /** Initiate the Acorn cipher **/
     Ascon128 cipher;
 
-    /** It is important to clear the key and iv before usage, ensures no strange rotations are affecting the decryption process **/
+    /** It is important to clear the key and IV before usage, ensures no strange rotations are affecting the decryption process **/
     cipher.clear();
-    cipher.setKey(key, cipherSize);
-    cipher.setIV(iv, cipherSize);
+    cipher.setKey(key, SIZE_16);
+    cipher.setIV(IV, SIZE_16);
 
     /** Clear memory address values before using it. This ensures no weird values suddently appearing **/
     memset(plaintext, 0xBA, size);
@@ -83,7 +84,7 @@ bool ascon_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
     /** Timings ended here **/
 
     /** Validate the received tag **/
-    if (!cipher.checkTag(tag, cipherSize)) {
+    if (!cipher.checkTag(tag, SIZE_16)) {
         return false;
     }
 

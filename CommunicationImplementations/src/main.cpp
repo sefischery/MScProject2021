@@ -47,7 +47,7 @@ void setup() {
 
     Serial.println("Step 4 & 5: Perform encryption & Compute Tag (ACORN)");
     /** Encryption **/
-    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, Tag, textSize, cipher.key, IV, SIZE_16, false);
+    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, Tag, textSize, cipher.key, IV, false);
 
     Serial.print("Tag: ");
     print_uint8(Tag, SIZE_16);
@@ -90,7 +90,7 @@ void setup() {
     Serial.println();
 
     /** Decryption **/
-    bool decryptionValidation = cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, Tag, textSize, cipher.key, IV, SIZE_16, false);
+    bool decryptionValidation = cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, Tag, textSize, cipher.key, IV, false);
     Serial.println("Step 4: Perform decryption of ciphertext");
     Serial.print("Decrypted plaintext: ");
     print_uint8(plaintextReceiver, textSize);

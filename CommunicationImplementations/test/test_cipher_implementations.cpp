@@ -2,6 +2,7 @@
 #include <unity.h>
 #include <utilities.h>
 #include <Encryption_testing.h>
+#define SIZE_16 16
 
 void test_I_equality_plaintext_output_ACORN() {
     char input[] = "ACORN_test_plaintext";
@@ -13,22 +14,22 @@ void test_I_equality_plaintext_output_ACORN() {
     uint8_t plaintext[textSize];
     charToUint8(input, plaintext, textSize);
     /** Validation process **/
-    uint8_t tag[SIZE];
-    uint8_t iv[SIZE];
+    uint8_t tag[SIZE_16];
+    uint8_t IV[SIZE_16];
     uint8_t plaintextReceiver[textSize];
     uint8_t ciphertextReceiver[textSize];
     /** IV initialization **/
-    GenerateInitializationVector(iv, SIZE);
+    GenerateInitializationVector(IV, false);
     /** Encryption **/
-    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, IV, false);
     /** Sender: Encapsulating iv,tag and data into one packet **/
-    int packetSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertextReceiver);
+    int packetSize = sizeof(IV) + sizeof (tag) + sizeof(ciphertextReceiver);
     uint8_t packetBuffer[packetSize];
-    AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    AssembleAuthenticatedEncryptionPacket(IV, tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Receiver: Unpack received data into iv, tag and informative data **/
-    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    DisassembleAuthenticaedEncryptionPacket(IV, tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Decryption **/
-    cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, IV, false);
     /** Convert received plaintext to readable char array **/
     uint8ToChar(plaintextReceiver, text, textSize);
     TEST_ASSERT_EQUAL_CHAR_ARRAY(input, text, textSize);
@@ -43,22 +44,22 @@ void test_I_equality_plaintext_output_ASCON() {
     uint8_t plaintext[textSize];
     charToUint8(input, plaintext, textSize);
     /** Validation process **/
-    uint8_t tag[SIZE];
-    uint8_t iv[SIZE];
+    uint8_t Tag[SIZE_16];
+    uint8_t IV[SIZE_16];
     uint8_t plaintextReceiver[textSize];
     uint8_t ciphertextReceiver[textSize];
     /** IV initialization **/
-    GenerateInitializationVector(iv, SIZE);
+    GenerateInitializationVector(IV, false);
     /** Encryption **/
-    cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, Tag, textSize, cipher.key, IV, false);
     /** Sender: Encapsulating iv,tag and data into one packet **/
-    int packetSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertextReceiver);
+    int packetSize = sizeof(IV) + sizeof (Tag) + sizeof(ciphertextReceiver);
     uint8_t packetBuffer[packetSize];
-    AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    AssembleAuthenticatedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Receiver: Unpack received data into iv, tag and informative data **/
-    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    DisassembleAuthenticaedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Decryption **/
-    cipher.decryption.ascon_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.decryption.ascon_decryption(ciphertextReceiver, plaintextReceiver, Tag, textSize, cipher.key, IV, false);
     /** Convert received plaintext to readable char array **/
     uint8ToChar(plaintextReceiver, text, textSize);
     TEST_ASSERT_EQUAL_CHAR_ARRAY(input, text, textSize);
@@ -74,22 +75,22 @@ void test_I_equality_plaintext_output_AES_GCM() {
     uint8_t plaintext[textSize];
     charToUint8(input, plaintext, textSize);
     /** Validation process **/
-    uint8_t tag[SIZE];
-    uint8_t iv[SIZE];
+    uint8_t Tag[SIZE_16];
+    uint8_t IV[SIZE_16];
     uint8_t plaintextReceiver[textSize];
     uint8_t ciphertextReceiver[textSize];
     /** IV initialization **/
-    GenerateInitializationVector(iv, SIZE);
+    GenerateInitializationVector(IV, false);
     /** Encryption **/
-    cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, Tag, textSize, cipher.key, IV, false);
     /** Sender: Encapsulating iv,tag and data into one packet **/
-    int packetSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertextReceiver);
+    int packetSize = sizeof(IV) + sizeof (Tag) + sizeof(ciphertextReceiver);
     uint8_t packetBuffer[packetSize];
-    AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    AssembleAuthenticatedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Receiver: Unpack received data into iv, tag and informative data **/
-    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    DisassembleAuthenticaedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Decryption **/
-    cipher.decryption.aes_gcm_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.decryption.aes_gcm_decryption(ciphertextReceiver, plaintextReceiver, Tag, textSize, cipher.key, IV, false);
     /** Convert received plaintext to readable char array **/
     uint8ToChar(plaintextReceiver, text, textSize);
     TEST_ASSERT_EQUAL_CHAR_ARRAY(input, text, textSize);
@@ -104,22 +105,22 @@ void test_II_equality_tag_ACORN() {
     uint8_t plaintext[textSize];
     charToUint8(input, plaintext, textSize);
     /** Validation process **/
-    uint8_t tag[SIZE];
-    uint8_t iv[SIZE];
+    uint8_t tag[SIZE_16];
+    uint8_t iv[SIZE_16];
     uint8_t plaintextReceiver[textSize];
     uint8_t ciphertextReceiver[textSize];
     /** IV initialization **/
-    GenerateInitializationVector(iv, SIZE);
+    GenerateInitializationVector(iv, false);
     /** Encryption **/
-    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, false);
     /** Sender: Encapsulating iv,tag and data into one packet **/
     int packetSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertextReceiver);
     uint8_t packetBuffer[packetSize];
-    AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Receiver: Unpack received data into iv, tag and informative data **/
-    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Decryption **/
-    bool decryption_result = cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    bool decryption_result = cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, false);
     /** Convert received plaintext to readable char array **/
     uint8ToChar(plaintextReceiver, text, textSize);
     TEST_ASSERT_TRUE(decryption_result);
@@ -134,22 +135,22 @@ void test_II_equality_tag_ASCON() {
     uint8_t plaintext[textSize];
     charToUint8(input, plaintext, textSize);
     /** Validation process **/
-    uint8_t tag[SIZE];
-    uint8_t iv[SIZE];
+    uint8_t Tag[SIZE_16];
+    uint8_t IV[SIZE_16];
     uint8_t plaintextReceiver[textSize];
     uint8_t ciphertextReceiver[textSize];
     /** IV initialization **/
-    GenerateInitializationVector(iv, SIZE);
+    GenerateInitializationVector(IV, false);
     /** Encryption **/
-    cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, Tag, textSize, cipher.key, IV, false);
     /** Sender: Encapsulating iv,tag and data into one packet **/
-    int packetSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertextReceiver);
+    int packetSize = sizeof(IV) + sizeof (Tag) + sizeof(ciphertextReceiver);
     uint8_t packetBuffer[packetSize];
-    AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    AssembleAuthenticatedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Receiver: Unpack received data into iv, tag and informative data **/
-    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    DisassembleAuthenticaedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Decryption **/
-    bool decryption_result = cipher.decryption.ascon_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    bool decryption_result = cipher.decryption.ascon_decryption(ciphertextReceiver, plaintextReceiver, Tag, textSize, cipher.key, IV, false);
     /** Convert received plaintext to readable char array **/
     uint8ToChar(plaintextReceiver, text, textSize);
     TEST_ASSERT_TRUE(decryption_result);
@@ -164,22 +165,22 @@ void test_II_equality_tag_AES_GCM() {
     uint8_t plaintext[textSize];
     charToUint8(input, plaintext, textSize);
     /** Validation process **/
-    uint8_t tag[SIZE];
-    uint8_t iv[SIZE];
+    uint8_t Tag[SIZE_16];
+    uint8_t IV[SIZE_16];
     uint8_t plaintextReceiver[textSize];
     uint8_t ciphertextReceiver[textSize];
     /** IV initialization **/
-    GenerateInitializationVector(iv, SIZE);
+    GenerateInitializationVector(IV, false);
     /** Encryption **/
-    cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, Tag, textSize, cipher.key, IV, false);
     /** Sender: Encapsulating iv,tag and data into one packet **/
-    int packetSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertextReceiver);
+    int packetSize = sizeof(IV) + sizeof (Tag) + sizeof(ciphertextReceiver);
     uint8_t packetBuffer[packetSize];
-    AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    AssembleAuthenticatedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Receiver: Unpack received data into iv, tag and informative data **/
-    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    DisassembleAuthenticaedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Decryption **/
-    bool decryption_result = cipher.decryption.aes_gcm_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    bool decryption_result = cipher.decryption.aes_gcm_decryption(ciphertextReceiver, plaintextReceiver, Tag, textSize, cipher.key, IV, false);
     /** Convert received plaintext to readable char array **/
     uint8ToChar(plaintextReceiver, text, textSize);
     TEST_ASSERT_TRUE(decryption_result);
@@ -195,23 +196,23 @@ void test_III_failure_decryption_corruption_ACORN() {
     uint8_t plaintext[textSize];
     charToUint8(input, plaintext, textSize);
     /** Validation process **/
-    uint8_t tag[SIZE];
-    uint8_t iv[SIZE];
+    uint8_t Tag[SIZE_16];
+    uint8_t IV[SIZE_16];
     uint8_t plaintextReceiver[textSize];
     uint8_t ciphertextReceiver[textSize];
     /** IV initialization **/
-    GenerateInitializationVector(iv, SIZE);
+    GenerateInitializationVector(IV, false);
     /** Encryption **/
-    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, Tag, textSize, cipher.key, IV, false);
     ciphertextReceiver[0] = 0x03; /** This could be a MITM who is tweaking the values **/
     /** Sender: Encapsulating iv,tag and data into one packet **/
-    int packetSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertextReceiver);
+    int packetSize = sizeof(IV) + sizeof (Tag) + sizeof(ciphertextReceiver);
     uint8_t packetBuffer[packetSize];
-    AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    AssembleAuthenticatedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Receiver: Unpack received data into iv, tag and informative data **/
-    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    DisassembleAuthenticaedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Decryption **/
-    bool decryption_result = cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    bool decryption_result = cipher.decryption.acorn_decryption(ciphertextReceiver, plaintextReceiver, Tag, textSize, cipher.key, IV, false);
     /** Convert received plaintext to readable char array **/
     uint8ToChar(plaintextReceiver, text, textSize);
     TEST_ASSERT_FALSE(decryption_result);
@@ -228,23 +229,23 @@ void test_III_failure_decryption_corruption_ASCON() {
     uint8_t plaintext[textSize];
     charToUint8(input, plaintext, textSize);
     /** Validation process **/
-    uint8_t tag[SIZE];
-    uint8_t iv[SIZE];
+    uint8_t Tag[SIZE_16];
+    uint8_t IV[SIZE_16];
     uint8_t plaintextReceiver[textSize];
     uint8_t ciphertextReceiver[textSize];
     /** IV initialization **/
-    GenerateInitializationVector(iv, SIZE);
+    GenerateInitializationVector(IV, false);
     /** Encryption **/
-    cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, Tag, textSize, cipher.key, IV, false);
     ciphertextReceiver[0] = 0x03; /** This could be a MITM who is tweaking the values **/
     /** Sender: Encapsulating iv,tag and data into one packet **/
-    int packetSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertextReceiver);
+    int packetSize = sizeof(IV) + sizeof (Tag) + sizeof(ciphertextReceiver);
     uint8_t packetBuffer[packetSize];
-    AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    AssembleAuthenticatedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Receiver: Unpack received data into iv, tag and informative data **/
-    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    DisassembleAuthenticaedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Decryption **/
-    bool decryption_result = cipher.decryption.ascon_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    bool decryption_result = cipher.decryption.ascon_decryption(ciphertextReceiver, plaintextReceiver, Tag, textSize, cipher.key, IV, false);
     /** Convert received plaintext to readable char array **/
     uint8ToChar(plaintextReceiver, text, textSize);
     TEST_ASSERT_FALSE(decryption_result);
@@ -260,23 +261,23 @@ void test_III_failure_decryption_corruption_AES_GCM() {
     uint8_t plaintext[textSize];
     charToUint8(input, plaintext, textSize);
     /** Validation process **/
-    uint8_t tag[SIZE];
-    uint8_t iv[SIZE];
+    uint8_t Tag[SIZE_16];
+    uint8_t IV[SIZE_16];
     uint8_t plaintextReceiver[textSize];
     uint8_t ciphertextReceiver[textSize];
     /** IV initialization **/
-    GenerateInitializationVector(iv, SIZE);
+    GenerateInitializationVector(IV, false);
     /** Encryption **/
-    cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, Tag, textSize, cipher.key, IV, false);
     ciphertextReceiver[0] = 0x03; /** This could be a MITM who is tweaking the values **/
     /** Sender: Encapsulating iv,tag and data into one packet **/
-    int packetSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertextReceiver);
+    int packetSize = sizeof(IV) + sizeof (Tag) + sizeof(ciphertextReceiver);
     uint8_t packetBuffer[packetSize];
-    AssembleAuthenticatedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    AssembleAuthenticatedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Receiver: Unpack received data into iv, tag and informative data **/
-    DisassembleAuthenticaedEncryptionPacket(iv, tag, SIZE, ciphertextReceiver, packetBuffer, packetSize);
+    DisassembleAuthenticaedEncryptionPacket(IV, Tag, SIZE_16, ciphertextReceiver, packetBuffer, packetSize);
     /** Decryption **/
-    bool decryption_result = cipher.decryption.aes_gcm_decryption(ciphertextReceiver, plaintextReceiver, tag, textSize, cipher.key, iv, SIZE);
+    bool decryption_result = cipher.decryption.aes_gcm_decryption(ciphertextReceiver, plaintextReceiver, Tag, textSize, cipher.key, IV, false);
     /** Convert received plaintext to readable char array **/
     uint8ToChar(plaintextReceiver, text, textSize);
     TEST_ASSERT_FALSE(decryption_result);
