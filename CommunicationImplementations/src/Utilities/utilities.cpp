@@ -52,7 +52,7 @@ std::string uint8ToString(const uint8_t *plaintext, int size) {
     return value;
 }
 
-/** Encapsulate iv, tag and ciphertext to one packet **/
+/** Encapsulate IV, Tag and ciphertext to one packet **/
 void AssembleAuthenticatedEncryptionPacket(const uint8_t *iv, const uint8_t *tag, int defaultSize,
                                            const uint8_t *ciphertextReceiver, uint8_t *packetBuffer,
                                            int packetSize) {
@@ -71,7 +71,7 @@ void AssembleAuthenticatedEncryptionPacket(const uint8_t *iv, const uint8_t *tag
         }
     }
 }
-/** Dissameble the IV, tag and ciphertext to three different pointers**/
+/** Dissameble the IV, Tag and ciphertext to three different pointers**/
 void DisassembleAuthenticaedEncryptionPacket(uint8_t *iv, uint8_t *tag,
                                              int defaultSize,
                                              uint8_t *ciphertext,

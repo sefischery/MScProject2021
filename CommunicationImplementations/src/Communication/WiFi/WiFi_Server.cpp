@@ -32,16 +32,16 @@ void setup(){
     /** Setup WebServer endpoints **/
 
     /** AES Setup **/
-    performEncryption(1, plaintext, messageSize, aesCiphertext, tag, iv);
-    uint8_t aesConcatenatedMessage[sizeof(iv) + sizeof (tag) + sizeof(aesCiphertext)];
-    int aesConcatenatedMessageSize = sizeof(iv) + sizeof (tag) + sizeof(aesCiphertext);
-    AssembleAuthenticatedEncryptionPacket(iv, tag, 16, aesCiphertext, aesConcatenatedMessage, aesConcatenatedMessageSize);
+    performEncryption(1, plaintext, messageSize, aesCiphertext, Tag, IV);
+    uint8_t aesConcatenatedMessage[sizeof(IV) + sizeof (Tag) + sizeof(aesCiphertext)];
+    int aesConcatenatedMessageSize = sizeof(IV) + sizeof (Tag) + sizeof(aesCiphertext);
+    AssembleAuthenticatedEncryptionPacket(IV, Tag, 16, aesCiphertext, aesConcatenatedMessage, aesConcatenatedMessageSize);
 
     Serial.print("Tag: ");
-    print_uint8(tag, 16);
+    print_uint8(Tag, 16);
 
     Serial.print("Iv: ");
-    print_uint8(iv, 16);
+    print_uint8(IV, 16);
 
     Serial.print("Concatenated message: ");
     print_uint8(aesConcatenatedMessage, aesConcatenatedMessageSize);
@@ -53,10 +53,10 @@ void setup(){
     });
 
     /** Acorn Setup **/
-    performEncryption(2, plaintext, messageSize, acornCiphertext, tag, iv);
-    uint8_t acornConcatenatedMessage[sizeof(iv) + sizeof (tag) + sizeof(acornCiphertext)];
-    int acornConcatenatedMessageSize = sizeof(iv) + sizeof (tag) + sizeof(acornCiphertext);
-    AssembleAuthenticatedEncryptionPacket(iv, tag, 16, acornCiphertext, acornConcatenatedMessage, acornConcatenatedMessageSize);
+    performEncryption(2, plaintext, messageSize, acornCiphertext, Tag, IV);
+    uint8_t acornConcatenatedMessage[sizeof(IV) + sizeof (Tag) + sizeof(acornCiphertext)];
+    int acornConcatenatedMessageSize = sizeof(IV) + sizeof (Tag) + sizeof(acornCiphertext);
+    AssembleAuthenticatedEncryptionPacket(IV, Tag, 16, acornCiphertext, acornConcatenatedMessage, acornConcatenatedMessageSize);
     /** Acorn Setup **/
 
     WebServer.on("/acorn", HTTP_GET, [acornConcatenatedMessage, acornConcatenatedMessageSize](AsyncWebServerRequest *request){
@@ -64,10 +64,10 @@ void setup(){
     });
 
     /** Ascon Setup **/
-    performEncryption(3, plaintext, messageSize, asconCiphertext, tag, iv);
-    uint8_t asconConcatenatedMessage[sizeof(iv) + sizeof (tag) + sizeof(asconCiphertext)];
-    int asconConcatenatedMessageSize = sizeof(iv) + sizeof (tag) + sizeof(asconCiphertext);
-    AssembleAuthenticatedEncryptionPacket(iv, tag, 16, asconCiphertext, asconConcatenatedMessage, asconConcatenatedMessageSize);
+    performEncryption(3, plaintext, messageSize, asconCiphertext, Tag, IV);
+    uint8_t asconConcatenatedMessage[sizeof(IV) + sizeof (Tag) + sizeof(asconCiphertext)];
+    int asconConcatenatedMessageSize = sizeof(IV) + sizeof (Tag) + sizeof(asconCiphertext);
+    AssembleAuthenticatedEncryptionPacket(IV, Tag, 16, asconCiphertext, asconConcatenatedMessage, asconConcatenatedMessageSize);
     /** Ascon Setup **/
 
     WebServer.on("/ascon", HTTP_GET, [asconConcatenatedMessage, asconConcatenatedMessageSize](AsyncWebServerRequest *request){

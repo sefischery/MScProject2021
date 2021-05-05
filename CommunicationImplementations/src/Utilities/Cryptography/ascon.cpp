@@ -27,7 +27,7 @@ bool ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
         unsigned long elapsed;
         int count;
         Serial.println("ascon-encryption,");
-        /** Perform the encryption og compute the tag **/
+        /** Perform the encryption og compute the Tag **/
         for (int graphIteration = 0; graphIteration < POINTITERATION; graphIteration++){
             start = micros();
             for (count = 0; count < 500; ++count) {
@@ -42,7 +42,7 @@ bool ascon_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
     }
     /** Timings ended here **/
 
-    /** Compute the tag **/
+    /** Compute the Tag **/
     cipher.computeTag(tag, size);
     return true;
 }
@@ -69,7 +69,7 @@ bool ascon_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
         unsigned long elapsed;
         int count;
         Serial.println("ascon-decryption,");
-        /** Perform the encryption og compute the tag **/
+        /** Perform the encryption og compute the Tag **/
         for (int graphIteration = 0; graphIteration < POINTITERATION; graphIteration++){
             start = micros();
             for (count = 0; count < 500; ++count) {
@@ -83,7 +83,7 @@ bool ascon_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
     }
     /** Timings ended here **/
 
-    /** Validate the received tag **/
+    /** Validate the received Tag **/
     if (!cipher.checkTag(tag, SIZE_16)) {
         return false;
     }

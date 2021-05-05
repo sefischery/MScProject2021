@@ -10,7 +10,7 @@ bool aes_gcm_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
     /** Initiate the Acorn cipher **/
     GCM<AES128> cipher;
 
-    /** It is important to clear the key and iv before usage, ensures no strange rotations are affecting the encryption process **/
+    /** It is important to clear the key and IV before usage, ensures no strange rotations are affecting the encryption process **/
     cipher.clear();
     cipher.setKey(key, SIZE_16);
     cipher.setIV(iv, SIZE_16);
@@ -19,7 +19,7 @@ bool aes_gcm_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
     memset(tag, 0xBA, SIZE_16);
     memset(ciphertext, 0xBA, size);
 
-    /** Perform the encryption og compute the tag **/
+    /** Perform the encryption og compute the Tag **/
     cipher.encrypt(ciphertext, plaintext, size);
 
     /** Timings started here **/
@@ -28,7 +28,7 @@ bool aes_gcm_encryption(uint8_t *plaintext, uint8_t *ciphertext, uint8_t *tag,
         unsigned long elapsed;
         int count;
         Serial.println("aes-encryption,");
-        /** Perform the encryption og compute the tag **/
+        /** Perform the encryption og compute the Tag **/
         for (int graphIteration = 0; graphIteration < POINTITERATION; graphIteration++){
             start = micros();
             for (count = 0; count < 500; ++count) {
@@ -52,7 +52,7 @@ bool aes_gcm_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
     /** Initiate the Acorn cipher **/
     GCM<AES128> cipher;
 
-    /** It is important to clear the key and iv before usage, ensures no strange rotations are affecting the decryption process **/
+    /** It is important to clear the key and IV before usage, ensures no strange rotations are affecting the decryption process **/
     cipher.clear();
     cipher.setKey(key, SIZE_16);
     cipher.setIV(iv, SIZE_16);
@@ -69,7 +69,7 @@ bool aes_gcm_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
         unsigned long elapsed;
         int count;
         Serial.println("aes-decryption,");
-        /** Perform the encryption og compute the tag **/
+        /** Perform the encryption og compute the Tag **/
         for (int graphIteration = 0; graphIteration < POINTITERATION; graphIteration++){
             start = micros();
             for (count = 0; count < 500; ++count) {
@@ -84,7 +84,7 @@ bool aes_gcm_decryption(uint8_t *ciphertext, uint8_t *plaintext, uint8_t *tag,
     }
     /** Timings ended here **/
 
-    /** Validate the received tag **/
+    /** Validate the received Tag **/
     if (!cipher.checkTag(tag, SIZE_16)) {
         return false;
     }

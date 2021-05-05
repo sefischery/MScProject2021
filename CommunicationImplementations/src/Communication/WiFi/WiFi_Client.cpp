@@ -61,9 +61,9 @@ void setup(){
         buffer[index] = response[index];
     }
     delay(10);
-    DisassembleAuthenticaedEncryptionPacket(iv, tag, 16, ciphertext, buffer, responseSize);
+    DisassembleAuthenticaedEncryptionPacket(IV, Tag, 16, ciphertext, buffer, responseSize);
     delay(10);
-    performDecryption(ciphertext, tag, iv, responseSize);
+    performDecryption(ciphertext, Tag, IV, responseSize);
 
     /** Testing **/
 }

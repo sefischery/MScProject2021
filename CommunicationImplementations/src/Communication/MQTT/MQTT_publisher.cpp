@@ -125,7 +125,7 @@ void loop() {
         // Perform encryption
         performEncryption(1, plaintext, (int) msg.length(), ciphertext, tag, iv);
 
-        // Concatenate to one big message containing iv + tag + ciphertext
+        // Concatenate to one big message containing IV + Tag + ciphertext
         uint8_t concatenatedMessage[sizeof(iv) + sizeof (tag) + sizeof(ciphertext)];
         int concatenatedMessageSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertext);
         AssembleAuthenticatedEncryptionPacket(iv, tag, 16, ciphertext, concatenatedMessage, concatenatedMessageSize);

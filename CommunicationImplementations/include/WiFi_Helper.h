@@ -10,8 +10,8 @@ const char message[] = "Hej med dig";
 const int messageSize = sizeof(message);
 
 /** Preparation for encryption **/
-uint8_t tag[16] = {};
-uint8_t iv[16] = {};
+uint8_t Tag[16] = {};
+uint8_t IV[16] = {};
 uint8_t aesCiphertext[messageSize] = {};
 uint8_t acornCiphertext[messageSize] = {};
 uint8_t asconCiphertext[messageSize] = {};
