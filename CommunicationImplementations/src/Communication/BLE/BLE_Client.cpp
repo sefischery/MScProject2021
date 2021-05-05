@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <BLEDevice.h>
-#include <utilities.h>
 #include <BLE_Crypto.h>
+#include <utilities.h>
 
 static boolean doConnect = false;
 static boolean connected = false;
