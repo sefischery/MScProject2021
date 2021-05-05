@@ -53,7 +53,7 @@ void setup() {
     print_uint8(Tag, SIZE_16);
     Serial.println();
     Serial.print("Ciphertext: ");
-    print_uint8(ciphertextReceiver, textSize-1);
+    print_uint8(ciphertextReceiver, textSize);
     Serial.println();
 
     /** Manipulate packet **/
