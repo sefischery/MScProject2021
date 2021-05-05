@@ -1,6 +1,6 @@
 #include <WiFiClientSecure.h>
 #include <PubSubClient.h>
-#include <Mqtt_functions.h>
+#include <MQTT_functions.h>
 #include "utilities.h"
 
 unsigned long lastPublish;

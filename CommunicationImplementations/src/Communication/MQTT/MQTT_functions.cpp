@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <PubSubClient.h>
-#include <Mqtt_functions.h>
+#include <MQTT_functions.h>
 #include <Encryption_testing.h>
 
 /** Callback function for MQTT_CALLBACK_SIGNATURE **/
