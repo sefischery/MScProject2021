@@ -4,7 +4,7 @@
 #include <BLE2902.h>
 #include <Arduino.h>
 #include <utilities.h>
-#include <BluetoothHelper.h>
+#include <BLE_Crypto.h>
 
 BLEServer* pServer = nullptr;
 BLECharacteristic* pCharacteristic = nullptr;
