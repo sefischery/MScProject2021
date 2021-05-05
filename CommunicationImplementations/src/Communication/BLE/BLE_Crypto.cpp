@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Encryption_testing.h>
+#include <BLE_Crypto.h>
 
 void performEncryption(int encryptionType, uint8_t *plaintext, int inputSize,
                        uint8_t *ciphertextReceiver, uint8_t *Tag, uint8_t *IV) {
@@ -7,15 +8,15 @@ void performEncryption(int encryptionType, uint8_t *plaintext, int inputSize,
     GenerateInitializationVector(IV, 16);
 
     /** Perform encryption and timings **/
-    if (encryptionType == 1)
+    if (encryptionType == AES_GCM_ENCRYPTION)
     {
         cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, Tag, inputSize, cipher.key, IV, false);
     }
-    else if (encryptionType == 2)
+    else if (encryptionType == ACORN_ENCRYPTION)
     {
         cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, Tag, inputSize, cipher.key, IV, false);
     }
-    else if (encryptionType == 3)
+    else if (encryptionType == ASCON_ENCRYPTION)
     {
         cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, Tag, inputSize, cipher.key, IV, false);
     }

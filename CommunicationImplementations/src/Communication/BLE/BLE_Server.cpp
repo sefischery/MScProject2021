@@ -77,8 +77,8 @@ bool ivRecived = false;
 bool tagReceived = false;
 std::string incomingString;
 
-uint8_t iv[16] = {};
-uint8_t tag[16] = {};
+uint8_t IV[16] = {};
+uint8_t Tag[16] = {};
 uint8_t ciphertext[20];
 
 uint8_t testingContainer[20];
@@ -98,13 +98,13 @@ void loop() {
             incomingString = pCharacteristic->getValue();
             std::string ivTest = incomingString.substr(0, 3);
 
-            if (ivTest == "iv:" || ivRecived ){
+            if (ivTest == "IV:" || ivRecived ){
 
                 /** Testing **/
                 if (!ivRecived){
                     uint8_t *receiver = pCharacteristic->getData();
                     for (int index = 3; index < 19; index++){
-                        iv[index-3] = receiver[index];
+                        IV[index - 3] = receiver[index];
                     }
                 }
                 /** Testing **/
@@ -112,29 +112,29 @@ void loop() {
                 ivRecived = true;
                 std::string tagTest = incomingString.substr(0, 4);
 
-                if (tagTest == "tag:" || tagReceived){
+                if (tagTest == "Tag:" || tagReceived){
 
                     /** Testing **/
                     if (!tagReceived){
                         uint8_t *receiver = pCharacteristic->getData();
                         for (int index = 4; index < 20; index++){
-                            tag[index-4] = receiver[index];
+                            Tag[index - 4] = receiver[index];
                         }
                     }
                     /** Testing **/
 
                     tagReceived = true;
-                    if (tagTest != "tag:" || tagReceived) {
+                    if (tagTest != "Tag:" || tagReceived) {
                         for (int index = 0; index < 20; index++){
                             ciphertext[index] = incomingString[index];
                         }
                         Serial.print("Ciphertext: ");
                         print_uint8(ciphertext, incomingString.length());
                         Serial.print("Tag: ");
-                        print_uint8(tag, 16);
+                        print_uint8(Tag, 16);
                         Serial.print("Iv: ");
-                        print_uint8(iv, 16);
-                        performDecryption(ciphertext, tag, iv, incomingString.length());
+                        print_uint8(IV, 16);
+                        performDecryption(ciphertext, Tag, IV, incomingString.length());
                         Serial.println();
                     }
                 }

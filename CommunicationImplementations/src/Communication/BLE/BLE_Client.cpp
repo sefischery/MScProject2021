@@ -122,8 +122,8 @@ bool performServerConnectionAttempt(){
 bool encryptionPerformed = false;
 bool hasSentIv = false;
 bool hasSentTag = false;
-uint8_t iv[16] = {0};
-uint8_t tag[16] = {0};
+uint8_t IV[16] = {0};
+uint8_t Tag[16] = {0};
 
 uint8_t copyOfCipherText[20] = {0};
 
@@ -148,42 +148,42 @@ void changeBleServerCharacteristics(){
             charToUint8(message, plaintext, textSize);
             uint8_t ciphertextReceiver[textSize];
 
-            performEncryption(1, plaintext, textSize, ciphertextReceiver, tag, iv);
+            performEncryption(AES_GCM_ENCRYPTION, plaintext, textSize, ciphertextReceiver, Tag, IV);
             encryptionPerformed = true;
             copy_uint8(ciphertextReceiver, copyOfCipherText, textSize);
             Serial.print("Ciphertext: ");
             print_uint8(ciphertextReceiver, 20);
             Serial.print("Tag: ");
-            print_uint8(tag, 16);
+            print_uint8(Tag, 16);
             Serial.print("Iv: ");
-            print_uint8(iv, 16);
+            print_uint8(IV, 16);
         }
 
         if (!hasSentIv){
             hasSentIv = true;
-            uint8_t writer[19] = "iv:";
+            uint8_t writer[19] = "IV:";
 
             for (int index = 3; index < 19; index++)
             {
-                writer[index] = iv[index-3];
+                writer[index] = IV[index - 3];
             }
-            Serial.print("writing iv: ");
+            Serial.print("writing IV: ");
             print_uint8(writer, 19);
             pRemoteCharacteristic->writeValue(writer, 19);
         }
         else if (!hasSentTag){
             hasSentTag = true;
-            pRemoteCharacteristic->writeValue("tag:");
+            pRemoteCharacteristic->writeValue("Tag:");
 
-            uint8_t writer[20] = "tag:";
+            uint8_t writer[20] = "Tag:";
 
             for (int index = 4; index < 20; index++)
             {
-                writer[index] = tag[index-4];
+                writer[index] = Tag[index - 4];
             }
 
-            Serial.print("writing tag: ");
-            print_uint8(tag, 20);
+            Serial.print("writing Tag: ");
+            print_uint8(Tag, 20);
 
             pRemoteCharacteristic->writeValue(writer, 20);
 
