@@ -30,6 +30,7 @@ void setup()
     bool connected = false;
     while (!connected) {
         /** Sets connected flag if the .connect function returns true **/
+        DEBUG_STREAM.println("Initating NB-IoT connection");
         connected = nbiot.connect(AccessPointName, cdp);
         DEBUG_STREAM.println("Connected successfully!");
     }
@@ -45,8 +46,10 @@ void setup()
 int msgCount = 0;
 void loop()
 {
+    Serial.println("Entered LOOP");
     sodaq_wdt_safe_delay(30000);
     if (!nbiot.isConnected()) {
+        Serial.println("Entered isConnected()");
         if (!nbiot.connect(AccessPointName, cdp)) {
             DEBUG_STREAM.println("Failed to connect to the modem!");
         }
