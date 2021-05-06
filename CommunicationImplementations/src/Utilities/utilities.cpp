@@ -42,16 +42,6 @@ void uint8ToChar(const uint8_t *plaintext, char *toText, int size) {
     }
 }
 
-/** Converts uint8 array to string **/
-std::string uint8ToString(const uint8_t *plaintext, int size) {
-    std::string value = "";
-    for (int index = 0; index < size; ++index) {
-        value += plaintext[index];
-    }
-
-    return value;
-}
-
 /** Encapsulate IV, Tag and ciphertext to one packet **/
 void AssembleAuthenticatedEncryptionPacket(const uint8_t *iv, const uint8_t *tag, int defaultSize,
                                            const uint8_t *ciphertextReceiver, uint8_t *packetBuffer,
