@@ -1,5 +1,7 @@
 #include <Arduino.h>
 #include <Encryption_testing.h>
+#include <WiFiUdp.h>
+
 
 void performEncryption(int encryptionType, uint8_t *plaintext, int inputSize,
                        uint8_t *ciphertextReceiver, uint8_t *Tag,
@@ -41,3 +43,23 @@ void performDecryption(uint8_t *ciphertext, uint8_t *Tag, uint8_t *IV,
     Serial.print("Decrypted Text: ");
     print_char(text, ciphertextSize-32);
 }
+
+void Build_And_Send_UDP_Packet(WiFiUDP &WiFiUDP, char const *msg, IPAddress &address, int UDP_Port_Number) {
+    WiFiUDP.beginPacket(address, UDP_Port_Number);
+    WiFiUDP.print(msg);
+    WiFiUDP.endPacket();
+}
+
+String Receive_UDP_Packet(WiFiUDP &WiFiUDP, char packet_buffer[]){
+    String tmp = "";
+    while(tmp == ""){
+        WiFiUDP.parsePacket();
+        while(WiFiUDP.read(packet_buffer, 350) > 0){
+            WiFiUDP.read(packet_buffer, 350);
+            delay(20);
+        }
+        tmp = packet_buffer;
+    }
+    return tmp;
+}
+
