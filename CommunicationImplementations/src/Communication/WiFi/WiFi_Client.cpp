@@ -31,10 +31,12 @@ String httpGETRequest(const char* serverName) {
     return payload;
 }
 
+byte mac[6];
+
 void setup(){
     Serial.begin(115200);
     /** Connect to the WiFi Access Point **/
-    WiFi.begin(SSID, WiFi_PASS);
+    WiFi.begin(SSID);//, WiFi_PASS);
     Serial.println("Connecting");
     while(WiFiClass::status() != WL_CONNECTED) {
         delay(500);
@@ -43,6 +45,22 @@ void setup(){
     Serial.println("");
     Serial.print("Connected to WiFi network with IP Address: ");
     Serial.println(WiFi.localIP());
+
+    /** print Mac adresse **/
+    WiFi.macAddress(mac);
+    Serial.print("MAC: ");
+    Serial.print(mac[5],HEX);
+    Serial.print(":");
+    Serial.print(mac[4],HEX);
+    Serial.print(":");
+    Serial.print(mac[3],HEX);
+    Serial.print(":");
+    Serial.print(mac[2],HEX);
+    Serial.print(":");
+    Serial.print(mac[1],HEX);
+    Serial.print(":");
+    Serial.println(mac[0],HEX);
+    /** print Mac adresse **/
 
     String response = httpGETRequest(webserver);
     Serial.print("Untreated content: ");

@@ -13,15 +13,33 @@ const char* WiFi_PASS = "123456789";
 
 AsyncWebServer WebServer(WebServerPort);
 
+byte mac[6];
 
 void setup(){
     Serial.begin(115200);
     Serial.println();
     Serial.print("Setting AP (Access Point)…");
     /** Initialize the WiFi Access Point **/
-    WiFi.softAP(SSID, WiFi_PASS);
+    WiFi.softAP(SSID);//, WiFi_PASS);
 
     IPAddress IP = WiFi.softAPIP();
+
+    /** print Mac adresse **/
+    WiFi.macAddress(mac);
+    Serial.print("MAC: ");
+    Serial.print(mac[5],HEX);
+    Serial.print(":");
+    Serial.print(mac[4],HEX);
+    Serial.print(":");
+    Serial.print(mac[3],HEX);
+    Serial.print(":");
+    Serial.print(mac[2],HEX);
+    Serial.print(":");
+    Serial.print(mac[1],HEX);
+    Serial.print(":");
+    Serial.println(mac[0],HEX);
+    /** print Mac adresse **/
+
     Serial.print("Access Point -> IP address: ");
     Serial.println(IP);
 
