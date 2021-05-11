@@ -4,6 +4,7 @@
 
 SoftwareSerial SigfoxSerial(SER_RX_PIN, SER_TX_PIN);
 
+int messageCount = 0;
 void setup()
 {
     Serial.begin(115200);
@@ -13,6 +14,38 @@ void setup()
     uint8_t msg[12] = "magnussebas";
     sendSigfoxMessage(msg, sizeof(msg), SigfoxSerial);
 
+    /** Testing **/
+    // Array definitions
+    uint8_t firstMessage[12] = {0x00};
+    uint8_t secondMessage[12] = {0x00};
+    uint8_t thirdMessage[12] = {0x00};
+    uint8_t data[12];
+
+    // Set message
+    String message = String("Message: ") + ++messageCount;
+
+    // Define operating arrays
+    uint8_t tag[16];
+    uint8_t iv[16];
+    uint8 plaintext[message.length()];
+    uint8_t ciphertext[message.length()];
+
+    // Fill plaintext array with message
+    for (int index = 0; index < message.length(); index++)
+    {
+        plaintext[index] = message[index];
+    }
+
+    // Perform encryption, thereby also fill iv and tag
+    performEncryption(1, plaintext, (int) msg.length(), ciphertext, tag, iv);
+
+
+
+
+
+
+
+    /** Testing **/
 }
 
 void loop()
