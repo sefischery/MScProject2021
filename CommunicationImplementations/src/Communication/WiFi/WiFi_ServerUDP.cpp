@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <WiFi_Helper.h>
+#include <cstring>
 
 WiFiUDP UDP;
 //WiFi information for the setup.
@@ -22,14 +23,14 @@ void Create_Open_AccessPoint(const char *SSID, int WiFi_Channel, int Hide_Access
 /** Wait in while-loop for a client connecting to the WiFi **/
 
 void Wait_For_Client_Connection(){
+    Serial.println("Waiting for clients to connect!");
     while(WiFi.softAPgetStationNum() <= 0){
-        delay(1);
+        delay(50);
     }
     Serial.println("Client connected! ");
     Serial.println(WiFi.softAPgetStationNum());
     Serial.println();
 }
-
 
 void setup() {
     Serial.begin(115200);
@@ -38,9 +39,12 @@ void setup() {
     Wait_For_Client_Connection();
 }
 void loop(){
-
-    String test = Receive_UDP_Packet(UDP, UDP_RECEIVER_BUFFER);
-    Serial.println("I received: ");
-    Serial.println(test);
+    Serial.println();
+    String received_message_UDP = Receive_UDP_Packet(UDP, UDP_RECEIVER_BUFFER);
+    String output_format = "Received UDP packet from ["+UDP.remoteIP().toString()+":"
+            + String(UDP.remotePort()) + "]" + " - Message: ";
+    Serial.println(output_format);
+    Serial.println(received_message_UDP);
+    memset(UDP_RECEIVER_BUFFER, 0, sizeof(UDP_RECEIVER_BUFFER));
 }
 
