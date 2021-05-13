@@ -3,7 +3,7 @@
 #include <WiFi_Helper.h>
 
 WiFiUDP UDP;
-
+IPAddress Server_IP(192,168,4,1);
 
 void Connect_To_AP(const char *SSID){
     Serial.println("Connecting to the Access Point: ");
