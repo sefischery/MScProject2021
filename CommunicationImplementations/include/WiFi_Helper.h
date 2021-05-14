@@ -8,6 +8,9 @@ const int messageSize = sizeof(message);
 //WiFi information for the setup.
 #define AP_SSID "ESP32_AP"
 #define UDP_PORT 1500
+#define AES_GCM_ENCRYPTION 1
+#define ACORN_ENCRYPTION 2
+#define ASCON_ENCRYPTION 3
 
 /** Preparation for encryption **/
 uint8_t Tag[16] = {};
@@ -21,6 +24,7 @@ void performEncryption(int encryptionType, uint8_t *plaintext, int inputSize,
 void performDecryption(uint8_t *ciphertext, uint8_t *Tag, uint8_t *IV,
                        int ciphertextSize);
 void Build_And_Send_UDP_Packet(WiFiUDP &WiFiUDP, char const *msg, IPAddress &address, int UDP_Port_Number);
+void Build_And_Send_UDP_Packet(WiFiUDP &WiFiUDP, const uint8_t *msg, int msg_size, IPAddress &address, int UDP_Port_Number);
 
 String Receive_UDP_Packet(WiFiUDP &WiFiUDP, char packet_buffer[]);
 

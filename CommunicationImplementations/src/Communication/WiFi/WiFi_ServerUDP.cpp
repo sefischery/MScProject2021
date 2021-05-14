@@ -2,6 +2,7 @@
 #include <WiFiUdp.h>
 #include <WiFi_Helper.h>
 #include <cstring>
+#include <utilities.h>
 
 WiFiUDP UDP;
 //WiFi information for the setup.
@@ -21,7 +22,6 @@ void Create_Open_AccessPoint(const char *SSID, int WiFi_Channel, int Hide_Access
 }
 
 /** Wait in while-loop for a client connecting to the WiFi **/
-
 void Wait_For_Client_Connection(){
     Serial.println("Waiting for clients to connect!");
     while(WiFi.softAPgetStationNum() <= 0){
@@ -45,6 +45,27 @@ void loop(){
             + String(UDP.remotePort()) + "]" + " - Message: ";
     Serial.println(output_format);
     Serial.println(received_message_UDP);
+
+    /** Testing **/
+    Serial.println("------------------------------------");
+    int responseSize = (int) received_message_UDP.length();
+
+    Serial.print("Response size: ");
+    Serial.println(responseSize);
+
+    uint8_t ciphertext[responseSize];
+    uint8_t buffer[responseSize];
+    for (int index = 0; index < responseSize; index++)
+    {
+        buffer[index] = received_message_UDP[index];
+    }
+    delay(10);
+    DisassembleAuthenticaedEncryptionPacket(IV, Tag, 16, ciphertext, buffer, responseSize);
+    delay(10);
+    performDecryption(ciphertext, Tag, IV, responseSize);
+    Serial.println();
+    /** Testing **/
+
     memset(UDP_RECEIVER_BUFFER, 0, sizeof(UDP_RECEIVER_BUFFER));
 }
 

@@ -50,6 +50,20 @@ void Build_And_Send_UDP_Packet(WiFiUDP &WiFiUDP, char const *msg, IPAddress &add
     WiFiUDP.endPacket();
 }
 
+void Build_And_Send_UDP_Packet(WiFiUDP &WiFiUDP, const uint8_t *msg, int msg_size,
+                               IPAddress &address, int UDP_Port_Number) {
+    WiFiUDP.beginPacket(address, UDP_Port_Number);
+
+    char tempContainer[msg_size];
+    for (int index = 0; index < msg_size; index++)
+    {
+        tempContainer[index] = (char) msg[index];
+    }
+
+    WiFiUDP.print(tempContainer);
+    WiFiUDP.endPacket();
+}
+
 String Receive_UDP_Packet(WiFiUDP &WiFiUDP, char packet_buffer[]){
     String tmp = "";
     while(tmp == ""){
