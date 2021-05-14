@@ -18,7 +18,7 @@ def createMessageEndpoint(server, data_array_of_dicts):
             date = datetime.datetime.fromtimestamp(int(json_data['date'])).strftime("%Y-%m-%d %H:%M:%S")
             payload_size = len(content)
 
-        data_array_of_dicts.append(
+        data_array_of_dicts.insert(0,
             {
                 'Date': date,
                 'Payload Size': payload_size,

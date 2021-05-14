@@ -18,7 +18,7 @@ def defineHtmlLayout(webapp, data_list):
                             children=webapp.title, className="header-title"
                         ),
                         html.P(
-                            children="Showcase NB-IoT received messages",
+                            children="IoT communication protocol backend",
                             className="header-description",
                         ),
                     ],
@@ -35,6 +35,10 @@ def defineHtmlLayout(webapp, data_list):
                                 id="technology-filter",
                                 options=[
                                     {
+                                        "label": 'MQTT',
+                                        "value": 'MQTT'
+                                    },
+                                    {
                                         "label": 'NB-IoT',
                                         "value": 'NB-IoT'
                                     },
@@ -43,8 +47,8 @@ def defineHtmlLayout(webapp, data_list):
                                         "value": 'Sigfox'
                                     },
                                 ],
-                                value="NB-IoT",
-                                clearable=False,
+                                value=None,
+                                clearable=True,
                                 className="dropdown",
                             ),
                         ]
@@ -66,8 +70,8 @@ def defineHtmlLayout(webapp, data_list):
                                     # for security_type in data.type.unique()
 
                                 ],
-                                value="organic",
-                                clearable=False,
+                                value=None,
+                                clearable=True,
                                 searchable=False,
                                 className="dropdown",
                             ),
@@ -100,7 +104,8 @@ def defineHtmlLayout(webapp, data_list):
                                      ["Date", "Payload Size", "Content", "type",
                                       "technology"]],
                             data=data_list,
-                            style_cell=dict(textAlign='left', padding='10px')
+                            style_cell=dict(textAlign='left', padding='10px'),
+                            style_table={'max-height': '300px', 'overflowY': 'auto'}
                         ),
                         className="card-listview",
                     ),

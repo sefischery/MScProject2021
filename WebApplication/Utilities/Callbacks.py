@@ -14,16 +14,28 @@ def dataCallback(webapp, data_list):
         Output("date-range", "end_date"),
         Output('table', 'data'),
         Input('interval-component', 'n_intervals'),
+        Input("technology-filter", "value"),
+        Input("type-filter", "value"),
     )
-    def updateTable(n_intervals):
+    def updateTable(n_intervals, technology, type):
+        if technology is None:
+            filterByTechnology = data_list
+        else:
+            filterByTechnology = [datapoint for datapoint in data_list if datapoint['technology'] == technology]
+
+        if type is None:
+            returninglist = filterByTechnology
+        else:
+            returninglist = [datapoint for datapoint in filterByTechnology if datapoint['type'] == type]
+
         if len(data_list) > 0:
             start_date = data_list[0]['Date']
             end_data = data_list[-1]['Date']
-            return start_date, end_data, data_list
+            return start_date, end_data, returninglist
         else:
             return datetime.datetime.now(), \
                    datetime.datetime.now(), \
-                   data_list
+                   returninglist
 
 
 def graphCallback(webapp):
