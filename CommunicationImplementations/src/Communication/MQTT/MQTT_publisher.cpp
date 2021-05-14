@@ -2,6 +2,9 @@
 #include <PubSubClient.h>
 #include <MQTT_functions.h>
 #include "utilities.h"
+#include <ArduinoJson.h>
+#include <Arduino.h>
+#include <Base64.h>
 
 unsigned long lastPublish;
 int msgCount;
@@ -105,10 +108,9 @@ void setup() {
 }
 
 void loop() {
-
     publisherCheckConnect(pubSubClient, AWS_ENDPOINT);
 
-    if (millis() - lastPublish > 10000) {
+    if (millis() - lastPublish > 30000) {
         String msg = String("Hello from ESP-Publisher: ") + ++msgCount;
 
         /** Testing **/
@@ -126,13 +128,32 @@ void loop() {
         performEncryption(1, plaintext, (int) msg.length(), ciphertext, tag, iv);
 
         // Concatenate to one big message containing IV + Tag + ciphertext
-        uint8_t concatenatedMessage[sizeof(iv) + sizeof (tag) + sizeof(ciphertext)];
-        int concatenatedMessageSize = sizeof(iv) + sizeof (tag) + sizeof(ciphertext);
+        int concatenatedMessageSize = 32 + msg.length();
+        uint8_t concatenatedMessage[concatenatedMessageSize];
         AssembleAuthenticatedEncryptionPacket(iv, tag, 16, ciphertext, concatenatedMessage, concatenatedMessageSize);
+
+        char assembledCharArray[concatenatedMessageSize];
+        uint8ToChar(concatenatedMessage, assembledCharArray, concatenatedMessageSize);
+
+        char *encoded_content;
+        Base64.encode(encoded_content, assembledCharArray, concatenatedMessageSize);
+
+        char JSONmessageBuffer[512];
+        DynamicJsonDocument contentObject(512);
+
+        contentObject["payload-size"] = concatenatedMessageSize;
+        contentObject["encode-content-size"] = 64;
+        contentObject["content"]   = encoded_content;
+        contentObject["type"] = "encryption";
+        contentObject["technology"] = "MQTT";
+
+        serializeJson(contentObject, JSONmessageBuffer);
+
+        print_char(JSONmessageBuffer, 512);
 
         /** Testing **/
         // Public message to encryption topic
-        boolean rc = pubSubClient.publish("Encryption", concatenatedMessage, concatenatedMessageSize);
+        boolean rc = pubSubClient.publish("Encryption", JSONmessageBuffer);
         Serial.print("Published, rc="); Serial.print( (rc ? "OK: " : "FAILED: ") );
         Serial.println(msg);
         lastPublish = millis();

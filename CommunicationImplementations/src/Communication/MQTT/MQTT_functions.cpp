@@ -2,33 +2,57 @@
 #include <PubSubClient.h>
 #include <MQTT_functions.h>
 #include <Encryption_testing.h>
+#include <ArduinoJson.h>
+#include <Base64.h>
+
 #define SIZE_16 16
 
 /** Callback function for MQTT_CALLBACK_SIGNATURE **/
-void msgReceived(char* topic, byte* payload, unsigned int length)
- {
+void  msgReceived(char* topic, byte* payload, unsigned int length)
+{
+    /** Testing **/
+    // Assign the received data to uint8_t type
+    char associatedMessage[length];
+    for (int index = 0; index < length; index++)
+    {
+        associatedMessage[index] = (char)payload[index];
+    }
+
     Serial.print("Message received on ");
     Serial.print(topic);
     Serial.print(": ");
-    for (int i = 0; i < length; i++) {
-        Serial.print((char)payload[i]);
-    }Serial.println();
-
-    /** Testing **/
-    // Assign the received data to uint8_t type
-    uint8_t associatedMessage[length];
-    for (int index = 0; index < length; index++)
-    {
-        associatedMessage[index] = payload[index];
-    }
+    print_char(associatedMessage, length);
 
     uint8_t IV[SIZE_16];
     uint8_t Tag[SIZE_16];
-    uint8_t ciphertext[length-32];
+    uint8_t ciphertext[SIZE_16];
 
-    DisassembleAuthenticaedEncryptionPacket(IV, Tag, SIZE_16, ciphertext, associatedMessage, (int) length);
+    DynamicJsonDocument contentObject(512);
+    deserializeJson(contentObject, associatedMessage);
 
-    performDecryption(ciphertext, Tag, IV, (int)length - 32);
+    const char *constContent = contentObject["content"];
+    const int encoded_payload_size = contentObject["encode-content-size"];
+    const int payload_size = contentObject["payload-size"];
+
+    char content[encoded_payload_size];
+    for (int index = 0; index < encoded_payload_size; index++)
+    {
+        content[index] = constContent[index];
+    }
+
+    char assembledData[payload_size];
+    Base64.decode(assembledData, content, encoded_payload_size);
+
+    uint8_t assembledDataHex[payload_size];
+    for (int index = 0; index < payload_size; index++)
+    {
+        assembledDataHex[index] = assembledData[index];
+    }
+
+    DisassembleAuthenticaedEncryptionPacket(IV, Tag, 16, ciphertext, assembledDataHex, payload_size);
+
+    Serial.println("---------------------------------------------");
+    performDecryption(ciphertext, Tag, IV, payload_size - 32);
 
     /** Testing **/
 
