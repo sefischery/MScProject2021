@@ -13,8 +13,6 @@ static BLEScan* pBLEScan;
 static BLEUUID serviceUUID("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
 static BLEUUID charUUID("beb5483e-36e1-4688-b7f5-ea07361b26a8");
 
-bool sendingEncryptedText = false;
-
 
 class MyClientCallback : public BLEClientCallbacks {
     void onConnect(BLEClient* pClient) override {
@@ -122,76 +120,90 @@ bool performServerConnectionAttempt(){
 bool encryptionPerformed = false;
 bool hasSentIv = false;
 bool hasSentTag = false;
+bool sendingEncryptedText = false;
+
+bool enableEncryption = false; // This decides whether encryption is applied or not
+
 uint8_t IV[16] = {0};
 uint8_t Tag[16] = {0};
 
 uint8_t copyOfCipherText[20] = {0};
 
+int msgNumber = 0;
+
 void changeBleServerCharacteristics(){
     std::string value = pRemoteCharacteristic->readValue();
     Serial.println(value.c_str());
 
-    if (value == "Server: You are connected")
+    if (enableEncryption)
     {
-        pRemoteCharacteristic->writeValue("Setup encryption");
-    }
-    else if (value == "Server: Encrypted channel ready" || sendingEncryptedText)
-    {
-        sendingEncryptedText = true;
-
-        /** Define initial text **/
-        char message[] = "Secret: 1234";
-        const int textSize = sizeof(message);
-
-        if(!encryptionPerformed){
-            uint8_t plaintext[textSize];
-            charToUint8(message, plaintext, textSize);
-            uint8_t ciphertextReceiver[textSize];
-
-            performEncryption(AES_GCM_ENCRYPTION, plaintext, textSize, ciphertextReceiver, Tag, IV);
-            encryptionPerformed = true;
-            copy_uint8(ciphertextReceiver, copyOfCipherText, textSize);
-            Serial.print("Ciphertext: ");
-            print_uint8(ciphertextReceiver, 20);
-            Serial.print("Tag: ");
-            print_uint8(Tag, 16);
-            Serial.print("Iv: ");
-            print_uint8(IV, 16);
+        if (value == "Server: You are connected")
+        {
+            pRemoteCharacteristic->writeValue("Setup encryption");
         }
+        else if (value == "Server: Encrypted channel ready" || sendingEncryptedText)
+        {
+            sendingEncryptedText = true;
 
-        if (!hasSentIv){
-            hasSentIv = true;
-            uint8_t writer[19] = "IV:";
+            /** Define initial text **/
+            char message[] = "Secret: 1234";
+            const int textSize = sizeof(message);
 
-            for (int index = 3; index < 19; index++)
-            {
-                writer[index] = IV[index - 3];
-            }
-            Serial.print("writing IV: ");
-            print_uint8(writer, 19);
-            pRemoteCharacteristic->writeValue(writer, 19);
-        }
-        else if (!hasSentTag){
-            hasSentTag = true;
-            pRemoteCharacteristic->writeValue("Tag:");
+            if(!encryptionPerformed){
+                uint8_t plaintext[textSize];
+                charToUint8(message, plaintext, textSize);
+                uint8_t ciphertextReceiver[textSize];
 
-            uint8_t writer[20] = "Tag:";
-
-            for (int index = 4; index < 20; index++)
-            {
-                writer[index] = Tag[index - 4];
+                performEncryption(AES_GCM_ENCRYPTION, plaintext, textSize, ciphertextReceiver, Tag, IV);
+                encryptionPerformed = true;
+                copy_uint8(ciphertextReceiver, copyOfCipherText, textSize);
+                Serial.print("Ciphertext: ");
+                print_uint8(ciphertextReceiver, 20);
+                Serial.print("Tag: ");
+                print_uint8(Tag, 16);
+                Serial.print("Iv: ");
+                print_uint8(IV, 16);
             }
 
-            Serial.print("writing Tag: ");
-            print_uint8(Tag, 20);
+            if (!hasSentIv){
+                hasSentIv = true;
+                uint8_t writer[19] = "IV:";
 
-            pRemoteCharacteristic->writeValue(writer, 20);
+                for (int index = 3; index < 19; index++)
+                {
+                    writer[index] = IV[index - 3];
+                }
+                Serial.print("writing IV: ");
+                print_uint8(writer, 19);
+                pRemoteCharacteristic->writeValue(writer, 19);
+            }
+            else if (!hasSentTag){
+                hasSentTag = true;
+                pRemoteCharacteristic->writeValue("Tag:");
 
-        }
-        else {
-            pRemoteCharacteristic->writeValue(copyOfCipherText, textSize);
+                uint8_t writer[20] = "Tag:";
+
+                for (int index = 4; index < 20; index++)
+                {
+                    writer[index] = Tag[index - 4];
+                }
+
+                Serial.print("writing Tag: ");
+                print_uint8(Tag, 20);
+
+                pRemoteCharacteristic->writeValue(writer, 20);
+
+            }
+            else {
+                pRemoteCharacteristic->writeValue(copyOfCipherText, textSize);
+            }
         }
     }
+    else {
+        String msg = String("Unencrypted msg: ") + msgNumber++;
+        pRemoteCharacteristic->writeValue(msg.c_str());
+    }
+
 }
 
 

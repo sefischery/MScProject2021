@@ -177,5 +177,5 @@ void loop() {
         oldDeviceConnected = deviceConnected;
     }
 
-    delay(2000);
+    delay(3500);
 }
