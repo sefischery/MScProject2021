@@ -122,8 +122,6 @@ bool hasSentIv = false;
 bool hasSentTag = false;
 bool sendingEncryptedText = false;
 
-bool enableEncryption = false; // This decides whether encryption is applied or not
-
 uint8_t IV[16] = {0};
 uint8_t Tag[16] = {0};
 
@@ -135,7 +133,7 @@ void changeBleServerCharacteristics(){
     std::string value = pRemoteCharacteristic->readValue();
     Serial.println(value.c_str());
 
-    if (enableEncryption)
+    if (ENABLE_ENCRYPTION)
     {
         if (value == "Server: You are connected")
         {

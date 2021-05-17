@@ -4,6 +4,8 @@
 #define ACORN_ENCRYPTION 2
 #define ASCON_ENCRYPTION 3
 
+#define ENABLE_ENCRYPTION true
+
 void performEncryption(int encryptionType,
                        uint8_t *plaintext,
                        int inputSize,

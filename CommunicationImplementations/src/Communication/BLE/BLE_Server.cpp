@@ -72,7 +72,7 @@ void setup() {
     Serial.println("Waiting a client connection to notify...");
 }
 
-bool encryptionFlag = false;
+bool prepareDecryption = false;
 bool ivRecived = false;
 bool tagReceived = false;
 std::string incomingString;
@@ -80,8 +80,6 @@ std::string incomingString;
 uint8_t IV[16] = {};
 uint8_t Tag[16] = {};
 uint8_t ciphertext[20];
-
-uint8_t testingContainer[20];
 
 void loop() {
     // notify changed value
@@ -94,7 +92,7 @@ void loop() {
         }
 
         //If the encryption; This needs to be fixed, ugly as fuck!
-        if (encryptionFlag){
+        if (prepareDecryption){
             incomingString = pCharacteristic->getValue();
             std::string ivTest = incomingString.substr(0, 3);
 
@@ -129,12 +127,12 @@ void loop() {
                             ciphertext[index] = incomingString[index];
                         }
                         Serial.print("Ciphertext: ");
-                        print_uint8(ciphertext, incomingString.length());
+                        print_uint8(ciphertext, (int) incomingString.length());
                         Serial.print("Tag: ");
                         print_uint8(Tag, 16);
                         Serial.print("Iv: ");
                         print_uint8(IV, 16);
-                        performDecryption(ciphertext, Tag, IV, incomingString.length());
+                        performDecryption(ciphertext, Tag, IV, (int) incomingString.length());
                         Serial.println();
                     }
                 }
@@ -142,7 +140,6 @@ void loop() {
         }
         // If not encryption
         else {
-            //  uint8_t *hi = pCharacteristic->toString();
             incomingString = pCharacteristic->getValue();
             Serial.println(incomingString.c_str());
         }
@@ -151,8 +148,7 @@ void loop() {
         {
             pCharacteristic->setValue("Server: Encrypted channel ready");
             pCharacteristic->notify();
-            encryptionFlag = true;
-
+            prepareDecryption = true;
         }
 
         delay(1000); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
