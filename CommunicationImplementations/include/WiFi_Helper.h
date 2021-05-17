@@ -12,6 +12,8 @@ const int messageSize = sizeof(message);
 #define ACORN_ENCRYPTION 2
 #define ASCON_ENCRYPTION 3
 
+#define ENABLE_ENCRYPTION true
+
 /** Preparation for encryption **/
 uint8_t Tag[16] = {};
 uint8_t IV[16] = {};

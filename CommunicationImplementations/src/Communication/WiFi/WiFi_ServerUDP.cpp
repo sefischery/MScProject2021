@@ -42,34 +42,41 @@ void setup() {
     UDP.begin(UDP_PORT);
     Wait_For_Client_Connection();
 }
+
+bool encrypted = false;
+
 void loop(){
     Serial.println();
     String received_message_UDP = Receive_UDP_Packet(UDP, UDP_RECEIVER_BUFFER);
-    String output_format = "Received UDP packet from ["+UDP.remoteIP().toString()+":"
-            + String(UDP.remotePort()) + "]" + " - Message: ";
-    Serial.println(output_format);
-    Serial.println(received_message_UDP);
 
-    /** Testing **/
-    Serial.println("------------------------------------");
-    int responseSize = (int) received_message_UDP.length();
+    if (ENABLE_ENCRYPTION){
+        /** Encryption **/
+        Serial.println("------------------------------------");
+        int responseSize = (int) received_message_UDP.length();
 
-    Serial.print("Response size: ");
-    Serial.println(responseSize);
+        Serial.print("Response size: ");
+        Serial.println(responseSize);
 
-    uint8_t ciphertext[responseSize];
-    uint8_t buffer[responseSize];
-    for (int index = 0; index < responseSize; index++)
-    {
-        buffer[index] = received_message_UDP[index];
+        uint8_t ciphertext[responseSize];
+        uint8_t buffer[responseSize];
+        for (int index = 0; index < responseSize; index++)
+        {
+            buffer[index] = received_message_UDP[index];
+        }
+        delay(10);
+        DisassembleAuthenticaedEncryptionPacket(IV, Tag, 16, ciphertext, buffer, responseSize);
+        delay(10);
+        performDecryption(ciphertext, Tag, IV, responseSize);
+        Serial.println();
+        /** Encryption **/
+    } else {
+        String output_format = "Received UDP packet from ["+UDP.remoteIP().toString()+":"
+                               + String(UDP.remotePort()) + "]" + " - Message: ";
+        Serial.println(output_format);
+        Serial.println(received_message_UDP);
     }
-    delay(10);
-    DisassembleAuthenticaedEncryptionPacket(IV, Tag, 16, ciphertext, buffer, responseSize);
-    delay(10);
-    performDecryption(ciphertext, Tag, IV, responseSize);
-    Serial.println();
-    /** Testing **/
 
+    delay(10);
     memset(UDP_RECEIVER_BUFFER, 0, sizeof(UDP_RECEIVER_BUFFER));
 }
 
