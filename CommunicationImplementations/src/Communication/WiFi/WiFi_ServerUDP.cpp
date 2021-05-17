@@ -13,7 +13,11 @@ WiFiUDP UDP;
 
 char UDP_RECEIVER_BUFFER[350];
 
-void Create_Open_AccessPoint(const char *SSID, int WiFi_Channel, int Hide_Access_Point, int Max_Number_of_Connections) {
+void Create_Open_AccessPoint(const char *SSID,
+                             int WiFi_Channel,
+                             int Hide_Access_Point,
+                             int Max_Number_of_Connections) {
+
     WiFi.softAP(SSID,nullptr,WiFi_Channel,Hide_Access_Point,Max_Number_of_Connections);
     Serial.println("Assigned IP address of Access Point: ");
     Serial.println(WiFi.softAPIP());
