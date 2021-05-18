@@ -111,10 +111,9 @@ void loop() {
     publisherCheckConnect(pubSubClient, AWS_ENDPOINT);
 
     if (millis() - lastPublish > 30000) {
-        String msg = String("Hello from ESP-Publisher: ") + ++msgCount;
+        String msg = String("MQTT: Hello from ESP-Publisher: ") + ++msgCount;
 
-        /** Testing **/
-
+        /** Encryption Related **/
         // Define arrays
         uint8_t iv[16];
         uint8_t tag[16];
@@ -135,27 +134,50 @@ void loop() {
         char assembledCharArray[concatenatedMessageSize];
         uint8ToChar(concatenatedMessage, assembledCharArray, concatenatedMessageSize);
 
-        char *encoded_content;
+        int encodedLength = Base64.encodedLength(concatenatedMessageSize);
+        char encoded_content[encodedLength];
         Base64.encode(encoded_content, assembledCharArray, concatenatedMessageSize);
 
         char JSONmessageBuffer[512];
         DynamicJsonDocument contentObject(512);
 
         contentObject["payload-size"] = concatenatedMessageSize;
-        contentObject["encode-content-size"] = 64;
+        contentObject["encode-content-size"] = encodedLength;
         contentObject["content"]   = encoded_content;
         contentObject["type"] = "encryption";
         contentObject["technology"] = "MQTT";
 
+        // Serial object
         serializeJson(contentObject, JSONmessageBuffer);
 
-        print_char(JSONmessageBuffer, 512);
+        // Clear the contentObject, make it ready for reuse
+        contentObject.clear();
 
-        /** Testing **/
         // Public message to encryption topic
         boolean rc = pubSubClient.publish("Encryption", JSONmessageBuffer);
-        Serial.print("Published, rc="); Serial.print( (rc ? "OK: " : "FAILED: ") );
+        Serial.print("Published to Encryption, rc="); Serial.print( (rc ? "OK: " : "FAILED: "));Serial.println();
+
+        delay(10);
+        /** Encryption Related **/
+
+        /** Plaintext Related **/
+        delay(10);
+        char JSONplaintextBuffer[512];
+
+        contentObject["payload-size"] = msg.length();
+        contentObject["content"]   = msg;
+        contentObject["type"] = "plaintext";
+        contentObject["technology"] = "MQTT";
+
+        serializeJson(contentObject, JSONplaintextBuffer);
+        /** Plaintext Related **/
+
+        // Public message to Plaintext topic
+        rc = pubSubClient.publish("Plaintext", JSONplaintextBuffer);
+        Serial.print("Published to Plaintext, rc="); Serial.print( (rc ? "OK: " : "FAILED: "));Serial.println();
+
         Serial.println(msg);
         lastPublish = millis();
+        Serial.println();
     }
 }
