@@ -65,7 +65,7 @@ void loop()
         uint8_t plaintext[msg_len];
         uint8_t ciphertext[msg_len];
 
-        DEBUG_STREAM.println("Definition of arrays was successfull");
+        DEBUG_STREAM.println("Definition of arrays was successful");
 
         // Copy message to plaintext as uint8_t
         charToUint8(msg.c_str(), plaintext, (int) msg_len);
@@ -75,20 +75,23 @@ void loop()
         // Perform encryption
         performEncryptionNB(AES_GCM_ENCRYPTION, plaintext, (int) msg_len, ciphertext, Tag, IV);
 
-        DEBUG_STREAM.println("Encryption passed, and therefore were successful");
+        DEBUG_STREAM.println("Encryption passed - successful");
 
         // Concatenate to one big message containing IV + Tag + ciphertext
         uint8_t concatenatedMessage[sizeof(IV) + sizeof (Tag) + sizeof(ciphertext)];
         int concatenatedMessageSize = sizeof(IV) + sizeof (Tag) + sizeof(ciphertext);
         AssembleAuthenticatedEncryptionPacket(IV, Tag, 16, ciphertext, concatenatedMessage, concatenatedMessageSize);
 
-        DEBUG_STREAM.println("Assemble function was passed without problems");
+        DEBUG_STREAM.println("Assemble function - succesful");
 
         /** Testing **/
 
         sendNBIoTUDP(concatenatedMessage, concatenatedMessageSize, TARGET_IP, TARGET_PORT, nbiot);
 
-        // This could be included to
-        //sendNBIoTUDP("This is clear-text, meaning not encrypted.", TARGET_IP, TARGET_PORT, nbiot);
+        /** Unecrypted version of NB-IoT
+        DEBUG_STREAM.println("Sending *UNENCRYPTED* NB-IoT packet: ");
+        const uint8_t message[] = "This is an unencrypted NB-IoT packet";
+        sendNBIoTUDP(message, (int) sizeof(message), TARGET_IP, TARGET_PORT, nbiot);
+        **/
     }
 }
