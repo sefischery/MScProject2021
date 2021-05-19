@@ -18,6 +18,7 @@ external_stylesheets = [
 ]
 
 data = []
+sigfox_data = []
 
 """ Initial setup of web application """
 server = Flask('my_app')
@@ -32,7 +33,7 @@ webapp.layout = defineHtmlLayout(webapp, data)
 callback_handler(webapp, data)
 
 """ This method creates the message endpoint, which is used for adding data """
-createMessageEndpoint(server, data)
+createMessageEndpoint(server, data, sigfox_data)
 
 if __name__ == "__main__":
     webapp.run_server(host='0.0.0.0', debug=True, port=80)
