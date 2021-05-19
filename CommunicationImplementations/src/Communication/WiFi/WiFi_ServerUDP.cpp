@@ -3,6 +3,7 @@
 #include <WiFi_Helper.h>
 #include <cstring>
 #include <utilities.h>
+#include <Base64.h>
 
 WiFiUDP UDP;
 //WiFi information for the setup.
@@ -49,31 +50,39 @@ void loop(){
     Serial.println();
     String received_message_UDP = Receive_UDP_Packet(UDP, UDP_RECEIVER_BUFFER);
 
+    Serial.print("Received message: ");
+    Serial.println(received_message_UDP);
+
+    int decodedLength = Base64.decodedLength((char *) received_message_UDP.c_str(), (int) received_message_UDP.length());
+    char assembledData[decodedLength];
+    Base64.decode(
+            assembledData,
+            (char *) received_message_UDP.c_str(),
+            (int) received_message_UDP.length()
+            );
+
     if (ENABLE_ENCRYPTION){
         /** Encryption **/
         Serial.println("------------------------------------");
-        int responseSize = (int) received_message_UDP.length();
 
         Serial.print("Response size: ");
-        Serial.println(responseSize);
+        Serial.println(decodedLength);
 
-        uint8_t ciphertext[responseSize];
-        uint8_t buffer[responseSize];
-        Serial.println("STEP1");
-        for (int index = 0; index < responseSize; index++)
+        uint8_t ciphertext[decodedLength];
+        uint8_t buffer[decodedLength];
+
+        for (int index = 0; index < decodedLength; index++)
         {
-            buffer[index] = received_message_UDP[index];
+            buffer[index] = assembledData[index];
         }
-        Serial.println("STEP2");
         delay(10);
-        DisassembleAuthenticaedEncryptionPacket(IV, Tag, 16, ciphertext, buffer, responseSize);
-        Serial.println("STEP3");
+        DisassembleAuthenticaedEncryptionPacket(IV, Tag, 16, ciphertext, buffer, decodedLength);
         delay(10);
-        performDecryption(ciphertext, Tag, IV, responseSize);
-        Serial.println("STEP4");
+
+        performDecryption(ciphertext, Tag, IV, decodedLength);
         Serial.println();
+
         memset(buffer, 0, sizeof(buffer));
-        Serial.println("STEP5");
     } else {
         String output_format = "Received UDP packet from ["+UDP.remoteIP().toString()+":"
                                + String(UDP.remotePort()) + "]" + " - Message: ";

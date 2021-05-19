@@ -2,6 +2,7 @@
 #include <WiFiUdp.h>
 #include <WiFi_Helper.h>
 #include <utilities.h>
+#include <Base64.h>
 
 #define AES_GCM_ENCRYPTION 1
 int messageNumber = 0;
@@ -68,7 +69,16 @@ void loop(){
 
         Serial.println("Assemble function was passed without problems");
 
-        Build_And_Send_UDP_Packet(UDP, concatenatedMessage, concatenatedMessageSize, Server_IP, UDP_PORT);
+        // Convert to char array as preparation for Base64 encoding
+        char assembledCharArray[concatenatedMessageSize];
+        uint8ToChar(concatenatedMessage, assembledCharArray, concatenatedMessageSize);
+
+        // Encode Data
+        int encodedLength = Base64.encodedLength(concatenatedMessageSize);
+        char encoded_content[encodedLength];
+        Base64.encode(encoded_content, assembledCharArray, concatenatedMessageSize);
+
+        Build_And_Send_UDP_Packet(UDP, encoded_content, Server_IP, UDP_PORT);
 
         /** Encryption **/
     } else
