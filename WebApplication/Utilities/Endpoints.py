@@ -33,8 +33,6 @@ def createMessageEndpoint(server, data_array_of_dicts, sigfox_data):
         json_data = request.json  # this is a dictionary!!
         content = json_data['content']
 
-        print(content)
-
         content = bytes.fromhex(content).decode('utf-8')
         date = datetime.datetime.fromtimestamp(int(json_data['date'])).strftime("%Y-%m-%d %H:%M:%S")
 
