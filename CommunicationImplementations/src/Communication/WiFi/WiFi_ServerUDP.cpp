@@ -59,16 +59,21 @@ void loop(){
 
         uint8_t ciphertext[responseSize];
         uint8_t buffer[responseSize];
+        Serial.println("STEP1");
         for (int index = 0; index < responseSize; index++)
         {
             buffer[index] = received_message_UDP[index];
         }
+        Serial.println("STEP2");
         delay(10);
         DisassembleAuthenticaedEncryptionPacket(IV, Tag, 16, ciphertext, buffer, responseSize);
+        Serial.println("STEP3");
         delay(10);
         performDecryption(ciphertext, Tag, IV, responseSize);
+        Serial.println("STEP4");
         Serial.println();
-        /** Encryption **/
+        memset(buffer, 0, sizeof(buffer));
+        Serial.println("STEP5");
     } else {
         String output_format = "Received UDP packet from ["+UDP.remoteIP().toString()+":"
                                + String(UDP.remotePort()) + "]" + " - Message: ";
@@ -78,5 +83,6 @@ void loop(){
 
     delay(10);
     memset(UDP_RECEIVER_BUFFER, 0, sizeof(UDP_RECEIVER_BUFFER));
+
 }
 

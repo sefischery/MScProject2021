@@ -74,9 +74,9 @@ void Build_And_Send_UDP_Packet(WiFiUDP &WiFiUDP, const uint8_t *msg, int msg_siz
 String Receive_UDP_Packet(WiFiUDP &WiFiUDP, char packet_buffer[]){
     String tmp = "";
     while(tmp == ""){
-        WiFiUDP.parsePacket();
-        while(WiFiUDP.read(packet_buffer, 350) > 0){
-            WiFiUDP.read(packet_buffer, 350);
+        int length = WiFiUDP.parsePacket();
+        while(WiFiUDP.read(packet_buffer, length) > 0){
+            WiFiUDP.read(packet_buffer, length);
             delay(20);
         }
         tmp = packet_buffer;

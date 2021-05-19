@@ -4,6 +4,7 @@
 #include <utilities.h>
 
 #define AES_GCM_ENCRYPTION 1
+int messageNumber = 0;
 
 WiFiUDP UDP;
 IPAddress Server_IP(192,168,4,1);
@@ -31,12 +32,12 @@ void setup() {
     UDP.begin(UDP_PORT);
 }
 
-int messageNumber = 0;
+
 
 void loop(){
-    delay(1000);
+    delay(5000);
     Serial.println();
-    String msg = String("This is an unecrypted UDP message sent via WiFi; Messager Number: ") + messageNumber++;
+    String msg = String("This is an unecrypted UDP message sent via WiFi - Message Number: ") + String(messageNumber++);
     String output_format = "Sending UDP packet to ["+Server_IP.toString()+":" + UDP_PORT + "]" + " - Sent message: ";
     Serial.println(output_format);
     Serial.println(msg);
