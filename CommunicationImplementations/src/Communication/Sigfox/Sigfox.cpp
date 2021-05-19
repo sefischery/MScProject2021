@@ -1,55 +1,99 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 #include <Sigfox_functions.h>
+#include <utilities.h>
+#include <Base64.h>
 
 SoftwareSerial SigfoxSerial(SER_RX_PIN, SER_TX_PIN);
 
 int messageCount = 0;
 void setup()
 {
+    delay(2000);
     Serial.begin(115200);
     SigfoxSerial.begin(9600);
-    SigfoxSerial.println("Test");
-    Serial.println("HELLO WORLD");
-    uint8_t msg[12] = "magnussebas";
-    sendSigfoxMessage(msg, sizeof(msg), SigfoxSerial);
+    Serial.println("Connection established to the Sigfox module");
 
-    /** Testing **/
-    // Array definitions
-    uint8_t firstMessage[12] = {0x00};
-    uint8_t secondMessage[12] = {0x00};
-    uint8_t thirdMessage[12] = {0x00};
-    uint8_t data[12];
+    //uint8_t msg[12] = "magnussebas";
+    //sendSigfoxMessage(msg, sizeof(msg), SigfoxSerial);
 
+    /** Encryption **/
     // Set message
     String message = String("Message: ") + ++messageCount;
 
-    // Define operating arrays
-    uint8_t tag[16];
+    // Define arrays
     uint8_t iv[16];
-    uint8 plaintext[message.length()];
+    uint8_t tag[16];
+    uint8_t plaintext[message.length()];
     uint8_t ciphertext[message.length()];
 
-    // Fill plaintext array with message
-    for (int index = 0; index < message.length(); index++)
-    {
-        plaintext[index] = message[index];
+    // Copy message to plaintext as uint8_t
+    charToUint8(message.c_str(), plaintext, (int) message.length());
+
+    // Perform encryption
+    performEncryption(ACORN_ENCRYPTION, plaintext, (int) message.length(), ciphertext, tag, iv);
+
+    // Concatenate to one big message containing IV + Tag + ciphertext
+    int concatenatedMessageSize = 32 + message.length();
+    uint8_t concatenatedMessage[concatenatedMessageSize];
+    AssembleAuthenticatedEncryptionPacket(iv, tag, 16, ciphertext, concatenatedMessage, concatenatedMessageSize);
+
+    // Convert to char array for base64 encoding
+    char assembledCharArray[concatenatedMessageSize];
+    uint8ToChar(concatenatedMessage, assembledCharArray, concatenatedMessageSize);
+
+    // Needs to be changed to base64
+    int encodedLength = Base64.encodedLength(concatenatedMessageSize);
+    char encoded_content[encodedLength];
+    Base64.encode(encoded_content, assembledCharArray, concatenatedMessageSize);
+
+    // Helping print statements
+    Serial.print("Complete packet size: ");Serial.println(encodedLength);
+    Serial.print("Divided into packages of size 12, makes: ");Serial.print(encodedLength / 12);Serial.print(".");Serial.print(encodedLength % 12);Serial.println(" number of packages.");
+    Serial.println();
+    Serial.print("Complete message: ");
+    print_char(encoded_content, encodedLength);
+    Serial.println();
+
+    // Prepare message transmission with max length of 12
+    uint8_t transmittingMessage[12];
+    int transmissionCount = 0;
+    for (int index = 0; index < encodedLength; ++index) {
+        if (((index % 12) == 0) && ((index / 12) > 0))
+        {
+            delay(10);
+            sendSigfoxMessage(transmittingMessage, 12, SigfoxSerial);
+            delay(10);
+            Serial.print("Transmission, number: ");Serial.print(transmissionCount++);Serial.println(", was successful.");
+            Serial.print("Message contained: ");
+            print_uint8(transmittingMessage, 12);
+            Serial.println();
+        }
+
+        transmittingMessage[index % 12] = encoded_content[index];
     }
 
-    // Perform encryption, thereby also fill iv and tag
-    performEncryption(1, plaintext, (int) msg.length(), ciphertext, tag, iv);
+    if (encodedLength % 12 != 0)
+    {
+        uint8_t remainingData[encodedLength % 12];
+        for (int index = 0; index < encodedLength % 12; ++index) {
+            remainingData[index] = transmittingMessage[index];
+        }
 
-
-
-
-
-
-
-    /** Testing **/
+        delay(10);
+        sendSigfoxMessage(remainingData, encodedLength % 12, SigfoxSerial);
+        delay(10);
+        Serial.print("Transmission, number: ");Serial.print(transmissionCount++);Serial.println(", was successful.");
+        Serial.print("Message contained: ");
+        print_uint8(remainingData, encodedLength % 12);
+        Serial.println();
+    }
+    /** Encryption **/
 }
 
 void loop()
 {
+    // This is used if AT commands are needed.
     /*
     delay(1000);
     String pac = "";

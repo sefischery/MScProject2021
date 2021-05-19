@@ -1,4 +1,6 @@
 #include <SoftwareSerial.h>
+#include <utilities.h>
+#include <Encryption_testing.h>
 
 /** Sends an inputted AT command to the Sigfox module via SoftwareSerial **/
 void sendSigfoxATCommand(char const *Command, SoftwareSerial &softwareSerial)
@@ -51,4 +53,24 @@ void sendSigfoxMessage(uint8_t *msg, int size, SoftwareSerial &softwareSerial)
     Serial.println();
     Serial.print("Status \t");
     Serial.println(status);
+}
+
+void performEncryption(int encryptionType, uint8_t *plaintext, int inputSize,
+                       uint8_t *ciphertextReceiver, uint8_t *Tag, uint8_t *IV) {
+    /** IV initialization **/
+    GenerateInitializationVector(IV, 16);
+
+    /** Perform encryption and timings **/
+    if (encryptionType == 1)
+    {
+        cipher.encryption.aes_gcm_encryption(plaintext, ciphertextReceiver, Tag, inputSize, cipher.key, IV, false);
+    }
+    else if (encryptionType == 2)
+    {
+        cipher.encryption.acorn_encryption(plaintext, ciphertextReceiver, Tag, inputSize, cipher.key, IV, false);
+    }
+    else if (encryptionType == 3)
+    {
+        cipher.encryption.ascon_encryption(plaintext, ciphertextReceiver, Tag, inputSize, cipher.key, IV, false);
+    }
 }
