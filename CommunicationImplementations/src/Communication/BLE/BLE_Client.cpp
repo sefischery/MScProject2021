@@ -155,12 +155,6 @@ void changeBleServerCharacteristics(){
                 performEncryption(AES_GCM_ENCRYPTION, plaintext, textSize, ciphertextReceiver, Tag, IV);
                 encryptionPerformed = true;
                 copy_uint8(ciphertextReceiver, copyOfCipherText, textSize);
-                Serial.print("Ciphertext: ");
-                print_uint8(ciphertextReceiver, 20);
-                Serial.print("Tag: ");
-                print_uint8(Tag, 16);
-                Serial.print("Iv: ");
-                print_uint8(IV, 16);
             }
 
             if (!hasSentIv){
@@ -171,14 +165,13 @@ void changeBleServerCharacteristics(){
                 {
                     writer[index] = IV[index - 3];
                 }
-                Serial.print("writing IV: ");
-                print_uint8(writer, 19);
+
+                Serial.print("Sending IV.");
                 pRemoteCharacteristic->writeValue(writer, 19);
+                Serial.println();
             }
             else if (!hasSentTag){
                 hasSentTag = true;
-                pRemoteCharacteristic->writeValue("Tag:");
-
                 uint8_t writer[20] = "Tag:";
 
                 for (int index = 4; index < 20; index++)
@@ -186,14 +179,17 @@ void changeBleServerCharacteristics(){
                     writer[index] = Tag[index - 4];
                 }
 
-                Serial.print("writing Tag: ");
-                print_uint8(Tag, 20);
-
+                Serial.println("Sending Tag.");
                 pRemoteCharacteristic->writeValue(writer, 20);
-
+                Serial.println();
             }
             else {
+                Serial.print("Ciphertext: ");print_uint8(copyOfCipherText, textSize);
+                Serial.print("IV: ");print_uint8(IV, 16);
+                Serial.print("Tag: ");print_uint8(Tag, 16);
                 pRemoteCharacteristic->writeValue(copyOfCipherText, textSize);
+
+                Serial.println();
             }
         }
     }

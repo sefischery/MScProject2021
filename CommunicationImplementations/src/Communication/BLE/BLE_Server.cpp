@@ -128,10 +128,6 @@ void loop() {
                         }
                         Serial.print("Ciphertext: ");
                         print_uint8(ciphertext, (int) incomingString.length());
-                        Serial.print("Tag: ");
-                        print_uint8(Tag, 16);
-                        Serial.print("Iv: ");
-                        print_uint8(IV, 16);
                         performDecryption(ciphertext, Tag, IV, (int) incomingString.length());
                         Serial.println();
                     }
