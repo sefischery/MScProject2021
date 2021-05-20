@@ -53,15 +53,15 @@ void loop(){
     Serial.print("Received message: ");
     Serial.println(received_message_UDP);
 
-    int decodedLength = Base64.decodedLength((char *) received_message_UDP.c_str(), (int) received_message_UDP.length());
-    char assembledData[decodedLength];
-    Base64.decode(
-            assembledData,
-            (char *) received_message_UDP.c_str(),
-            (int) received_message_UDP.length()
-            );
-
     if (ENABLE_ENCRYPTION){
+        int decodedLength = Base64.decodedLength((char *) received_message_UDP.c_str(), (int) received_message_UDP.length());
+        char assembledData[decodedLength];
+        Base64.decode(
+                assembledData,
+                (char *) received_message_UDP.c_str(),
+                (int) received_message_UDP.length()
+        );
+
         /** Encryption **/
         Serial.println("------------------------------------");
 
