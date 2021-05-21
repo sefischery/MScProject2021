@@ -12,6 +12,9 @@ WiFiUDP UDP;
 #define AP_MAX_CON 5
 //#define AP_PASSWORD ""
 
+/** Preparation for encryption **/
+uint8_t Tag[16] = {};
+uint8_t IV[16] = {};
 char UDP_RECEIVER_BUFFER[350];
 
 void Create_Open_AccessPoint(const char *SSID,
@@ -39,9 +42,9 @@ void Wait_For_Client_Connection(){
 
 void setup() {
     Serial.begin(115200);
-    Create_Open_AccessPoint(AP_SSID, AP_CHANNEL, AP_CLOACK, AP_MAX_CON);
+    Connect_To_AP(AP_SSID, WiFi);
     UDP.begin(UDP_PORT);
-    Wait_For_Client_Connection();
+    Serial.println("Hello there");
 }
 
 bool encrypted = false;
@@ -83,13 +86,13 @@ void loop(){
         Serial.println();
 
         memset(buffer, 0, sizeof(buffer));
-    } else {
+    }
+    else {
         String output_format = "Received UDP packet from ["+UDP.remoteIP().toString()+":"
                                + String(UDP.remotePort()) + "]" + " - Message: ";
         Serial.println(output_format);
         Serial.println(received_message_UDP);
     }
-
     delay(10);
     memset(UDP_RECEIVER_BUFFER, 0, sizeof(UDP_RECEIVER_BUFFER));
 

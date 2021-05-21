@@ -8,28 +8,14 @@
 int messageNumber = 0;
 
 WiFiUDP UDP;
-IPAddress Server_IP(192,168,4,1);
-
-void Connect_To_AP(const char *SSID){
-    Serial.println("Connecting to the Access Point: ");
-    Serial.println(SSID);
-
-    WiFi.begin(SSID);
-    while (WiFiClass::status() != WL_CONNECTED) {
-        delay(500);
-        Serial.println("Connecting to WiFi..");
-    }
-
-    Serial.println("Connected to WiFi");
-    Serial.print("IP Address: ");
-    Serial.println(WiFi.localIP());
-    Serial.print("MAC Address: ");
-    Serial.println(WiFi.macAddress());
-}
+IPAddress Server_IP(192,168,43,136);
+/** Preparation for encryption **/
+uint8_t Tag[16] = {};
+uint8_t IV[16] = {};
 
 void setup() {
     Serial.begin(115200);
-    Connect_To_AP(AP_SSID);
+    Connect_To_AP(AP_SSID, WiFi);
     UDP.begin(UDP_PORT);
 }
 

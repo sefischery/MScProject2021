@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Encryption_testing.h>
 #include <WiFiUdp.h>
+#include <WiFi.h>
 
 
 void performEncryption(int encryptionType, uint8_t *plaintext,
@@ -84,3 +85,19 @@ String Receive_UDP_Packet(WiFiUDP &WiFiUDP, char packet_buffer[]){
     return tmp;
 }
 
+void Connect_To_AP(const char *SSID, WiFiClass &WiFi_instance) {
+    Serial.println("Connecting to the Access Point: ");
+    Serial.println(SSID);
+
+    WiFi_instance.begin(SSID);
+    while (WiFiClass::status() != WL_CONNECTED) {
+        delay(500);
+        Serial.println("Connecting to WiFi_instance..");
+    }
+
+    Serial.println("Connected to WiFi_instance");
+    Serial.print("IP Address: ");
+    Serial.println(WiFi_instance.localIP());
+    Serial.print("MAC Address: ");
+    Serial.println(WiFi_instance.macAddress());
+}
