@@ -1,4 +1,4 @@
-This directory is exclusively testing.
+This directory is exclusively used for testing.
 
 See example:
 https://docs.platformio.org/en/latest/tutorials/core/unit_testing_blink.html
@@ -14,17 +14,15 @@ pio test -e esp32-dev
 
 Or simply select the platofrmio test | board and execute
 
-If we want to test multiple boards CONCURRENTLY we need to
-specify the port used for each device within platformio.ini
-j
 
+If you require code styles and suggestion, then check if the following error in CLion occurs:
+"This file does not belong to any project target; code insight feautres might nto work properly."
 
-More information about PlatformIO Unit Testing:
-- https://docs.platformio.org/page/plus/unit-testing.html
----
-
-if you get an error in CLion with something like could not provide code insights then go to
-
-CMakeLists.txt and manually add
+Then you must go to CMakeLists.txt and manualy add the following:
 add_executable(Z_DUMMY_TARGET ${SRC_LIST} test/test_XYZ.cpp)
-(remember to remove it)
+
+and then execute the relevant tests by the commands specified above.
+Remember to remove the add_executable once testing is done.
+
+If multiple boards are needed for testing (i.e. concurrent testing)
+the explicit ports most be ensured are correct for each device within the platformio.ini environment file.
