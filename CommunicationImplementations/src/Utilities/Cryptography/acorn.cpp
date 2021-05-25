@@ -1,5 +1,5 @@
-#include <Acorn128.h>
 #include <Arduino.h>
+#include <Acorn128.h>
 #define SIZE_16 16
 #define POINTITERATION 200
 
