@@ -21,6 +21,8 @@ void setup()
     // Set message
     String message = String("Message: ") + ++messageCount;
 
+    Serial.print("Plain data: \"");Serial.print(message);Serial.println("\"");
+
     // Define arrays
     uint8_t iv[16];
     uint8_t tag[16];
@@ -38,6 +40,10 @@ void setup()
     uint8_t concatenatedMessage[concatenatedMessageSize];
     AssembleAuthenticatedEncryptionPacket(iv, tag, 16, ciphertext, concatenatedMessage, concatenatedMessageSize);
 
+    Serial.println();
+    Serial.print("Encrypted data: ");print_uint8(concatenatedMessage, concatenatedMessageSize);
+    Serial.println();
+
     // Convert to char array for base64 encoding
     char assembledCharArray[concatenatedMessageSize];
     uint8ToChar(concatenatedMessage, assembledCharArray, concatenatedMessageSize);
@@ -49,9 +55,9 @@ void setup()
 
     // Helping print statements
     Serial.print("Complete packet size: ");Serial.println(encodedLength);
-    Serial.print("Divided into packages of size 12, makes: ");Serial.print(encodedLength / 12);Serial.print(".");Serial.print(encodedLength % 12);Serial.println(" number of packages.");
+    Serial.print("Divided into: ");Serial.print(encodedLength / 12);Serial.print(".");Serial.print(encodedLength % 12);Serial.println(" number of packages.");
     Serial.println();
-    Serial.print("Complete message: ");
+    Serial.print("Base64 encoded data: ");
     print_char(encoded_content, encodedLength);
     Serial.println();
 

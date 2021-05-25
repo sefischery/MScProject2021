@@ -30,7 +30,7 @@ void setup()
     bool connected = false;
     while (!connected) {
         /** Sets connected flag if the .connect function returns true **/
-        DEBUG_STREAM.println("Initating NB-IoT connection");
+        DEBUG_STREAM.println("Initiating NB-IoT connection");
         connected = nbiot.connect(AccessPointName, cdp);
         DEBUG_STREAM.println("Connected successfully!");
     }
@@ -44,6 +44,7 @@ void setup()
 }
 
 int msgCount = 0;
+
 void loop()
 {
     Serial.println("Entered LOOP");
@@ -55,37 +56,46 @@ void loop()
         }
     }
     else {
-        // This is where the message is decrypted.
-        /** Testing **/
+        DEBUG_STREAM.println("Successful connection to NB-IoT modem");
+
+        /** Define message **/
         String msg = String("NB-IoT message; Number: ") + ++msgCount;
 
+        /** Encryption process started **/
         uint8_t Tag[16];
         uint8_t IV[16];
         unsigned int msg_len = msg.length();
         uint8_t plaintext[msg_len];
         uint8_t ciphertext[msg_len];
 
-        DEBUG_STREAM.println("Definition of arrays was successful");
+        /** Print plaintext **/
+        DEBUG_STREAM.print("Plain data: \"");
+        DEBUG_STREAM.print(msg);
+        DEBUG_STREAM.println("\"");
 
-        // Copy message to plaintext as uint8_t
+        /** Copy message to plaintext as uint8_t **/
         charToUint8(msg.c_str(), plaintext, (int) msg_len);
 
-        DEBUG_STREAM.println("Conversion of msg to plaintext was successful");
-
-        // Perform encryption
+        /** Perform encryption **/
         performEncryptionNB(AES_GCM_ENCRYPTION, plaintext, (int) msg_len, ciphertext, Tag, IV);
 
-        DEBUG_STREAM.println("Encryption passed - successful");
-
-        // Concatenate to one big message containing IV + Tag + ciphertext
+        /** Concatenate to one big message containing IV + Tag + ciphertext **/
         uint8_t concatenatedMessage[sizeof(IV) + sizeof (Tag) + sizeof(ciphertext)];
         int concatenatedMessageSize = sizeof(IV) + sizeof (Tag) + sizeof(ciphertext);
         AssembleAuthenticatedEncryptionPacket(IV, Tag, 16, ciphertext, concatenatedMessage, concatenatedMessageSize);
 
-        DEBUG_STREAM.println("Assemble function - succesful");
+        /** Print encrypted contetn **/
+        DEBUG_STREAM.println("");
+        DEBUG_STREAM.print("Encrypted data: ");
+        for (int index = 0; index < concatenatedMessageSize; ++index) {
+            int num = concatenatedMessage[index];
+            char hex[6];
+            sprintf(hex, "0x%02x ", num);
+            DEBUG_STREAM.print(hex);
+        }DEBUG_STREAM.println("");
+        DEBUG_STREAM.println("");
 
-        /** Testing **/
-
+        /** Send assembled encrypted packet **/
         sendNBIoTUDP(concatenatedMessage, concatenatedMessageSize, TARGET_IP, TARGET_PORT, nbiot);
 
         /** Unecrypted version of NB-IoT
