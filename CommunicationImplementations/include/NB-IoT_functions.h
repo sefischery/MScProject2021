@@ -14,6 +14,7 @@
 #define ACORN_ENCRYPTION 2
 #define ASCON_ENCRYPTION 3
 
+void print_unit8_NB(uint8_t *inputArray, int sizeOfInputArray);
 void sendNBIoTUDP(const uint8_t *message, int messageSize, const char *targetIP, int targetPort, Sodaq_nbIOT &nbiot);
 void performEncryptionNB(int encryptionType, uint8_t *plaintext, int inputSize,
                          uint8_t *ciphertextReceiver, uint8_t *Tag, uint8_t *IV);
