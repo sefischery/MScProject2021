@@ -6,6 +6,7 @@ import numpy as np
 import scipy.stats as st
 
 result_path = str(Path.cwd().parents[0])
+print(result_path)
 result_path_graphs = f"{result_path}\\GraphResults"
 result_path_graphs_hist = f"{result_path_graphs}\\Histogram"
 result_path_graphs_box = f"{result_path_graphs}\\Boxplot"
@@ -26,21 +27,30 @@ def generate_histogram(deviceType, encryptionStandard, isEncryption, save):
         operating_values = read[f'{encryptionStandard}-decryption'].values
 
     fig, axe = plt.subplots(figsize=(9, 5))
-    axe.hist(operating_values, histtype='stepfilled', alpha=0.5, color='#86bf91', zorder=2, rwidth=0.9)
+    #axe.hist(operating_values, histtype='stepfilled', alpha=0.5, color='#86bf91', zorder=2, rwidth=0.9)
+    yAxisArray = [x for x in range(0, len(operating_values))]
+    axe.scatter(operating_values, yAxisArray, color='#86bf91', marker='x')
     axe.set_xlabel(microseconds_label_str)
     axe.set_ylabel('Samples count')
     axe.grid(color='white')  # True, axis='y', alpha=0.2)
     axe.set_facecolor('#e6e8e7')
 
     # Get mean as standard deviation
-    std = mpatches.Patch(color='#86bf91', label=f'std: {round(operating_values.std(), 4)}', alpha=0.5)
-    mean = mpatches.Patch(color='r', label=f'mean: {round(operating_values.mean(), 2)}', alpha=0.3)
+    std = mpatches.Patch(color='b', label=f'std: {round(operating_values.std(), 4)}', alpha=0.5)
+    mean = mpatches.Patch(color='r', label=f'mean: {round(operating_values.mean(), 4)}', alpha=0.3)
     axe.legend(handles=[std, mean])
 
     mean = operating_values.mean()
+    std = operating_values.std()
+
+    std_minus = mean - std
+    std_plus = mean + std
 
     # the problem comes here
     plt.axvline(mean, color='r', linestyle='dashed', linewidth=2, alpha=0.3)
+    if std > 0.00005:
+        plt.axvline(std_minus, color='b', linestyle='dashed', linewidth=2, alpha=0.5)
+        plt.axvline(std_plus, color='b', linestyle='dashed', linewidth=2, alpha=0.5)
 
     if isEncryption:
         naming = "encryption"
@@ -196,9 +206,9 @@ def triggerBoxplot3(cryptographicOperation, display, save):
 
 
 if __name__ == '__main__':
-    #triggerHistogram(display=False, save=True)
+    triggerHistogram(display=False, save=True)
     #triggerBoxplot1("encryption", display=False, save=True)
     #triggerBoxplot1("decryption", display=True, save=True)
-    triggerBoxplot2("decryption", display=False, save=True)
+    #triggerBoxplot2("decryption", display=False, save=True)
     #triggerBoxplot3("encryption", display=False, save=True)
     #triggerBoxplot3("decryption", display=False, save=True)
