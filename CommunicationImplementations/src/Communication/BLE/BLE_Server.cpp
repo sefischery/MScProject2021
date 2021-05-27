@@ -104,6 +104,11 @@ void loop() {
                     for (int index = 3; index < 19; index++){
                         IV[index - 3] = receiver[index];
                     }
+
+                    Serial.println();
+                    Serial.print("Reading value from client: ");
+                    Serial.println(incomingString.c_str());
+                    Serial.println();
                 }
                 /** Testing **/
 
@@ -118,6 +123,11 @@ void loop() {
                         for (int index = 4; index < 20; index++){
                             Tag[index - 4] = receiver[index];
                         }
+
+                        Serial.println();
+                        Serial.print("Reading value from client: ");
+                        Serial.println(incomingString.c_str());
+                        Serial.println();
                     }
                     /** Testing **/
 
@@ -126,6 +136,9 @@ void loop() {
                         for (int index = 0; index < 20; index++){
                             ciphertext[index] = incomingString[index];
                         }
+                        Serial.print("Reading value from client: ");
+                        Serial.println(incomingString.c_str());
+
                         Serial.print("Ciphertext: ");
                         print_uint8(ciphertext, (int) incomingString.length());
                         performDecryption(ciphertext, Tag, IV, (int) incomingString.length());
@@ -137,12 +150,14 @@ void loop() {
         // If not encryption
         else {
             incomingString = pCharacteristic->getValue();
+            Serial.print("Reading value from client: ");
             Serial.println(incomingString.c_str());
+            Serial.println();
         }
 
         if (incomingString == "Setup encryption")
         {
-            pCharacteristic->setValue("Server: Encrypted channel ready");
+            pCharacteristic->setValue("Encrypted channel ready");
             pCharacteristic->notify();
             prepareDecryption = true;
         }
@@ -164,7 +179,7 @@ void loop() {
     }
     // connecting
     if (deviceConnected && !oldDeviceConnected) {
-        pCharacteristic->setValue("Server: You are connected");
+        pCharacteristic->setValue("You are connected");
         pCharacteristic->notify();
         oldDeviceConnected = deviceConnected;
     }

@@ -13,6 +13,7 @@ static BLEScan* pBLEScan;
 static BLEUUID serviceUUID("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
 static BLEUUID charUUID("beb5483e-36e1-4688-b7f5-ea07361b26a8");
 
+String characteristicUUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
 
 class MyClientCallback : public BLEClientCallbacks {
     void onConnect(BLEClient* pClient) override {
@@ -110,11 +111,14 @@ bool performServerConnectionAttempt(){
     bool connectionAttempt = connectToServer();
     if (connectionAttempt) {
         Serial.println("Connection to BLE Server: ESTABLISHED");
+        Serial.println();
         return false;
     } else {
         Serial.println("Connection to BLE Server: FAILED");
+        Serial.println();
         return true;
     }
+    Serial.println();
 }
 
 bool encryptionPerformed = false;
@@ -129,18 +133,28 @@ uint8_t copyOfCipherText[20] = {0};
 
 int msgNumber = 0;
 
+
+
 void changeBleServerCharacteristics(){
     std::string value = pRemoteCharacteristic->readValue();
-    Serial.println(value.c_str());
 
     if (ENABLE_ENCRYPTION)
     {
-        if (value == "Server: You are connected")
+        if (value == "You are connected")
         {
+            Serial.print("Reading value from server: ");
+            Serial.println(value.c_str());
+            Serial.println();
+
             pRemoteCharacteristic->writeValue("Setup encryption");
         }
-        else if (value == "Server: Encrypted channel ready" || sendingEncryptedText)
+        else if (value == "Encrypted channel ready" || sendingEncryptedText)
         {
+            if (!sendingEncryptedText){
+                Serial.print("Reading value from server: ");
+                Serial.println(value.c_str());
+                Serial.println();
+            }
             sendingEncryptedText = true;
 
             /** Define initial text **/
@@ -166,7 +180,7 @@ void changeBleServerCharacteristics(){
                     writer[index] = IV[index - 3];
                 }
 
-                Serial.print("Sending IV.");
+                Serial.println("Writing: IV");
                 pRemoteCharacteristic->writeValue(writer, 19);
                 Serial.println();
             }
@@ -179,7 +193,7 @@ void changeBleServerCharacteristics(){
                     writer[index] = Tag[index - 4];
                 }
 
-                Serial.println("Sending Tag.");
+                Serial.println("Writing: Tag");
                 pRemoteCharacteristic->writeValue(writer, 20);
                 Serial.println();
             }
@@ -187,6 +201,7 @@ void changeBleServerCharacteristics(){
                 Serial.print("Ciphertext: ");print_uint8(copyOfCipherText, textSize);
                 Serial.print("IV: ");print_uint8(IV, 16);
                 Serial.print("Tag: ");print_uint8(Tag, 16);
+                Serial.print("Plaintext: ");print_char(message, textSize);
                 pRemoteCharacteristic->writeValue(copyOfCipherText, textSize);
 
                 Serial.println();
@@ -196,8 +211,13 @@ void changeBleServerCharacteristics(){
     else {
         String msg = String("Unencrypted msg: ") + msgNumber++;
         pRemoteCharacteristic->writeValue(msg.c_str());
-    }
 
+        Serial.print("Client writing to attribute: ");
+        Serial.println(characteristicUUID.c_str());
+        Serial.print("Msg-> ");
+        Serial.println(msg);
+        Serial.println();
+    }
 }
 
 
