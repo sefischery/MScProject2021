@@ -91,12 +91,12 @@ void GenerateInitializationVector(uint8_t *IV, int size) {
     RNG.begin("RANDOM_NUMB_GEN");
     RNG.addNoiseSource(noise);
 
-    bool IsKeyGenerated = false;
-    while (!IsKeyGenerated){
+    bool IsIVGenerated = false;
+    while (!IsIVGenerated){
         RNG.loop();
         if(RNG.available(size)){
             RNG.rand(IV, size);
-            IsKeyGenerated = true;
+            IsIVGenerated = true;
         }
     }
 }
