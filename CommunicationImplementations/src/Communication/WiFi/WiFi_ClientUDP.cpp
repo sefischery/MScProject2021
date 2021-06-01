@@ -24,13 +24,14 @@ void setup() {
 void loop(){
     delay(5000);
     Serial.println();
-    String msg = String("This is an unencrypted UDP message sent via WiFi - Message Number: ") + String(messageNumber++);
-    String output_format = "Sending UDP packet to ["+Server_IP.toString()+":" + UDP_PORT + "]" + " - Sent message: ";
-    Serial.println(output_format);
-    Serial.println(msg);
+
 
     if (ENABLE_ENCRYPTION)
     {
+        String msg = String("This is an encrypted UDP message sent via WiFi - Message Number: ") + String(messageNumber++);
+        String output_format = "Sending UDP packet to ["+Server_IP.toString()+":" + UDP_PORT + "]" + " - Sent message: ";
+        Serial.println(output_format);
+        Serial.println(msg);
         /** Encryption  **/
         int msg_len = (int) msg.length();
         uint8_t plaintext[msg_len];
@@ -70,6 +71,10 @@ void loop(){
         Serial.println();
     } else
     {
+        String msg = String("This is an unencrypted UDP message sent via WiFi - Message Number: ") + String(messageNumber++);
+        String output_format = "Sending UDP packet to ["+Server_IP.toString()+":" + UDP_PORT + "]" + " - Sent message: ";
+        Serial.println(output_format);
+        Serial.println(msg);
         Build_And_Send_UDP_Packet(UDP, msg.c_str(), Server_IP, UDP_PORT);
     }
 
