@@ -58,7 +58,12 @@ void sendSigfoxMessage(uint8_t *msg, int size, SoftwareSerial &softwareSerial)
 void performEncryption(int encryptionType, uint8_t *plaintext, int inputSize,
                        uint8_t *ciphertextReceiver, uint8_t *Tag, uint8_t *IV) {
     /** IV initialization **/
-    GenerateInitializationVector(IV, 16);
+    //GenerateInitializationVector(IV, 16);
+    uint8_t temp[16] = {0xaf, 0x5b, 0x92, 0x33, 0x13, 0x91, 0x2f, 0x75, 0x3e, 0x7c, 0xcb, 0xa2, 0xa1, 0x26, 0xa6, 0x72};
+    for (int index = 0; index < 16; index++)
+    {
+        IV[index] = temp[index];
+    }
 
     /** Perform encryption and timings **/
     if (encryptionType == 1)

@@ -61,6 +61,33 @@ void setup()
     print_char(encoded_content, encodedLength);
     Serial.println();
 
+    /** TEMP **/
+    uint8_t transmittingMessage1[12];
+    int transmissionCount1 = 0;
+    for (int index = 0; index < encodedLength; ++index) {
+        if (((index % 12) == 0) && ((index / 12) > 0))
+        {
+            Serial.print("Packet ");Serial.print(transmissionCount1);Serial.print(": ");
+            print_uint8(transmittingMessage1, 12);
+            transmissionCount1++;
+        }
+
+        transmittingMessage1[index % 12] = encoded_content[index];
+    }
+
+    if (encodedLength % 12 != 0)
+    {
+        uint8_t remainingData[encodedLength % 12];
+        for (int index = 0; index < encodedLength % 12; ++index) {
+            remainingData[index] = transmittingMessage1[index];
+        }
+
+        Serial.print("Packet 4: ");
+        print_uint8(remainingData, encodedLength % 12);
+        Serial.println();
+    }
+    /** TEMP **/
+
     // Prepare message transmission with max length of 12
     uint8_t transmittingMessage[12];
     int transmissionCount = 0;
