@@ -53,8 +53,11 @@ void loop(){
     String received_message_UDP = Receive_UDP_Packet(UDP, UDP_RECEIVER_BUFFER);
 
     Serial.println("------------------------------------");
-    Serial.print("Received message: ");
+    String output_format = "Received UDP packet from ["+UDP.remoteIP().toString()+":"
+                           + String(UDP.remotePort()) + "]" + " - Message: ";
+    Serial.println(output_format);
     Serial.println(received_message_UDP);
+
 
     if (ENABLE_ENCRYPTION){
         int decodedLength = Base64.decodedLength((char *) received_message_UDP.c_str(), (int) received_message_UDP.length());

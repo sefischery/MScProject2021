@@ -24,7 +24,7 @@ void setup() {
 void loop(){
     delay(5000);
     Serial.println();
-    String msg = String("This is an unecrypted UDP message sent via WiFi - Message Number: ") + String(messageNumber++);
+    String msg = String("This is an unencrypted UDP message sent via WiFi - Message Number: ") + String(messageNumber++);
     String output_format = "Sending UDP packet to ["+Server_IP.toString()+":" + UDP_PORT + "]" + " - Sent message: ";
     Serial.println(output_format);
     Serial.println(msg);
