@@ -44,7 +44,6 @@ void setup() {
     Serial.begin(115200);
     Connect_To_AP(AP_SSID, WiFi);
     UDP.begin(UDP_PORT);
-    Serial.println("Hello there");
 }
 
 bool encrypted = false;
@@ -53,6 +52,7 @@ void loop(){
     Serial.println();
     String received_message_UDP = Receive_UDP_Packet(UDP, UDP_RECEIVER_BUFFER);
 
+    Serial.println("------------------------------------");
     Serial.print("Received message: ");
     Serial.println(received_message_UDP);
 
@@ -66,8 +66,6 @@ void loop(){
         );
 
         /** Encryption **/
-        Serial.println("------------------------------------");
-
         Serial.print("Response size: ");
         Serial.println(decodedLength);
 
@@ -81,6 +79,9 @@ void loop(){
         delay(10);
         DisassembleAuthenticaedEncryptionPacket(IV, Tag, 16, ciphertext, buffer, decodedLength);
         delay(10);
+
+        Serial.print("Ciphertext: ");
+        print_uint8(ciphertext, decodedLength - 32);
 
         performDecryption(ciphertext, Tag, IV, decodedLength);
         Serial.println();

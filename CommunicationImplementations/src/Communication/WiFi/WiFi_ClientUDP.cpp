@@ -8,7 +8,7 @@
 int messageNumber = 0;
 
 WiFiUDP UDP;
-IPAddress Server_IP(192,168,43,136);
+IPAddress Server_IP(192,168,43,120);
 /** Preparation for encryption **/
 uint8_t Tag[16] = {};
 uint8_t IV[16] = {};
@@ -36,24 +36,16 @@ void loop(){
         uint8_t plaintext[msg_len];
         uint8_t ciphertext[msg_len];
 
-        Serial.println("Definition of arrays was successfull");
-
         // Copy message to plaintext as uint8_t
         charToUint8(msg.c_str(), plaintext, msg_len);
 
-        Serial.println("Conversion of msg to plaintext was successful");
-
         // Perform encryption
         performEncryption(AES_GCM_ENCRYPTION, plaintext, msg_len, ciphertext, Tag, IV);
-
-        Serial.println("Encryption passed, and therefore were successful");
 
         // Concatenate to one big message containing IV + Tag + ciphertext
         uint8_t concatenatedMessage[sizeof(IV) + sizeof (Tag) + sizeof(ciphertext)];
         int concatenatedMessageSize = sizeof(IV) + sizeof (Tag) + sizeof(ciphertext);
         AssembleAuthenticatedEncryptionPacket(IV, Tag, 16, ciphertext, concatenatedMessage, concatenatedMessageSize);
-
-        Serial.println("Assemble function was passed without problems");
 
         // Convert to char array as preparation for Base64 encoding
         char assembledCharArray[concatenatedMessageSize];
@@ -67,6 +59,15 @@ void loop(){
         Build_And_Send_UDP_Packet(UDP, encoded_content, Server_IP, UDP_PORT);
 
         /** Encryption **/
+        Serial.print("Ciphertext: ");
+        print_uint8(ciphertext, msg_len);
+
+        Serial.print("Tag: ");
+        print_uint8(Tag, 16);
+
+        Serial.print("IV: ");
+        print_uint8(IV, 16);
+        Serial.println();
     } else
     {
         Build_And_Send_UDP_Packet(UDP, msg.c_str(), Server_IP, UDP_PORT);
