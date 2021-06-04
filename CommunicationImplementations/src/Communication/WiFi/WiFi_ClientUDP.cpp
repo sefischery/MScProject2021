@@ -8,7 +8,7 @@
 int messageNumber = 0;
 
 WiFiUDP UDP;
-IPAddress Server_IP(192,168,43,120);
+IPAddress Server_IP(192,168,43,136);
 /** Preparation for encryption **/
 uint8_t Tag[16] = {};
 uint8_t IV[16] = {};
@@ -18,8 +18,6 @@ void setup() {
     Connect_To_AP(AP_SSID, WiFi);
     UDP.begin(UDP_PORT);
 }
-
-
 
 void loop(){
     delay(5000);
@@ -59,16 +57,17 @@ void loop(){
 
         Build_And_Send_UDP_Packet(UDP, encoded_content, Server_IP, UDP_PORT);
 
-        /** Encryption **/
-        Serial.print("Ciphertext: ");
-        print_uint8(ciphertext, msg_len);
+        Serial.print("IV: ");
+        print_uint8(IV, 16);
 
         Serial.print("Tag: ");
         print_uint8(Tag, 16);
 
-        Serial.print("IV: ");
-        print_uint8(IV, 16);
+        Serial.print("Ciphertext: ");
+        print_uint8(ciphertext, msg_len);
+
         Serial.println();
+
     } else
     {
         String msg = String("This is an unencrypted UDP message sent via WiFi - Message Number: ") + String(messageNumber++);
