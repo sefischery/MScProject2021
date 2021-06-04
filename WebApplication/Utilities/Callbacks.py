@@ -1,6 +1,7 @@
 import datetime
 from Utilities.Utilities import constructDataFrame
 from dash.dependencies import Output, Input
+import copy
 
 
 def callback_handler(webapp, data_list):
@@ -48,13 +49,19 @@ def graphCallback(webapp):
         Input('table', 'data')
     )
     def update_charts(technology, security_type, start_date, end_date, data_input):
-        graph_data = constructDataFrame(data_input)
+        temp = copy.deepcopy(data_input)
 
+        if len(temp) > 2:
+            temp.reverse()
+
+        graph_data = constructDataFrame(temp)
+
+        # Start and End date are twisted, but thats a quick fix, since we changed the order of the message, such that newest is in the top of the table.
         mask = (
                 (graph_data.technology == technology)
                 & (graph_data.type == security_type)
-                & (graph_data.Date >= start_date)
-                & (graph_data.Date <= end_date)
+                & (graph_data.Date <= start_date)
+                & (graph_data.Date >= end_date)
         )
         filtered_data = graph_data.loc[mask, :]
 
