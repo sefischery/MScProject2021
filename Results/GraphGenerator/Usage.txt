@@ -9,3 +9,7 @@ Flash: [========= ]  90.2% (used 29092 bytes from 32256 bytes)
 ESP32:
 RAM:   [          ]   4.2% (used 13840 bytes from 327680 bytes)
 Flash: [==        ]  19.0% (used 248612 bytes from 1310720 bytes)
+
+Sodaq SFF:
+RAM:   [=         ]  11.2% (used 3660 bytes from 32768 bytes)
+Flash: [=         ]  13.1% (used 34352 bytes from 262144 bytes)
