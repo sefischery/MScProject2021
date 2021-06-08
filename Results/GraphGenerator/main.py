@@ -88,6 +88,7 @@ def generate_boxplot(cryptographicOperation, deviceTypes, encryptionStandards, s
     box_plot_coloring(axe, columns[:3], [1,2,3], "red", "white")
     box_plot_coloring(axe, columns[3:6], [4,5,6], "blue", "white")
     box_plot_coloring(axe, columns[6:9], [7,8,9], "green", "white")
+    box_plot_coloring(axe, columns[9:12], [10, 11, 12], "yellow", "white")
     plt.xticks(number_array, namings, rotation=10)
     axe.set_ylabel(microseconds_label_str)
     axe.grid(color='white')  # True, axis='y', alpha=0.2)
@@ -95,7 +96,8 @@ def generate_boxplot(cryptographicOperation, deviceTypes, encryptionStandards, s
     uno = mpatches.Patch(color='red', label=f'Uno', alpha=0.3)
     esp8266 = mpatches.Patch(color='blue', label=f'ESP8266', alpha=0.3)
     esp32 = mpatches.Patch(color='green', label=f'ESP32', alpha=0.3)
-    axe.legend(handles=[esp32, esp8266, uno])
+    sodaq = mpatches.Patch(color='yellow', label=f'SODAQ', alpha=0.3)
+    axe.legend(handles=[esp32, esp8266, uno, sodaq])
 
     if save:
         plt.savefig(f'{result_path_graphs_box}\\one-in-all-{cryptographicOperation}.pdf', bbox_inches="tight", pad_inches=0.1)
@@ -116,8 +118,10 @@ def generate_boxplot2(cryptographicOperation, devices, standardTypes, save):
             box_plot_coloring(axe, crypto, [1, 2, 3], 'red', 'white')
         elif index == 1:
             box_plot_coloring(axe, crypto, [1, 2, 3], 'blue', 'white')
-        else:
+        elif index == 2:
             box_plot_coloring(axe, crypto, [1, 2, 3], 'green', 'white')
+        else:
+            box_plot_coloring(axe, crypto, [1, 2, 3], 'yellow', 'white')
     plt.xticks([1, 2, 3], ['ACORN', 'ASCON', 'AES'], rotation=10)
     axe.set_ylabel(microseconds_label_str)
     axe.grid(color='white')  # True, axis='y', alpha=0.2)
@@ -125,7 +129,8 @@ def generate_boxplot2(cryptographicOperation, devices, standardTypes, save):
     uno = mpatches.Patch(color='red', label=f'Uno', alpha=0.3)
     esp8266 = mpatches.Patch(color='blue', label=f'ESP8266', alpha=0.3)
     esp32 = mpatches.Patch(color='green', label=f'ESP32', alpha=0.3)
-    axe.legend(handles=[esp32, esp8266, uno])
+    sodaq = mpatches.Patch(color='yellow', label=f'SODAQ', alpha=0.3)
+    axe.legend(handles=[esp32, esp8266, uno, sodaq])
 
     if save:
         plt.savefig(f'{result_path_graphs_box}\\comparable-boxplot-{cryptographicOperation}.pdf', bbox_inches="tight", pad_inches=0.1)
@@ -149,6 +154,8 @@ def generate_boxplot_individual(data, label, save):
         confidence_interval = (0.74, 0.74)
     elif "Esp8266-acorn-encryption" == label:
         confidence_interval = (0.72, 0.72)
+    elif "Sodaq-acorn-decryption" == label:
+        confidence_interval = (2.39, 2.39)
     else:
         confidence_interval = st.t.interval(alpha=0.95, df=len(data) - 1, loc=np.mean(data), scale=st.sem(data))
     print(f'{label}: {confidence_interval}')
@@ -162,7 +169,7 @@ def generate_boxplot_individual(data, label, save):
 
 
 def triggerHistogram(display, save):
-    devices = ['Uno', 'Esp8266', 'Esp32']
+    devices = ['Uno', 'Esp8266', 'Esp32', 'Sodaq']
     encryptions = ['acorn', 'ascon', 'aes']
 
     for device in devices:
@@ -175,7 +182,7 @@ def triggerHistogram(display, save):
 
 
 def triggerBoxplot1(cryptographicOperation, display, save):
-    devices = ['Uno', 'Esp8266', 'Esp32']
+    devices = ['Uno', 'Esp8266', 'Esp32', 'Sodaq']
     encryptions = ['acorn', 'ascon', 'aes']
     generate_boxplot(cryptographicOperation, devices, encryptions, save)
 
@@ -184,7 +191,7 @@ def triggerBoxplot1(cryptographicOperation, display, save):
 
 
 def triggerBoxplot2(cryptographicOperation, display, save):
-    devices = ['Uno', 'Esp8266', 'Esp32']
+    devices = ['Uno', 'Esp8266', 'Esp32', 'Sodaq']
     encryptions = ['acorn', 'ascon', 'aes']
     generate_boxplot2(cryptographicOperation, devices, encryptions, save)
     if display:
@@ -192,7 +199,7 @@ def triggerBoxplot2(cryptographicOperation, display, save):
 
 
 def triggerBoxplot3(cryptographicOperation, display, save):
-    devices = ['Uno', 'Esp8266', 'Esp32']
+    devices = ['Uno', 'Esp8266', 'Esp32', 'Sodaq']
     encryptions = ['acorn', 'ascon', 'aes']
     for device in devices:
         for standard in encryptions:
@@ -207,8 +214,9 @@ def triggerBoxplot3(cryptographicOperation, display, save):
 
 if __name__ == '__main__':
     triggerHistogram(display=False, save=True)
-    #triggerBoxplot1("encryption", display=False, save=True)
-    #triggerBoxplot1("decryption", display=True, save=True)
-    #triggerBoxplot2("decryption", display=False, save=True)
-    #triggerBoxplot3("encryption", display=False, save=True)
-    #triggerBoxplot3("decryption", display=False, save=True)
+    triggerBoxplot1("encryption", display=False, save=True)
+    triggerBoxplot1("decryption", display=False, save=True)
+    triggerBoxplot2("encryption", display=False, save=True)
+    triggerBoxplot2("decryption", display=False, save=True)
+    triggerBoxplot3("encryption", display=False, save=True)
+    triggerBoxplot3("decryption", display=False, save=True)
