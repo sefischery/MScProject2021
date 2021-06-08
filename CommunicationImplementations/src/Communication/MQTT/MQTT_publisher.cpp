@@ -97,7 +97,7 @@ void setup() {
 
     Serial.print("Connecting to ");
     Serial.print(SSID);
-    WiFi.begin(SSID, WiFi_PASS);
+    WiFi.begin(SSID);//, WiFi_PASS);
     WiFi.waitForConnectResult();
     Serial.print(", WiFi connected, IP address: ");
     Serial.println(WiFi.localIP());
@@ -158,7 +158,21 @@ void loop() {
         Serial.print("Published to Encryption, rc="); Serial.print( (rc ? "OK: " : "FAILED: "));Serial.println();
 
         delay(10);
-        /** Encryption Related **/
+        /** Encryption Related End **/
+        /** Print encrypted related data **/
+        Serial.print("Tag: ");
+        print_uint8(tag, 16);
+
+        Serial.print("IV: ");
+        print_uint8(iv, 16);
+
+        Serial.print("Ciphertext: ");
+        print_uint8(ciphertext, msg.length());
+
+        Serial.print("Plaintext: ");
+        Serial.print("\"");
+        Serial.print(msg);
+        Serial.println("\"");
 
         /** Plaintext Related **/
         delay(10);
@@ -170,13 +184,12 @@ void loop() {
         contentObject["technology"] = "MQTT";
 
         serializeJson(contentObject, JSONplaintextBuffer);
+
         /** Plaintext Related **/
 
         // Public message to Plaintext topic
         rc = pubSubClient.publish("Plaintext", JSONplaintextBuffer);
         Serial.print("Published to Plaintext, rc="); Serial.print( (rc ? "OK: " : "FAILED: "));Serial.println();
-
-        Serial.println(msg);
         lastPublish = millis();
         Serial.println();
     }

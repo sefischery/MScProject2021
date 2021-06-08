@@ -83,9 +83,6 @@ void loop(){
         DisassembleAuthenticaedEncryptionPacket(IV, Tag, 16, ciphertext, buffer, decodedLength);
         delay(10);
 
-        Serial.print("Ciphertext: ");
-        print_uint8(ciphertext, decodedLength - 32);
-
         performDecryption(ciphertext, Tag, IV, decodedLength);
         Serial.println();
 

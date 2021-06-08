@@ -38,11 +38,14 @@ void performDecryption(uint8_t *ciphertext,
     /** Perform decryption and timing of the following **/
     cipher.decryption.aes_gcm_decryption(ciphertext, plaintextReceiver, Tag, ciphertextSize, cipher.key, IV, false);
 
+    Serial.print("IV: ");
+    print_uint8(IV, 16);
+
     Serial.print("Tag: ");
     print_uint8(Tag, 16);
 
-    Serial.print("Iv: ");
-    print_uint8(IV, 16);
+    Serial.print("Ciphertext: ");
+    print_uint8(ciphertext, ciphertextSize - 32);
 
     uint8ToChar(plaintextReceiver, text, ciphertextSize-32);
     Serial.print("Decrypted Text: ");

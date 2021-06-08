@@ -95,7 +95,7 @@ void setup() {
 
     Serial.print("Connecting to ");
     Serial.print(SSID);
-    WiFi.begin(SSID, WiFi_PASS);
+    WiFi.begin(SSID);//, WiFi_PASS);
     WiFi.waitForConnectResult();
     Serial.print(", WiFi connected, IP address: ");
     Serial.println(WiFi.localIP());

@@ -8,7 +8,7 @@
 int messageNumber = 0;
 
 WiFiUDP UDP;
-IPAddress Server_IP(192,168,43,136);
+IPAddress Server_IP(192,168,43,120);
 /** Preparation for encryption **/
 uint8_t Tag[16] = {};
 uint8_t IV[16] = {};

@@ -51,9 +51,9 @@ void  msgReceived(char* topic, byte* payload, unsigned int length)
 
     DisassembleAuthenticaedEncryptionPacket(IV, Tag, 16, ciphertext, assembledDataHex, payload_size);
 
-    Serial.println("---------------------------------------------");
     performDecryption(ciphertext, Tag, IV, payload_size - 32);
 
+    Serial.println("---------------------------------------------");
     /** Testing **/
 
     Serial.println();
@@ -121,8 +121,11 @@ void performDecryption(uint8_t *ciphertext, uint8_t *Tag, uint8_t *IV, int ciphe
     Serial.print("Tag: ");
     print_uint8(Tag, 16);
 
-    Serial.print("Iv: ");
+    Serial.print("IV: ");
     print_uint8(IV, 16);
+
+    Serial.print("Ciphertext: ");
+    print_uint8(ciphertext, ciphertextSize);
 
     uint8ToChar(plaintextReceiver, text, ciphertextSize);
     Serial.print("Decrypted Text: ");
