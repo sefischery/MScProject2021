@@ -6,4 +6,3 @@
 - Sebastian Fischer, s164158
 - Magnus Glasdam Jakobsen, s164156
 
-## Introduction to this Github repository
