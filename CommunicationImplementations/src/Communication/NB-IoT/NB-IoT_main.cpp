@@ -86,7 +86,7 @@ void loop() {
         int concatenatedMessageSize = sizeof(IV) + sizeof (Tag) + sizeof(ciphertext);
         AssembleAuthenticatedEncryptionPacket(IV, Tag, 16, ciphertext, concatenatedMessage, concatenatedMessageSize);
 
-        /** Print encrypted contetn **/
+        /** Print encrypted content **/
         DEBUG_STREAM.println();
         DEBUG_STREAM.print("Assembled Packet: ");
         for (int index = 0; index < concatenatedMessageSize; ++index) {
@@ -101,7 +101,7 @@ void loop() {
         /** Send assembled encrypted packet **/
         sendNBIoTUDP(concatenatedMessage, concatenatedMessageSize, TARGET_IP, TARGET_PORT, nbiot);
 
-        /** Unecrypted version of NB-IoT
+        /** Unencrypted version of NB-IoT
         DEBUG_STREAM.println("Sending *UNENCRYPTED* NB-IoT packet: ");
         const uint8_t message[] = "This is an unencrypted NB-IoT packet";
         sendNBIoTUDP(message, (int) sizeof(message), TARGET_IP, TARGET_PORT, nbiot);

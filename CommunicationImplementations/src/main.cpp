@@ -1,8 +1,5 @@
 #include <Arduino.h>
-#include <AES_GCM.h>
-#include <ASCON.h>
 #include <utilities.h>
-#include <ACORN.h>
 #include <Crypto.h>
 #include <Encryption_testing.h>
 

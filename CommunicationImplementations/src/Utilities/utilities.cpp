@@ -61,7 +61,7 @@ void AssembleAuthenticatedEncryptionPacket(const uint8_t *iv, const uint8_t *tag
         }
     }
 }
-/** Dissameble the IV, Tag and ciphertext to three different pointers**/
+/** Disassemble the IV, Tag and ciphertext to three different pointers**/
 void DisassembleAuthenticaedEncryptionPacket(uint8_t *iv, uint8_t *tag,
                                              int defaultSize,
                                              uint8_t *ciphertext,
@@ -85,7 +85,7 @@ void DisassembleAuthenticaedEncryptionPacket(uint8_t *iv, uint8_t *tag,
     }
 }
 
-/** Genereates a random IV from Noise Source **/
+/** Generates a random IV from Noise Source **/
 void GenerateInitializationVector(uint8_t *IV, int size) {
     TransistorNoiseSource noise(A0);
     RNG.begin("RANDOM_NUMB_GEN");
