@@ -30,6 +30,7 @@ bool connectToServer() {
     Serial.println(myDevice->getAddress().toString().c_str());
 
     BLEClient *pClient  = BLEDevice::createClient();
+
     Serial.println(" - Created client");
 
     pClient->setClientCallbacks(new MyClientCallback());
@@ -46,8 +47,8 @@ bool connectToServer() {
         pClient->disconnect();
         return false;
     }
-    Serial.println(" - Found our service");
 
+    Serial.println(" - Found our service");
 
     // Obtain a reference to the characteristic in the service of the remote BLE server.
     pRemoteCharacteristic = pRemoteService->getCharacteristic(charUUID);

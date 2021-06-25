@@ -168,6 +168,30 @@ def generate_boxplot_individual(data, label, save):
         plt.savefig(f'{result_path_graphs_box}\\{label}-boxplot.pdf', bbox_inches="tight", pad_inches=0.1)
 
 
+def generate_mcu_processing_plot(save):
+    devices = ['Uno', 'Esp8266', 'Esp32', 'Sodaq']
+    namings = []
+    counter = 0
+    fig, axe = plt.subplots(figsize=(9, 5))
+    for deviceIndex, device in enumerate(devices):
+            namings.append(f'{device}')
+    box_plot_coloring(axe, columns[:3], [1,2,3], "red", "white")
+    box_plot_coloring(axe, columns[3:6], [4,5,6], "blue", "white")
+    box_plot_coloring(axe, columns[6:9], [7,8,9], "green", "white")
+    box_plot_coloring(axe, columns[9:12], [10, 11, 12], "yellow", "white")
+    plt.xticks(number_array, namings, rotation=10)
+    axe.set_ylabel(microseconds_label_str)
+    axe.grid(color='white')  # True, axis='y', alpha=0.2)
+    axe.set_facecolor('#e6e8e7')
+    uno = mpatches.Patch(color='red', label=f'Uno', alpha=0.3)
+    esp8266 = mpatches.Patch(color='blue', label=f'ESP8266', alpha=0.3)
+    esp32 = mpatches.Patch(color='green', label=f'ESP32', alpha=0.3)
+    sodaq = mpatches.Patch(color='yellow', label=f'SODAQ', alpha=0.3)
+    axe.legend(handles=[esp32, esp8266, uno, sodaq])
+
+    if save:
+        plt.savefig(f'{result_path_graphs_box}\\processing-power-plot.pdf', bbox_inches="tight", pad_inches=0.1)
+
 def triggerHistogram(display, save):
     devices = ['Uno', 'Esp8266', 'Esp32', 'Sodaq']
     encryptions = ['acorn', 'ascon', 'aes']
@@ -211,12 +235,19 @@ def triggerBoxplot3(cryptographicOperation, display, save):
     if display:
         plt.show()
 
+def triggerBoxplot1(display, save):
+    generate_mcu_processing_plot("","", save)
+
+    if display:
+        plt.show()
+
 
 if __name__ == '__main__':
-    triggerHistogram(display=False, save=True)
-    triggerBoxplot1("encryption", display=False, save=True)
-    triggerBoxplot1("decryption", display=False, save=True)
-    triggerBoxplot2("encryption", display=False, save=True)
-    triggerBoxplot2("decryption", display=False, save=True)
-    triggerBoxplot3("encryption", display=False, save=True)
-    triggerBoxplot3("decryption", display=False, save=True)
+
+    #triggerHistogram(display=False, save=True)
+    #triggerBoxplot1("encryption", display=False, save=True)
+    #triggerBoxplot1("decryption", display=False, save=True)
+    #triggerBoxplot2("encryption", display=False, save=True)
+    #triggerBoxplot2("decryption", display=False, save=True)
+    #triggerBoxplot3("encryption", display=False, save=True)
+    #triggerBoxplot3("decryption", display=False, save=True)

@@ -63,11 +63,9 @@ void setup() {
     // Start advertising
     BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
     pAdvertising->addServiceUUID(SERVICE_UUID);
-
     pAdvertising->setScanResponse(true);
     pAdvertising->setMinPreferred(0x06);  // functions that help with iPhone connections issue
     pAdvertising->setMinPreferred(0x12);
-
     BLEDevice::startAdvertising();
     Serial.println("Waiting a client connection to notify...");
 }
